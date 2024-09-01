@@ -7,6 +7,7 @@ import com.example.shoppingmall.model.dto.user.UpdateUserRequest;
 import com.example.shoppingmall.model.entity.User;
 import com.example.shoppingmall.model.enums.UserRole;
 import com.example.shoppingmall.repository.UserRepository;
+import com.example.shoppingmall.service.SignUpService;
 import com.example.shoppingmall.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,8 @@ public class UserServiceIntegrationTest {
 
     @Autowired
     private UserService userService;
-
+    @Autowired
+    private SignUpService signUpService;
     @Autowired
     private UserRepository userRepository;
 
@@ -34,7 +36,7 @@ public class UserServiceIntegrationTest {
         SignUpRequest signUpRequest = new SignUpRequest("test@example.com", "password123", "Test User", "1234567890", "Test Address");
 
         // When
-        userService.signUp(signUpRequest);
+        signUpService.signUp(signUpRequest);
 
         // Then
         User savedUser = userRepository.findByEmail("test@example.com").orElse(null);
@@ -47,7 +49,7 @@ public class UserServiceIntegrationTest {
         LoginRequest loginRequest = new LoginRequest("test@example.com", "password123");
 
         // When
-        String token = userService.login(loginRequest);
+        String token = signUpService.login(loginRequest);
 
         // Then
         assertNotNull(token);
@@ -58,7 +60,7 @@ public class UserServiceIntegrationTest {
     void 사용자_정보_수정_성공() {
         // 1. 회원가입 먼저 실행
         SignUpRequest signUpRequest = new SignUpRequest("test@example.com", "password123", "Test User", "1234567890", "Test Address");
-        userService.signUp(signUpRequest);
+        signUpService.signUp(signUpRequest);
 
         // 2. 사용자 정보 수정 테스트
         UpdateUserRequest updateUserRequest = new UpdateUserRequest("Updated User", "0987654321", "Updated Address");
@@ -79,7 +81,7 @@ public class UserServiceIntegrationTest {
     void 비밀번호_변경_성공() {
         // 1. 회원가입 먼저 실행
         SignUpRequest signUpRequest = new SignUpRequest("test@example.com", "password123", "Test User", "1234567890", "Test Address");
-        userService.signUp(signUpRequest);
+        signUpService.signUp(signUpRequest);
 
         // 2. 비밀번호 변경 테스트
         UpdatePasswordRequest updatePasswordRequest = new UpdatePasswordRequest("password123", "newPassword123");
@@ -90,7 +92,7 @@ public class UserServiceIntegrationTest {
 
         // 3. 로그인 시 새로운 비밀번호 사용 가능 확인
         LoginRequest loginRequest = new LoginRequest("test@example.com", "newPassword123");
-        String token = userService.login(loginRequest);
+        String token = signUpService.login(loginRequest);
 
         assertNotNull(token);
     }
@@ -99,7 +101,7 @@ public class UserServiceIntegrationTest {
     void 유저_계정_비활성화_성공() {
         // 1. 회원가입 먼저 실행
         SignUpRequest signUpRequest = new SignUpRequest("test@example.com", "password123", "Test User", "1234567890", "Test Address");
-        userService.signUp(signUpRequest);
+        signUpService.signUp(signUpRequest);
 
         // 2. 계정 비활성화 테스트
         User savedUser = userRepository.findByEmail("test@example.com").orElse(null);

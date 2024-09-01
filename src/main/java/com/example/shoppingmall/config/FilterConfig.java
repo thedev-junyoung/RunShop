@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import com.example.shoppingmall.filter.JWTFilter;
 import com.example.shoppingmall.utils.JWT;
 
-@Configuration
+//@Configuration
 public class FilterConfig {
     private final JWT jwt;
 

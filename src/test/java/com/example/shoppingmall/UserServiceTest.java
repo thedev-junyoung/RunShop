@@ -8,6 +8,7 @@ import com.example.shoppingmall.model.dto.user.UpdateUserRequest;
 import com.example.shoppingmall.model.entity.User;
 import com.example.shoppingmall.model.enums.UserRole;
 import com.example.shoppingmall.repository.UserRepository;
+import com.example.shoppingmall.service.SignUpService;
 import com.example.shoppingmall.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -30,62 +31,10 @@ public class UserServiceTest {
 
     @Autowired
     private UserService userService;
-
     @MockBean
     private UserRepository userRepository;
 
-    @Test
-    void 회원가입_성공() {
-        // Given
-        SignUpRequest signUpRequest = new SignUpRequest("test@example.com", "password123", "Test User", "1234567890", "Test Address");
 
-        // 비밀번호를 해싱하여 저장할 사용자 객체 생성
-        String hashedPassword = hashPassword(signUpRequest.getPassword());
-        User user = new User();
-        user.setEmail(signUpRequest.getEmail());
-        user.setPassword(hashedPassword); // 해싱된 비밀번호 사용
-        user.setName(signUpRequest.getName());
-        user.setPhone(signUpRequest.getPhone());
-        user.setAddress(signUpRequest.getAddress());
-        user.setRole(UserRole.USER);
-
-        // Mocking
-        Mockito.when(userRepository.existsByEmail(signUpRequest.getEmail())).thenReturn(false);
-        Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(user);
-
-        // When
-        log.info("프로세스를 시작: {}", signUpRequest.getEmail());
-        userService.signUp(signUpRequest);
-
-        // Then
-        Mockito.verify(userRepository, Mockito.times(1)).save(Mockito.any(User.class));
-        log.info("사용자 가입 테스트 통과: {}", user.getEmail());
-    }
-
-    @Test
-    void 로그인_성공() {
-        // Given
-        LoginRequest loginRequest = new LoginRequest("test@example.com", "password123");
-
-        // 이미 저장된 사용자를 가정하고 테스트
-        String hashedPassword = hashPassword(loginRequest.getPassword());
-        User user = new User();
-        user.setEmail(loginRequest.getEmail());
-        user.setPassword(hashedPassword); // 해싱된 비밀번호 사용
-        user.setRole(UserRole.USER);
-
-        // Mocking
-        Mockito.when(userRepository.findByEmail(anyString())).thenReturn(java.util.Optional.of(user));
-
-        // When
-        log.info("로그인 프로세스 시작: {}", loginRequest.getEmail());
-        String token = userService.login(loginRequest);
-
-        // Then
-        assertNotNull(token);
-        assertEquals(UserRole.USER, user.getRole());
-        log.info("로그인 프로세스 성공: {}", user.getEmail());
-    }
 
     @Test
     void 사용자_정보_수정_성공() {
