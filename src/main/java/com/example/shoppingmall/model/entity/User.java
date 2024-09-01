@@ -41,7 +41,7 @@ public class User {
     private LocalDateTime updatedAt;
 
     @Enumerated(EnumType.STRING)
-    private UserRole role;
+    private UserRole role=UserRole.CUSTOMER;
 
     @Column(name = "enabled")
     private boolean enabled = true; // 기본값을 true로 설정
