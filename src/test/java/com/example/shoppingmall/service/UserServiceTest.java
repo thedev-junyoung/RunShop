@@ -1,15 +1,9 @@
-package com.example.shoppingmall;
+package com.example.shoppingmall.service;
 
-
-import com.example.shoppingmall.model.dto.user.LoginRequest;
-import com.example.shoppingmall.model.dto.user.SignUpRequest;
 import com.example.shoppingmall.model.dto.user.UpdatePasswordRequest;
 import com.example.shoppingmall.model.dto.user.UpdateUserRequest;
 import com.example.shoppingmall.model.entity.User;
-import com.example.shoppingmall.model.enums.UserRole;
 import com.example.shoppingmall.repository.UserRepository;
-import com.example.shoppingmall.service.SignUpService;
-import com.example.shoppingmall.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.mindrot.jbcrypt.BCrypt;
@@ -21,9 +15,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 
 @SpringBootTest
 @Slf4j
@@ -46,7 +38,6 @@ public class UserServiceTest {
         user.setPhone("1234567890");
         user.setAddress("Test Address");
         user.setEmail("test@example.com");
-        user.setRole(UserRole.USER);
 
         // Mocking
         Mockito.when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));

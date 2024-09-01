@@ -1,25 +1,55 @@
 package com.example.shoppingmall.service;
 
+import com.example.shoppingmall.model.dto.user.SignUpRequest;
 import com.example.shoppingmall.model.dto.user.UpdatePasswordRequest;
 import com.example.shoppingmall.model.dto.user.UpdateUserRequest;
+import com.example.shoppingmall.model.enums.UserRole;
 import com.example.shoppingmall.repository.UserRepository;
 import com.example.shoppingmall.utils.JWT;
 import lombok.extern.slf4j.Slf4j;
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.example.shoppingmall.model.entity.User;
+
+import java.util.List;
 
 @Service
 @Slf4j
 public class UserService {
 
     private final UserRepository userRepository;
-
-    public UserService(UserRepository userRepository, JWT jwt) {
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    public UserService(UserRepository userRepository, JWT jwt, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
 
+    public void signUp(SignUpRequest request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("중복된 이메일 입니다.");
+        }
+
+        User user = new User();
+        user.setEmail(request.getEmail());
+        user.setPassword(bCryptPasswordEncoder.encode(request.getPassword()));
+        user.setName(request.getName());
+        user.setPhone(request.getPhone());
+        user.setAddress(request.getAddress());
+
+        userRepository.save(user);
+        log.info("유저 회원가입 성공 : {}", user.getEmail());
+    }
+    // 특정 유저 조회
+    public User getUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+    }
+    // 전체 유저 조회
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
 
     public void updateUserDetails(Long userId, UpdateUserRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -41,7 +71,7 @@ public class UserService {
         if (!checkPassword(request.getOldPassword(), user.getPassword())) {
             throw new IllegalArgumentException("Old password is incorrect");
         }
-        user.setPassword(hashPassword(request.getNewPassword()));
+        user.setPassword(bCryptPasswordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
         log.info("유저 패스워드 변경 완료 userId: {}", userId);
     }
@@ -52,9 +82,7 @@ public class UserService {
         userRepository.save(user);
         log.info("유저 계정 비활성화 완료 userId: {}", userId);
     }
-    private String hashPassword(String password) {
-        return BCrypt.hashpw(password, BCrypt.gensalt());
-    }
+
     private boolean checkPassword(String plaintext, String hashed) {
         return BCrypt.checkpw(plaintext, hashed);
     }

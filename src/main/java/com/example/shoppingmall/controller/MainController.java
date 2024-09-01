@@ -1,8 +1,8 @@
 package com.example.shoppingmall.controller;
 
 import com.example.shoppingmall.model.dto.user.SignUpRequest;
-import com.example.shoppingmall.model.dto.user.LoginRequest;
-import com.example.shoppingmall.service.SignUpService;
+import com.example.shoppingmall.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,21 +12,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/")
 public class MainController {
-    private final SignUpService signUpService;
 
-    public MainController(SignUpService signUpService) {
-        this.signUpService = signUpService;
+    private final UserService userService;
+
+    public MainController(UserService userService) {
+        this.userService = userService;
     }
 
-    @PostMapping("/join")
-    public ResponseEntity<Object> join(@RequestBody SignUpRequest request){
-        signUpService.signUp(request);
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<Object> login(@RequestBody LoginRequest request){
-        signUpService.login(request);
-        return ResponseEntity.ok().build();
+    // 회원가입
+    @RequestMapping("/signup")
+    @PostMapping
+    public ResponseEntity<Void> signUp(@RequestBody SignUpRequest request) {
+        userService.signUp(request);
+        return ResponseEntity.status(HttpStatus.CREATED).build(); // 201 Created 상태 코드 반환
     }
 }
