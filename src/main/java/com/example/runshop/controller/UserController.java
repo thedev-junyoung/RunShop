@@ -1,16 +1,18 @@
 package com.example.runshop.controller;
 
+import com.example.runshop.model.dto.response.SuccessResponse;
 import com.example.runshop.model.dto.user.UpdatePasswordRequest;
 import com.example.runshop.model.dto.user.UpdateUserRequest;
-import com.example.runshop.model.entity.User;
+import com.example.runshop.model.dto.user.UserDTO;
 import com.example.runshop.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class UserController {
 
     private final UserService userService;
@@ -19,39 +21,33 @@ public class UserController {
         this.userService = userService;
     }
 
-
-    // 특정 유저 조회
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUser(@PathVariable Long id) {
-        User user = userService.getUserById(id);
-        return ResponseEntity.ok(user); // 200 OK 상태 코드 반환
+    public ResponseEntity<?> getUser(@PathVariable Long id, HttpServletRequest request) {
+        UserDTO user = userService.getUserById(id);
+        return SuccessResponse.ok("사용자 정보를 성공적으로 조회했습니다.", user, request.getRequestURI());
     }
 
-    // 전체 유저 조회
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
-        return ResponseEntity.ok(users); // 200 OK 상태 코드 반환
+    public ResponseEntity<?> getAllUsers(HttpServletRequest request) {
+        List<UserDTO> users = userService.getAllUsers();
+        return SuccessResponse.ok("모든 사용자 정보를 성공적으로 조회했습니다.", users, request.getRequestURI());
     }
 
-    // 유저 정보 수정
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateUser(@PathVariable Long id, @RequestBody UpdateUserRequest request) {
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UpdateUserRequest request, HttpServletRequest httpRequest) {
         userService.updateUserDetails(id, request);
-        return ResponseEntity.ok().build(); // 200 OK 상태 코드 반환
+        return SuccessResponse.ok("사용자 정보가 성공적으로 업데이트되었습니다.", httpRequest.getRequestURI());
     }
 
-    // 유저 비밀번호 수정
-    @PutMapping("/{id}/password")
-    public ResponseEntity<Void> updatePassword(@PathVariable Long id, @RequestBody UpdatePasswordRequest request) {
+    @PatchMapping("/{id}/password")
+    public ResponseEntity<?> updatePassword(@PathVariable Long id, @RequestBody UpdatePasswordRequest request, HttpServletRequest httpRequest) {
         userService.updatePassword(id, request);
-        return ResponseEntity.ok().build(); // 200 OK 상태 코드 반환
+        return SuccessResponse.ok("비밀번호가 성공적으로 변경되었습니다.", httpRequest.getRequestURI());
     }
 
-    // 유저 삭제(비활성화)
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    @PatchMapping("/{id}/deactivate")
+    public ResponseEntity<?> deactivateUser(@PathVariable Long id, HttpServletRequest httpRequest) {
         userService.deactivateUser(id);
-        return ResponseEntity.noContent().build(); // 204 No Content 상태 코드 반환
+        return SuccessResponse.ok("사용자 계정이 성공적으로 비활성화되었습니다.", httpRequest.getRequestURI());
     }
 }
