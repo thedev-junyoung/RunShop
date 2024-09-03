@@ -2,13 +2,12 @@ package com.example.runshop.service;
 
 import com.example.runshop.exception.user.IncorrectPasswordException;
 import com.example.runshop.exception.user.UserNotFoundException;
-import com.example.runshop.mapper.UserMapper;
+import com.example.runshop.utils.mapper.UserMapper;
 import com.example.runshop.model.dto.user.SignUpRequest;
 import com.example.runshop.model.dto.user.UpdatePasswordRequest;
 import com.example.runshop.model.dto.user.UpdateUserRequest;
 import com.example.runshop.model.dto.user.UserDTO;
 import com.example.runshop.repository.UserRepository;
-import com.example.runshop.utils.JWT;
 import lombok.extern.slf4j.Slf4j;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

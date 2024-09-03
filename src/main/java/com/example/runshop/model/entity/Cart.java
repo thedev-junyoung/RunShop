@@ -1,12 +1,16 @@
 package com.example.runshop.model.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Getter
+@Setter
 public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

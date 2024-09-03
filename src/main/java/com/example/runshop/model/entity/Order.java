@@ -2,12 +2,16 @@ package com.example.runshop.model.entity;
 
 import jakarta.persistence.*;
 import com.example.runshop.model.enums.OrderStatus;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "orders") // 테이블 이름을 'orders'로 변경
 public class Order {
     @Id

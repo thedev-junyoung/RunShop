@@ -24,6 +24,6 @@ public class MainController {
     @PostMapping("/signup")
     public ResponseEntity<?> signUp(@RequestBody SignUpRequest request, HttpServletRequest httpRequest) {
         userService.signUp(request);
-        return SuccessResponse.ok("회원가입이 성공적으로 완료되었습니다.", httpRequest.getRequestURI());
+        return SuccessResponse.ok("회원가입이 성공적으로 완료되었습니다.", null, httpRequest.getRequestURI());
     }
 }

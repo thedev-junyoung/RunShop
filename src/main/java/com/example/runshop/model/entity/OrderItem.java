@@ -6,6 +6,7 @@ import lombok.Setter;
 import com.example.runshop.model.enums.PaymentMethod;
 import com.example.runshop.model.enums.PaymentStatus;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -22,7 +23,7 @@ public class OrderItem {
     @Column(name = "payment_date", nullable = false)
     private LocalDateTime paymentDate;
     @Column(name = "amount", nullable = false)
-    private double amount;
+    private BigDecimal amount;
 
     @PrePersist
     protected void onCreate() {

@@ -1,4 +1,4 @@
-package com.example.runshop.mapper;
+package com.example.runshop.utils.mapper;
 
 import com.example.runshop.model.dto.user.UserDTO;
 import com.example.runshop.model.entity.User;

@@ -2,9 +2,9 @@ package com.example.runshop.model.dto.response;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 public class SuccessResponse<T> {
     private HttpStatus status;
+    private int code;
     private String message;
     private T data;
     private String path;
@@ -12,10 +12,12 @@ public class SuccessResponse<T> {
     // 생성자
     public SuccessResponse(HttpStatus status, String message, T data, String path) {
         this.status = status;
+        this.code = status.value(); // 상태 코드를 설정
         this.message = message;
         this.data = data;
         this.path = path;
     }
+
     // 성공 응답 생성 메서드 (데이터 포함)
     public static <T> ResponseEntity<SuccessResponse<T>> ok(String message, T data) {
         return new ResponseEntity<>(new SuccessResponse<>(HttpStatus.OK, message, data, null), HttpStatus.OK);
@@ -34,5 +36,26 @@ public class SuccessResponse<T> {
     // 오류 응답 생성 메서드
     public static ResponseEntity<SuccessResponse<Void>> error(HttpStatus status, String message, String path) {
         return new ResponseEntity<>(new SuccessResponse<>(status, message, null, path), status);
+    }
+
+    // Getter 메서드 추가
+    public HttpStatus getStatus() {
+        return status;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public T getData() {
+        return data;
+    }
+
+    public String getPath() {
+        return path;
     }
 }

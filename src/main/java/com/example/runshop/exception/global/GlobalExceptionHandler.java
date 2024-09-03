@@ -28,6 +28,11 @@ public class GlobalExceptionHandler {
         return SuccessResponse.error(HttpStatus.UNAUTHORIZED, ex.getMessage(), request.getRequestURI());
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<SuccessResponse<Void>> handleIllegalArgumentException(IllegalArgumentException ex, HttpServletRequest request) {
+        return SuccessResponse.error(HttpStatus.UNAUTHORIZED, ex.getMessage(), request.getRequestURI());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<SuccessResponse<Void>> handleGeneralException(Exception ex, HttpServletRequest request) {
         return SuccessResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다.", request.getRequestURI());

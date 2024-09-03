@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Entity
 @Getter
 @Setter
@@ -49,6 +50,10 @@ public class Product {
         updatedAt = LocalDateTime.now();
     }
     // 재고 관계 추가
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "seller_id")
+    private Seller seller;
 
     // - **Product** 1 : N **CartItem**
     // (한 상품이 여러 장바구니에 포함될 수 있음)
