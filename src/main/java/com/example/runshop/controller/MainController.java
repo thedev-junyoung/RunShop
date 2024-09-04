@@ -4,6 +4,7 @@ import com.example.runshop.model.dto.response.SuccessResponse;
 import com.example.runshop.model.dto.user.SignUpRequest;
 import com.example.runshop.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,7 +23,7 @@ public class MainController {
 
     // 회원가입
     @PostMapping("/signup")
-    public ResponseEntity<?> signUp(@RequestBody SignUpRequest request, HttpServletRequest httpRequest) {
+    public ResponseEntity<?> signUp(@Valid @RequestBody SignUpRequest request, HttpServletRequest httpRequest) {
         userService.signUp(request);
         return SuccessResponse.ok("회원가입이 성공적으로 완료되었습니다.", null, httpRequest.getRequestURI());
     }

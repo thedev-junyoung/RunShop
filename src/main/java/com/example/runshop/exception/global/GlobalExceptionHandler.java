@@ -5,6 +5,7 @@ import com.example.runshop.exception.user.UserAlreadyExistsException;
 import com.example.runshop.exception.user.UserNotFoundException;
 import com.example.runshop.model.dto.response.SuccessResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,6 +14,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<String> handleValidationExceptions(ConstraintViolationException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<SuccessResponse<Void>> handleUserAlreadyExistsException(UserAlreadyExistsException ex, HttpServletRequest request) {
         return SuccessResponse.error(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI());
