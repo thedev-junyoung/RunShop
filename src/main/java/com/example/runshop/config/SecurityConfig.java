@@ -3,6 +3,8 @@ package com.example.runshop.config;
 import com.example.runshop.filter.JWTFilter;
 import com.example.runshop.filter.LoginFilter;
 import com.example.runshop.utils.JWT;
+import com.example.runshop.utils.JwtLogoutHandler;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -59,7 +61,15 @@ public class SecurityConfig {
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/signup", "/login").permitAll() // 이 경로들은 인증 없이 접근 허용
                 .anyRequest().authenticated() // 나머지 요청들은 인증 필요
-        );
+        )            .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            response.setStatus(HttpServletResponse.SC_OK);
+                        })
+                        .addLogoutHandler(new JwtLogoutHandler(jwt))
+                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        ;
         // 커스텀 필터 추가
         // JWTFilter: JWT 토큰을 검증하는 필터로, 사용자 인증 정보를 추출하고 검증함
         // LoginFilter: 로그인 요청을 처리하여 사용자 인증을 수행하는 필터

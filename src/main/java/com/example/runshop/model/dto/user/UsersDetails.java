@@ -21,12 +21,12 @@ public class UsersDetails implements UserDetails {
         Collection<GrantedAuthority> collection = new ArrayList<>();
 
         // 유저의 역할(Role)을 GrantedAuthority 인터페이스로 감싸서 Collection에 추가
-//        collection.add(new GrantedAuthority() {
-//            @Override
-//            public String getAuthority() {
-//                return String.valueOf(user.getRole()); // 유저의 역할을 반환
-//            }
-//        });
+        collection.add(new GrantedAuthority() {
+            @Override
+            public String getAuthority() {
+                return String.valueOf(user.getRole()); // 유저의 역할을 반환
+            }
+        });
         return collection; // 권한 정보를 담은 Collection을 반환
     }
 
