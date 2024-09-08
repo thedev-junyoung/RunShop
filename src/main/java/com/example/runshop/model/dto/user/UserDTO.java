@@ -1,17 +1,19 @@
 package com.example.runshop.model.dto.user;
 
-import lombok.Data;
+import com.example.runshop.model.enums.UserRole;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
+@SuperBuilder
 @Data
-public class UserDTO {
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)  // 부모 클래스의 equals, hashCode 메서드를 포함하도록 설정
+public class UserDTO extends BaseUserDTO {
     private Long id;
     private String email;
-    private String name;
-    private String phone;
-    private String address;
+    private UserRole role;
     private String createdAt;
-    private boolean enabled;
     private String updatedAt;
-
-
+    private boolean enabled;
+    // 기본 생성자 수동 추가
 }

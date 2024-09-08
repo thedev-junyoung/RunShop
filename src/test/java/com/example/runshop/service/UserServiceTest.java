@@ -34,7 +34,10 @@ public class UserServiceTest {
     @Test
     void 사용자_정보_수정_성공() {
         // Given: 테스트 데이터 및 환경 설정
-        UpdateUserRequest updateUserRequest = new UpdateUserRequest("Updated User", "0987654321", "Updated Address");
+        UpdateUserRequest updateUserRequest = new UpdateUserRequest();
+        updateUserRequest.setName("Updated User");
+        updateUserRequest.setPhone("0987654321");
+        updateUserRequest.setAddress("Updated Address");
         User user = new User();
         user.setId(1L);
         user.setName("Test User");
@@ -98,7 +101,7 @@ public class UserServiceTest {
 
         // When: 테스트 대상 메서드 실행
         log.info("Starting user deactivation process for userId: {}", user.getId());
-        userService.deactivateUser(user.getId());
+        userService.disabled(user.getId());
 
         // Then: 테스트 결과 검증
         Mockito.verify(userRepository, Mockito.times(1)).save(Mockito.any(User.class)); // save 메서드가 한 번 호출되었는지 확인

@@ -2,14 +2,17 @@ package com.example.runshop.service;
 
 import com.example.runshop.exception.user.IncorrectPasswordException;
 import com.example.runshop.exception.user.UserNotFoundException;
+import com.example.runshop.model.dto.user.*;
+import com.example.runshop.utils.JWT;
 import com.example.runshop.utils.mapper.UserMapper;
-import com.example.runshop.model.dto.user.SignUpRequest;
-import com.example.runshop.model.dto.user.UpdatePasswordRequest;
-import com.example.runshop.model.dto.user.UpdateUserRequest;
-import com.example.runshop.model.dto.user.UserDTO;
 import com.example.runshop.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.example.runshop.model.entity.User;
@@ -25,12 +28,14 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserMapper userMapper;
+    private final JWT jwt;
 
     // 생성자를 통한 의존성 주입
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, UserMapper userMapper, JWT jwt) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userMapper = userMapper;
+        this.jwt = jwt;
     }
 
     // 회원가입 처리
@@ -113,10 +118,33 @@ public class UserService {
         userRepository.save(user);
         log.info("유저 패스워드 변경 완료 userId: {}", userId);
     }
+    @Transactional
+    public void updateUserRole(Long userId, UpdateRoleRequest request) {
+        // userId로 유저를 조회하고, 존재하지 않으면 예외 발생
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다: " + userId));
+
+        // 새로운 역할을 설정 (여기서는 단일 역할로 처리)
+        user.setRole(request.getRole());  // 유저의 역할 필드가 String이라면 그대로 저장
+        // 변경된 User 엔티티 저장
+        userRepository.save(user);
+        log.info("유저 역할 수정 완료 userId: {}, newRole: {}", userId, request.getRole());
+        // SecurityContext에서 인증 정보 업데이트
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // 새로운 권한 생성
+        List<GrantedAuthority> updatedAuthorities = List.of(new SimpleGrantedAuthority(String.valueOf(request.getRole())));
+
+        // 새로운 인증 객체로 업데이트
+        Authentication newAuth = new UsernamePasswordAuthenticationToken(authentication.getPrincipal(), authentication.getCredentials(), updatedAuthorities);
+        SecurityContextHolder.getContext().setAuthentication(newAuth);
+        SecurityContextHolder.getContext().getAuthentication().getAuthorities().forEach(authority -> log.info("new authority: {}", authority));
+
+    }
 
     // 유저 계정 비활성화
     @Transactional
-    public void deactivateUser(Long userId) {
+    public void disabled(Long userId) {
         // userId로 유저를 조회하고, 존재하지 않으면 예외 발생
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다: " + userId));
