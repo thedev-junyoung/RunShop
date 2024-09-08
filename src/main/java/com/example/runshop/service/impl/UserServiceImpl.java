@@ -4,15 +4,10 @@ import com.example.runshop.exception.user.IncorrectPasswordException;
 import com.example.runshop.exception.user.UserNotFoundException;
 import com.example.runshop.model.dto.user.*;
 import com.example.runshop.service.UserService;
+import com.example.runshop.utils.SecurityContextUtil;
 import com.example.runshop.utils.mapper.UserMapper;
 import com.example.runshop.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.mindrot.jbcrypt.BCrypt;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.example.runshop.model.entity.User;
@@ -91,13 +86,10 @@ public class UserServiceImpl implements UserService {
         user.setPhone(request.getPhone());
         user.setAddress(request.getAddress());
 
-        /*
-         * JPA는 엔티티를 수정할 때, 해당 엔티티의 모든 필드를 업데이트함
-         * 만약 일부 필드만 업데이트하고 싶다면, 해당 필드만 수정하고(set) save() 메서드를 호출하면 됨
-         */
-
-        // 변경된 User 엔티티 저장
-        userRepository.save(user);
+        // 영속성 컨텍스트에서 엔티티의 변경사항을 감지하고, 트랜잭션이 종료되는 시점에 변경사항을 DB에 반영
+        // 따라서 별도의 save() 메서드 호출이 필요 없음
+        // 변경된 User 엔티티 저장 -> userRepository.save(user)가 필요 없음
+        // userRepository.save(user);
         log.info("유저 상세 정보 수정 완료 userId: {}", userId);
     }
 
@@ -110,7 +102,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다: " + userId));
 
         // 기존 패스워드가 일치하는지 확인
-        if (!checkPassword(request.getOldPassword(), user.getPassword())) {
+        if (!user.checkPassword(request.getOldPassword(), user.getPassword())) {
             throw new IncorrectPasswordException("기존 비밀번호가 일치하지 않습니다.");
         }
 
@@ -131,19 +123,11 @@ public class UserServiceImpl implements UserService {
         // 새로운 역할을 설정 (여기서는 단일 역할로 처리)
         user.setRole(request.getRole());  // 유저의 역할 필드가 String이라면 그대로 저장
         // 변경된 User 엔티티 저장
-        userRepository.save(user);
+        // userRepository.save(user); -> 필요 없음. Dirty Checking으로 인해 트랜잭션 종료 시
+        // flush() 메서드가 호출되어 변경사항이 DB에 반영됨
         log.info("유저 역할 수정 완료 userId: {}, newRole: {}", userId, request.getRole());
         // SecurityContext에서 인증 정보 업데이트
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        // 새로운 권한 생성
-        List<GrantedAuthority> updatedAuthorities = List.of(new SimpleGrantedAuthority(String.valueOf(request.getRole())));
-
-        // 새로운 인증 객체로 업데이트
-        Authentication newAuth = new UsernamePasswordAuthenticationToken(authentication.getPrincipal(), authentication.getCredentials(), updatedAuthorities);
-        SecurityContextHolder.getContext().setAuthentication(newAuth);
-        SecurityContextHolder.getContext().getAuthentication().getAuthorities().forEach(authority -> log.info("new authority: {}", authority));
-
+        SecurityContextUtil.updateAuthentication(request.getRole());
     }
 
     // 유저 계정 비활성화
@@ -157,14 +141,13 @@ public class UserServiceImpl implements UserService {
         // 계정 비활성화 (enabled를 false로 설정)
         user.setEnabled(false);
 
-        // 변경된 User 엔티티 저장
-        userRepository.save(user);
+        // 변경된 User 엔티티 저장 -> userRepository.save(user)가 필요 없음
+        // why? JPA는 엔티티를 수정할 때, 해당 엔티티의 모든 필드를 업데이트함
+        // 따라서 별도의 save() 메서드 호출이 필요 없음
+        // 즉, 영속성 컨텍스트에서 엔티티의 변경사항을 감지하고, 트랜잭션이 종료되는 시점에 변경사항을 DB에 반영
+        // userRepository.save(user);
         log.info("유저 계정 비활성화 완료 userId: {}", userId);
     }
 
-    // 비밀번호 일치 여부 확인
-    private boolean checkPassword(String plaintext, String hashed) {
-        return BCrypt.checkpw(plaintext, hashed); // 주어진 평문 비밀번호와 저장된 해시된 비밀번호를 비교
-    }
 
 }
