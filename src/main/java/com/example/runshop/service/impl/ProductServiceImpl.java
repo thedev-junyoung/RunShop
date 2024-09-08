@@ -29,6 +29,7 @@ public class ProductServiceImpl implements ProductService {
     }
     @RoleCheck("SELLER")  // "SELLER" 권한만 접근 가능
     @Transactional
+    @Override
     public void addProduct(AddProductRequest request) {
         // 상품을 등록하는 코드
         final Product product = new Product(request.getName(), request.getDescription(), request.getPrice(), request.getCategory(), request.getBrand());
@@ -37,6 +38,7 @@ public class ProductServiceImpl implements ProductService {
 
     // 상품 조회 기능
     @Transactional(readOnly = true)
+    @Override
     public ProductDTO getProduct(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 상품을 찾을 수 없습니다."));
@@ -46,6 +48,7 @@ public class ProductServiceImpl implements ProductService {
 
     // 상품 전체 조회 기능
     @Transactional(readOnly = true)
+    @Override
     public List<ProductDTO> getProducts() {
         return productRepository.findAll().stream()
                 .map(productMapper::productToProductDTO)
@@ -58,6 +61,7 @@ public class ProductServiceImpl implements ProductService {
     // REPEATABLE_READ: 트랜잭션 내에서 SELECT 쿼리를 여러 번 실행해도 항상 같은 결과를 보장
     @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.REPEATABLE_READ)
     @RoleCheck("SELLER")  // "ROLE_SELLER" 권한만 접근 가능
+    @Override
     public void updateProduct(Long id, UpdateProductRequest request) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 상품을 찾을 수 없습니다."));
@@ -75,12 +79,15 @@ public class ProductServiceImpl implements ProductService {
 
     @RoleCheck("SELLER")  // "ROLE_SELLER" 권한만 접근 가능
     @Transactional
+    @Override
     public void deleteProduct(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 상품을 찾을 수 없습니다."));
         productRepository.deleteById(id);
     }
+    @RoleCheck("SELLER")  // "ROLE_SELLER" 권한만 접근 가능
     @Transactional
+    @Override
     public void disabled(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 상품을 찾을 수 없습니다."));

@@ -4,7 +4,6 @@ import com.example.runshop.exception.user.IncorrectPasswordException;
 import com.example.runshop.exception.user.UserNotFoundException;
 import com.example.runshop.model.dto.user.*;
 import com.example.runshop.service.UserService;
-import com.example.runshop.utils.JWT;
 import com.example.runshop.utils.mapper.UserMapper;
 import com.example.runshop.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -29,19 +28,18 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserMapper userMapper;
-    private final JWT jwt;
 
     // 생성자를 통한 의존성 주입
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, UserMapper userMapper, JWT jwt) {
+    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userMapper = userMapper;
-        this.jwt = jwt;
     }
 
     // 회원가입 처리
     // 회원가입 과정 중 오류 발생 시 모든 변경사항이 롤백되도록 @Transactional 애노테이션 추가
     @Transactional
+    @Override
     public void signUp(SignUpRequest request) {
         // 이메일 중복 확인
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -63,6 +61,7 @@ public class UserServiceImpl implements UserService {
 
     // 특정 유저 조회
     @Transactional(readOnly = true) // 읽기 전용 트랜잭션
+    @Override
     public UserDTO getUserById(Long userId) {
         // userId로 유저를 조회하고, 존재하지 않으면 예외 발생
         User user = userRepository.findById(userId)
@@ -72,6 +71,7 @@ public class UserServiceImpl implements UserService {
 
     // 전체 유저 조회
     @Transactional(readOnly = true) // 읽기 전용 트랜잭션
+    @Override
     public List<UserDTO> getAllUsers() {
         // 모든 유저를 조회하여 반환
         return userRepository.findAll().stream()
@@ -80,6 +80,7 @@ public class UserServiceImpl implements UserService {
     }
     // 유저 정보 업데이트
     @Transactional
+    @Override
     public void updateUserDetails(Long userId, UpdateUserRequest request) {
         // userId로 유저를 조회하고, 존재하지 않으면 예외 발생
         User user = userRepository.findById(userId)
@@ -102,6 +103,7 @@ public class UserServiceImpl implements UserService {
 
     // 패스워드 업데이트
     @Transactional
+    @Override
     public void updatePassword(Long userId, UpdatePasswordRequest request) {
         // userId로 유저를 조회하고, 존재하지 않으면 예외 발생
         User user = userRepository.findById(userId)
@@ -120,6 +122,7 @@ public class UserServiceImpl implements UserService {
         log.info("유저 패스워드 변경 완료 userId: {}", userId);
     }
     @Transactional
+    @Override
     public void updateUserRole(Long userId, UpdateRoleRequest request) {
         // userId로 유저를 조회하고, 존재하지 않으면 예외 발생
         User user = userRepository.findById(userId)
@@ -145,6 +148,7 @@ public class UserServiceImpl implements UserService {
 
     // 유저 계정 비활성화
     @Transactional
+    @Override
     public void disabled(Long userId) {
         // userId로 유저를 조회하고, 존재하지 않으면 예외 발생
         User user = userRepository.findById(userId)
