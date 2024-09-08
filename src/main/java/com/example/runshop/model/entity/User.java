@@ -4,6 +4,7 @@ import com.example.runshop.model.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -69,4 +70,10 @@ public class User {
     // 유저는 하나의 장바구니를 가질 수 있다.
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Cart cart;
+
+
+    // 비밀번호 일치 여부 확인
+    public boolean checkPassword(String plaintext, String hashed) {
+        return BCrypt.checkpw(plaintext, hashed); // 주어진 평문 비밀번호와 저장된 해시된 비밀번호를 비교
+    }
 }
