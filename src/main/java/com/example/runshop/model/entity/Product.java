@@ -2,8 +2,7 @@ package com.example.runshop.model.entity;
 
 import com.example.runshop.model.enums.Category;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -12,7 +11,7 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
+@Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,6 +28,7 @@ public class Product {
 
     @Column(name = "category", nullable = false)
     @Enumerated(EnumType.STRING)
+
     private Category category;
 
     @Column(name = "brand")
@@ -39,6 +39,18 @@ public class Product {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Column(name = "enabled", nullable = false, columnDefinition = "boolean default true")
+    private boolean enabled = true;
+
+    public Product(String name, String description, int price, Category category, String brand) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.category = category;
+        this.brand = brand;
+    }
+
 
     @PrePersist
     protected void onCreate() {
