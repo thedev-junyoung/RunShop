@@ -14,9 +14,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(SecurityException.class)
+    public ResponseEntity<SuccessResponse<Void>> handleSecurityException(SecurityException ex, HttpServletRequest request) {
+        return SuccessResponse.error(HttpStatus.FORBIDDEN, ex.getMessage(), request.getRequestURI());
+    }
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<String> handleValidationExceptions(ConstraintViolationException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    public ResponseEntity<SuccessResponse<Void>> handleValidationExceptions(ConstraintViolationException ex, HttpServletRequest request) {
+        return SuccessResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+
     }
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<SuccessResponse<Void>> handleUserAlreadyExistsException(UserAlreadyExistsException ex, HttpServletRequest request) {

@@ -1,12 +1,16 @@
 package com.example.runshop.model.dto.user;
 
 import com.example.runshop.model.entity.User;
+import com.example.runshop.model.enums.UserRole;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
+@Slf4j
 public class UsersDetails implements UserDetails {
     private final User user; // User 엔티티를 참조하는 필드, 해당 유저의 정보를 저장
 
@@ -20,13 +24,12 @@ public class UsersDetails implements UserDetails {
         // 유저의 권한 정보를 담을 Collection 생성
         Collection<GrantedAuthority> collection = new ArrayList<>();
 
-        // 유저의 역할(Role)을 GrantedAuthority 인터페이스로 감싸서 Collection에 추가
-        collection.add(new GrantedAuthority() {
-            @Override
-            public String getAuthority() {
-                return String.valueOf(user.getRole()); // 유저의 역할을 반환
-            }
-        });
+        // 유저의 역할(Role)을 SimpleGrantedAuthority로 감싸서 Collection에 추가
+        collection.add(new SimpleGrantedAuthority(""+user.getRole())); // 유저의 역할을 반환
+
+        UserRole role = user.getRole();
+        log.info("User's role in UsersDetails: {}", role);  // 역할 확인용 로그
+        log.info("collection: {}", collection);
         return collection; // 권한 정보를 담은 Collection을 반환
     }
 
