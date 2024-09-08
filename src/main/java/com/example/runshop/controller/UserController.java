@@ -2,6 +2,7 @@ package com.example.runshop.controller;
 
 import com.example.runshop.model.dto.response.SuccessResponse;
 import com.example.runshop.model.dto.user.UpdatePasswordRequest;
+import com.example.runshop.model.dto.user.UpdateRoleRequest;
 import com.example.runshop.model.dto.user.UpdateUserRequest;
 import com.example.runshop.model.dto.user.UserDTO;
 import com.example.runshop.service.UserService;
@@ -44,10 +45,14 @@ public class UserController {
         userService.updatePassword(id, request);
         return SuccessResponse.ok("비밀번호가 성공적으로 변경되었습니다.", httpRequest.getRequestURI());
     }
-
-    @PatchMapping("/{id}/deactivate")
+    @PatchMapping("/{id}/role")
+    public ResponseEntity<?> updateRole(@PathVariable Long id, @RequestBody UpdateRoleRequest request, HttpServletRequest httpRequest) {
+        userService.updateUserRole(id, request);
+        return SuccessResponse.ok("사용자 권한이 성공적으로 변경되었습니다.", httpRequest.getRequestURI());
+    }
+    @PatchMapping("/{id}/disabled")
     public ResponseEntity<?> deactivateUser(@PathVariable Long id, HttpServletRequest httpRequest) {
-        userService.deactivateUser(id);
+        userService.disabled(id);
         return SuccessResponse.ok("사용자 계정이 성공적으로 비활성화되었습니다.", httpRequest.getRequestURI());
     }
 }
