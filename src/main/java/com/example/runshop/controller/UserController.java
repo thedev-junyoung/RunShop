@@ -5,7 +5,7 @@ import com.example.runshop.model.dto.user.UpdatePasswordRequest;
 import com.example.runshop.model.dto.user.UpdateRoleRequest;
 import com.example.runshop.model.dto.user.UpdateUserRequest;
 import com.example.runshop.model.dto.user.UserDTO;
-import com.example.runshop.service.UserService;
+import com.example.runshop.service.impl.UserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +16,9 @@ import java.util.List;
 @RequestMapping("/api/users")
 public class UserController {
 
-    private final UserService userService;
+    private final UserServiceImpl userService;
 
-    public UserController(UserService userService) {
+    public UserController(UserServiceImpl userService) {
         this.userService = userService;
     }
 

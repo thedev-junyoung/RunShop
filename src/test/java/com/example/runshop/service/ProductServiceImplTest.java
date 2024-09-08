@@ -1,9 +1,11 @@
 package com.example.runshop.service;
 
+import com.example.runshop.model.dto.product.ProductDTO;
 import com.example.runshop.model.dto.product.UpdateProductRequest;
 import com.example.runshop.model.dto.product.AddProductRequest;
 import com.example.runshop.model.enums.Category;
 import com.example.runshop.repository.ProductRepository;
+import com.example.runshop.service.impl.ProductServiceImpl;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
@@ -19,10 +21,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-public class ProductServiceTest {
+public class ProductServiceImplTest {
 
     @Autowired
-    private ProductService productService;  // 실제 ProductService 빈을 사용
+    private ProductServiceImpl productService;  // 실제 ProductService 빈을 사용
 
     @MockBean
     private ProductRepository productRepository;
@@ -88,7 +90,7 @@ public class ProductServiceTest {
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
 
         // when
-        Product foundProduct = productService.getProduct(productId);
+        ProductDTO foundProduct = productService.getProduct(productId);
 
         // then
         assertEquals("나이키 운동화", foundProduct.getName());

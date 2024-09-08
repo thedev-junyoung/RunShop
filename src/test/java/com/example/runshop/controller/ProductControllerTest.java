@@ -1,10 +1,10 @@
 package com.example.runshop.controller;
 
+import com.example.runshop.model.dto.product.ProductDTO;
 import com.example.runshop.model.dto.product.UpdateProductRequest;
 import com.example.runshop.model.dto.product.AddProductRequest;
-import com.example.runshop.model.entity.Product;
 import com.example.runshop.model.enums.Category;
-import com.example.runshop.service.ProductService;
+import com.example.runshop.service.impl.ProductServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -25,7 +25,7 @@ public class ProductControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private ProductService productService;
+    private ProductServiceImpl productService;
 
     @BeforeEach
     void setUp() {
@@ -54,16 +54,22 @@ public class ProductControllerTest {
     @Test
     public void 상품조회_API_성공() throws Exception {
         Long productId = 1L;
-        Product product = new Product("나이키 운동화", "나이키 에어맥스", 100000, Category.SHOES, "나이키");
+        ProductDTO product = ProductDTO.builder()
+                .id(productId)
+                .name("나이키 운동화")
+                .description("나이키 에어맥스")
+                .price(100000)
+                .category(Category.SHOES)
+                .brand("나이키")
+                .build();
 
         when(productService.getProduct(eq(productId))).thenReturn(product);
 
         mockMvc.perform(get("/api/products/{id}", productId)
-                        .param("role", "SELLER")  // role 파라미터 추가
-                )
+                        .param("role", "SELLER"))  // role 파라미터 추가
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("나이키 운동화"))
-                .andExpect(jsonPath("$.description").value("나이키 에어맥스"));
+                .andExpect(jsonPath("$.data.name").value("나이키 운동화"))  // 수정된 경로
+                .andExpect(jsonPath("$.data.description").value("나이키 에어맥스"));
 
         verify(productService, times(1)).getProduct(productId);
     }
@@ -93,11 +99,11 @@ public class ProductControllerTest {
     public void 상품삭제_API_성공() throws Exception {
         Long productId = 1L;
 
-        mockMvc.perform(delete("/api/products/{id}", productId)
+        mockMvc.perform(patch("/api/products/{id}/disabled", productId)
                         .param("role", "SELLER")  // role 파라미터 추가
                 )
                 .andExpect(status().isOk());
 
-        verify(productService, times(1)).deleteProduct(productId);
+        verify(productService, times(1)).disabled(productId);
     }
 }

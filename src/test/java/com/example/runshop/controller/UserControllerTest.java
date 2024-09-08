@@ -3,7 +3,7 @@ package com.example.runshop.controller;
 import com.example.runshop.model.dto.user.UpdatePasswordRequest;
 import com.example.runshop.model.dto.user.UpdateUserRequest;
 import com.example.runshop.model.dto.user.UserDTO;
-import com.example.runshop.service.UserService;
+import com.example.runshop.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
@@ -19,6 +19,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(UserController.class)
@@ -29,7 +30,7 @@ public class UserControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private UserService userService;
+    private UserServiceImpl userService;
 
     // Spring의 웹 애플리케이션 컨텍스트.
     // MockMvc를 WebApplicationContext와 함께 설정하면, 실제 애플리케이션과 동일한 컨텍스트에서
@@ -55,7 +56,7 @@ public class UserControllerTest {
         UserDTO userDTO = UserDTO.builder()
                 .id(userId)
                 .email("testuser@example.com")
-                .name("testuser")
+                .name("홍길동")
                 .phone("010-1234-5678")
                 .address("서울특별시 중구")
                 .createdAt("2023-09-01T12:00:00")
@@ -112,10 +113,10 @@ public class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("모든 사용자 정보를 성공적으로 조회했습니다."))
                 .andExpect(jsonPath("$.data[0].id").value(1L))
-                .andExpect(jsonPath("$.data[0].name").value("이몽룡"))
+                .andExpect(jsonPath("$.data[0].name").value("testuser1"))
                 .andExpect(jsonPath("$.data[0].address").value("부산광역시 해운대구"))
                 .andExpect(jsonPath("$.data[1].id").value(2L))
-                .andExpect(jsonPath("$.data[1].name").value("성춘향"))
+                .andExpect(jsonPath("$.data[1].name").value("testuser2"))
                 .andExpect(jsonPath("$.data[1].address").value("전라북도 남원시"));
 
         verify(userService, times(1)).getAllUsers();
@@ -153,7 +154,8 @@ public class UserControllerTest {
         // Given
         Long userId = 1L;
         // When & Then
-        mockMvc.perform(patch("/api/users/{id}/deactivate", userId))
+        mockMvc.perform(patch("/api/users/{id}/disabled", userId))
+                .andDo(print())  // 응답 및 로그 출력
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("사용자 계정이 성공적으로 비활성화되었습니다."));
 

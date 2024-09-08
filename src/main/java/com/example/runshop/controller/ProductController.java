@@ -1,10 +1,10 @@
 package com.example.runshop.controller;
 
+import com.example.runshop.model.dto.product.ProductDTO;
 import com.example.runshop.model.dto.product.UpdateProductRequest;
 import com.example.runshop.model.dto.product.AddProductRequest;
 import com.example.runshop.model.dto.response.SuccessResponse;
-import com.example.runshop.model.entity.Product;
-import com.example.runshop.service.ProductService;
+import com.example.runshop.service.impl.ProductServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -16,11 +16,12 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class ProductController {
 
-    private final ProductService productService;
+    private final ProductServiceImpl productService;
 
-    public ProductController(ProductService productService) {
+    public ProductController(ProductServiceImpl productService) {
         this.productService = productService;
     }
+
 
     @PostMapping
     public ResponseEntity<?> addProduct(@RequestBody @Valid AddProductRequest request, HttpServletRequest httpRequest) {
@@ -30,7 +31,7 @@ public class ProductController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getProduct(@PathVariable Long id, HttpServletRequest httpRequest) {
-        Product product = productService.getProduct(id);
+        ProductDTO product = productService.getProduct(id);
         return SuccessResponse.ok("상품을 성공적으로 조회했습니다.", product, httpRequest.getRequestURI());
     }
 
