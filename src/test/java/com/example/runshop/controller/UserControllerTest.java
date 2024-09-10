@@ -3,7 +3,7 @@ package com.example.runshop.controller;
 import com.example.runshop.model.dto.user.UpdatePasswordRequest;
 import com.example.runshop.model.dto.user.UpdateUserRequest;
 import com.example.runshop.model.dto.user.UserDTO;
-import com.example.runshop.service.impl.UserServiceImpl;
+import com.example.runshop.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
@@ -30,7 +30,7 @@ public class UserControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private UserServiceImpl userService;
+    private UserService userService;
 
     // Spring의 웹 애플리케이션 컨텍스트.
     // MockMvc를 WebApplicationContext와 함께 설정하면, 실제 애플리케이션과 동일한 컨텍스트에서

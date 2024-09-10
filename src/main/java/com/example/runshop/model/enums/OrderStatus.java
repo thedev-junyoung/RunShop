@@ -1,9 +1,9 @@
 package com.example.runshop.model.enums;
 
 public enum OrderStatus {
-    PaymentWaiting,
-    paymentComplete,
-    shippingInProgress,
-    deliveryComplete,
-    orderCancellation
+    PAYMENT_WAITING,
+    PAYMENT_COMPLETE,
+    SHIPPING_IN_PROGRESS,
+    DELIVERY_COMPLETE,
+    ORDER_CANCELLATION
 }

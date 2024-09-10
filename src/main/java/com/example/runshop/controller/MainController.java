@@ -2,7 +2,7 @@ package com.example.runshop.controller;
 
 import com.example.runshop.model.dto.response.SuccessResponse;
 import com.example.runshop.model.dto.user.SignUpRequest;
-import com.example.runshop.service.impl.UserServiceImpl;
+import com.example.runshop.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/")
 public class MainController {
 
-    private final UserServiceImpl userService;
+    private final UserService userService;
 
-    public MainController(UserServiceImpl userService) {
+    public MainController(UserService userService) {
         this.userService = userService;
     }
 

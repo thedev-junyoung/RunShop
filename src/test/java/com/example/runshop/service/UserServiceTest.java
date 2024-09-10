@@ -4,7 +4,6 @@ import com.example.runshop.model.dto.user.UpdatePasswordRequest;
 import com.example.runshop.model.dto.user.UpdateUserRequest;
 import com.example.runshop.model.entity.User;
 import com.example.runshop.repository.UserRepository;
-import com.example.runshop.service.impl.UserServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.mindrot.jbcrypt.BCrypt;
@@ -21,7 +20,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 
 @SpringBootTest // Spring Boot 애플리케이션 컨텍스트를 로드하여 통합 테스트 환경을 제공
 @Slf4j
-public class UserServiceImplTest {
+public class UserServiceTest {
 
     @Autowired
     private UserService userService; // 인터페이스를 통해 서비스 주입
