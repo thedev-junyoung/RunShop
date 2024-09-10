@@ -4,7 +4,7 @@ import com.example.runshop.model.dto.product.ProductDTO;
 import com.example.runshop.model.dto.product.UpdateProductRequest;
 import com.example.runshop.model.dto.product.AddProductRequest;
 import com.example.runshop.model.dto.response.SuccessResponse;
-import com.example.runshop.service.impl.ProductServiceImpl;
+import com.example.runshop.service.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class ProductController {
 
-    private final ProductServiceImpl productService;
+    private final ProductService productService;
 
-    public ProductController(ProductServiceImpl productService) {
+    public ProductController(ProductService productService) {
         this.productService = productService;
     }
 

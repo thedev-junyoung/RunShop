@@ -5,7 +5,6 @@ import com.example.runshop.model.dto.product.UpdateProductRequest;
 import com.example.runshop.model.dto.product.AddProductRequest;
 import com.example.runshop.model.enums.Category;
 import com.example.runshop.repository.ProductRepository;
-import com.example.runshop.service.impl.ProductServiceImpl;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
@@ -24,7 +23,7 @@ import static org.mockito.Mockito.*;
 public class ProductServiceImplTest {
 
     @Autowired
-    private ProductServiceImpl productService;  // 실제 ProductService 빈을 사용
+    private ProductService productService;  // 실제 ProductService 빈을 사용
 
     @MockBean
     private ProductRepository productRepository;
