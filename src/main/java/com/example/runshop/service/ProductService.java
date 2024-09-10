@@ -30,7 +30,14 @@ public class ProductService{
     @Transactional
     public void addProduct(AddProductRequest request) {
         // 상품을 등록하는 코드
-        final Product product = new Product(request.getName(), request.getDescription(), request.getPrice(), request.getCategory(), request.getBrand());
+        final Product product = Product
+                .builder()
+                .name(request.getName())
+                .description(request.getDescription())
+                .price(request.getPrice())
+                .category(request.getCategory())
+                .brand(request.getBrand())
+                .build();
         productRepository.save(product);
     }
 

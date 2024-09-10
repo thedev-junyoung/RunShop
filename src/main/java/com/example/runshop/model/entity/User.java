@@ -2,8 +2,7 @@ package com.example.runshop.model.entity;
 
 import com.example.runshop.model.enums.UserRole;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.time.LocalDateTime;
@@ -14,7 +13,10 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@Inheritance(strategy = InheritanceType.JOINED) // 조인 전략 사용
+@Builder
+@NoArgsConstructor
+@Inheritance(strategy = InheritanceType.JOINED)
+@AllArgsConstructor // 조인 전략 사용
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

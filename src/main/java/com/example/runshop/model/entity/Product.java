@@ -41,16 +41,7 @@ public class Product {
     private LocalDateTime updatedAt;
 
     @Column(name = "enabled", nullable = false, columnDefinition = "boolean default true")
-    private boolean enabled = true;
-
-    public Product(String name, String description, int price, Category category, String brand) {
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.category = category;
-        this.brand = brand;
-    }
-
+    private boolean enabled;
 
     @PrePersist
     protected void onCreate() {

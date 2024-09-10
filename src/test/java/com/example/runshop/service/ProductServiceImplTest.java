@@ -85,7 +85,13 @@ public class ProductServiceImplTest {
     public void 상품조회_성공() {
         // given
         Long productId = 1L;
-        Product product = new Product("나이키 운동화", "나이키 에어맥스", 100000, Category.SHOES, "나이키");
+        Product product = Product.builder()
+                .name("나이키 운동화")
+                .description("나이키 에어맥스")
+                .price(100000)
+                .category(Category.SHOES)
+                .brand("나이키")
+                .build();
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
 
         // when
@@ -116,7 +122,14 @@ public class ProductServiceImplTest {
     public void 상품수정_권한성공() {
         // given
         Long productId = 1L;
-        Product existingProduct = new Product("나이키 운동화", "나이키 에어맥스", 100000, Category.SHOES, "나이키");
+        Product existingProduct = Product.builder()
+                .name("나이키 운동화")
+                .description("나이키 에어맥스")
+                .price(100000)
+                .category(Category.SHOES)
+                .brand("나이키")
+                .build();
+
         when(productRepository.findById(productId)).thenReturn(Optional.of(existingProduct));
 
         UpdateProductRequest updateRequest = new UpdateProductRequest(
@@ -138,7 +151,13 @@ public class ProductServiceImplTest {
     public void 상품수정_권한실패() {
         // given
         Long productId = 1L;
-        Product existingProduct = new Product("나이키 운동화", "나이키 에어맥스", 100000, Category.SHOES, "나이키");
+        Product existingProduct = Product.builder()
+                .name("나이키 운동화")
+                .description("나이키 에어맥스")
+                .price(100000)
+                .category(Category.SHOES)
+                .brand("나이키")
+                .build();
         when(productRepository.findById(productId)).thenReturn(Optional.of(existingProduct));
 
         UpdateProductRequest updateRequest = new UpdateProductRequest(
@@ -163,7 +182,13 @@ public class ProductServiceImplTest {
     public void 상품삭제_권한성공() {
         // given
         Long productId = 1L;
-        Product existingProduct = new Product("나이키 운동화", "나이키 에어맥스", 100000, Category.SHOES, "나이키");
+        Product existingProduct = Product.builder()
+                .name("나이키 운동화")
+                .description("나이키 에어맥스")
+                .price(100000)
+                .category(Category.SHOES)
+                .brand("나이키")
+                .build();
         when(productRepository.findById(productId)).thenReturn(Optional.of(existingProduct));
 
         // when
@@ -177,7 +202,13 @@ public class ProductServiceImplTest {
     public void 상품삭제_권한실패() {
         // given
         Long productId = 1L;
-        Product existingProduct = new Product("나이키 운동화", "나이키 에어맥스", 100000, Category.SHOES, "나이키");
+        Product existingProduct = Product.builder()
+                .name("나이키 운동화")
+                .description("나이키 에어맥스")
+                .price(100000)
+                .category(Category.SHOES)
+                .brand("나이키")
+                .build();
         when(productRepository.findById(productId)).thenReturn(Optional.of(existingProduct));
 
         // when & then
