@@ -69,10 +69,9 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> orders = new ArrayList<>();
 
-    // 유저는 하나의 장바구니를 가질 수 있다.
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Cart cart;
-
+    // 유저는 장바구니 아이템을
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CartItem> cartItems = new ArrayList<>();
 
     // 비밀번호 일치 여부 확인
     public boolean checkPassword(String plaintext, String hashed) {
