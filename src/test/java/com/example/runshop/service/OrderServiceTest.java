@@ -3,6 +3,7 @@ package com.example.runshop.service;
 import com.example.runshop.model.entity.Order;
 import com.example.runshop.model.entity.User;
 import com.example.runshop.model.enums.OrderStatus;
+import com.example.runshop.repository.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
