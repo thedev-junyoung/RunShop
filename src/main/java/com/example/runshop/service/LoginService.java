@@ -31,7 +31,7 @@ public class LoginService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         // 사용자 이메일을 통해 User 엔티티 조회
         User user = userRepository.findByEmail(email)
-                .orElseThrow(); // 사용자가 존재하지 않을 경우 예외 발생
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + email));
 
         // 사용자가 존재하면 UsersDetails 객체로 변환하여 반환
         if (user != null) {

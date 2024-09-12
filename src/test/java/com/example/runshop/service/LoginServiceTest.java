@@ -50,12 +50,11 @@ class LoginServiceTest {
     void 사용자가_존재하지_않을때_예외를_던진다() {
         // Given
         String email = "nonexistent@example.com";
-        when(userRepository.findByEmail(email)).thenReturn(null);
+        when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
         log.info("테스트 시작: 사용자가 존재하지 않을 때 예외 발생");
 
         // When & Then
         assertThrows(UsernameNotFoundException.class, () -> loginService.loadUserByUsername(email));
         log.info("테스트 종료: UsernameNotFoundException 예외 발생 확인");
-
     }
 }
