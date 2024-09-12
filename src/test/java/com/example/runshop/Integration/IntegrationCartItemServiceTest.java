@@ -1,4 +1,4 @@
-package com.example.runshop.service;
+package com.example.runshop.Integration;
 
 import com.example.runshop.model.entity.CartItem;
 import com.example.runshop.model.entity.Inventory;
@@ -7,13 +7,16 @@ import com.example.runshop.model.entity.User;
 import com.example.runshop.model.enums.Category;
 import com.example.runshop.model.enums.UserRole;
 import com.example.runshop.repository.CartItemRepository;
+import com.example.runshop.service.CartItemService;
+import com.example.runshop.service.ProductService;
+import com.example.runshop.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -22,20 +25,20 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
-class CartItemServiceTest {
+@SpringBootTest
+class IntegrationCartItemServiceTest {
 
-    @InjectMocks
+    @Autowired
     private CartItemService cartItemService;
 
-    @Mock
+    @MockBean
     private CartItemRepository cartItemRepository;
 
-    @Mock
-    private UserService userService;
+    @MockBean
+    private UserService userService;  // UserService를 Mocking
 
-    @Mock
-    private ProductService productService;
+    @MockBean
+    private ProductService productService;  // ProductService를 Mocking
 
     private User user;
     private Product product;
@@ -64,76 +67,91 @@ class CartItemServiceTest {
 
         Inventory inventory = new Inventory();
         inventory.setProduct(product);
-        inventory.setStockQuantity(10);
+        inventory.setStockQuantity(10); // 재고 설정
         product.setInventory(inventory);
+
+        // UserService의 findById를 Mocking
+        when(userService.findById(anyLong())).thenReturn(user);
+
+        // ProductService의 findById를 Mocking
+        when(productService.findById(anyLong())).thenReturn(product);
+
+        // Mocking save method
+        when(cartItemRepository.save(any(CartItem.class))).thenAnswer(invocation -> invocation.getArgument(0));
     }
 
     @Test
+    @WithMockUser(roles = "CUSTOMER")
     @DisplayName("상품을 장바구니에 추가하면 CartItem이 생성된다.")
     public void whenAddValidProductToCart_thenCartItemCreated() {
-        // 필요한 곳에만 stubbing 적용
-        when(userService.findById(anyLong())).thenReturn(user);
-        when(productService.findById(anyLong())).thenReturn(product);
+        // Mocking the repository behavior: 장바구니에 동일한 상품이 없다고 가정
         when(cartItemRepository.findByUserAndProduct(user, product)).thenReturn(Optional.empty());
-        when(cartItemRepository.save(any(CartItem.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
+        // When
         CartItem cartItem = cartItemService.addToCart(user.getId(), product.getId(), 1);
 
+        // Then
         assertNotNull(cartItem);
         assertEquals(1, cartItem.getQuantity());
         assertEquals(product.getId(), cartItem.getProduct().getId());
+
+        // CartItem을 user의 장바구니 리스트에 추가
         user.getCartItems().add(cartItem);
 
+        // 장바구니에 상품이 추가되었는지 확인
         assertTrue(user.getCartItems().contains(cartItem));
     }
 
     @Test
+    @WithMockUser(roles = "CUSTOMER")
     @DisplayName("상품이 이미 장바구니에 존재할 경우 수량이 증가된다.")
     public void whenProductAlreadyInCart_thenQuantityIncreases() {
-        // Given: 장바구니에 이미 상품이 추가된 상태
+        // Given: 장바구니에 이미 상품이 추가된 상태로 가정
         CartItem existingCartItem = new CartItem();
         existingCartItem.setProduct(product);
-        existingCartItem.setQuantity(1);
+        existingCartItem.setQuantity(1);  // 이미 1개의 상품이 있음
         user.getCartItems().add(existingCartItem);
 
-        when(userService.findById(anyLong())).thenReturn(user);
-        when(productService.findById(anyLong())).thenReturn(product);
+        // Mocking the repository behavior: 동일한 상품이 이미 장바구니에 있는 경우
         when(cartItemRepository.findByUserAndProduct(user, product)).thenReturn(Optional.of(existingCartItem));
-        when(cartItemRepository.save(any(CartItem.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // When: 수량을 2만큼 추가
-        CartItem updatedCartItem = cartItemService.addToCart(user.getId(), product.getId(), 2);
+        // When: 동일한 상품을 다시 장바구니에 추가
+        CartItem updatedCartItem = cartItemService.addToCart(user.getId(), product.getId(), 2);  // 수량 2 추가
 
-        // Then: 수량이 3으로 증가했는지 확인
+        // Then: 수량이 증가해야 함
         assertNotNull(updatedCartItem);
-        assertEquals(3, updatedCartItem.getQuantity());
+        assertEquals(3, updatedCartItem.getQuantity());  // 총 3개로 증가했는지 확인
         assertEquals(product.getId(), updatedCartItem.getProduct().getId());
     }
+
     @Test
+    @WithMockUser(roles = "CUSTOMER")
     @DisplayName("장바구니에서 상품을 성공적으로 삭제할 수 있다.")
     public void whenRemoveProductFromCart_thenCartItemRemoved() {
-        // Given: 장바구니에 상품이 추가된 상태
+        // Given: 장바구니에 상품이 추가된 상태로 가정
         CartItem existingCartItem = new CartItem();
         existingCartItem.setProduct(product);
         existingCartItem.setQuantity(1);
         user.getCartItems().add(existingCartItem);
 
-        when(userService.findById(anyLong())).thenReturn(user);
-        when(productService.findById(anyLong())).thenReturn(product);
+        // Mocking the repository behavior
         when(cartItemRepository.findByUserAndProduct(user, product)).thenReturn(Optional.of(existingCartItem));
 
+        // When: 장바구니에서 해당 상품을 삭제
         cartItemService.removeFromCart(user.getId(), product.getId());
 
+        // Then: 삭제된 것이 맞는지 확인
         verify(cartItemRepository, times(1)).delete(existingCartItem);
     }
 
     @Test
+    @WithMockUser(roles = "CUSTOMER")
     @DisplayName("장바구니에 없는 상품을 삭제하려 하면 예외가 발생한다.")
     public void whenRemoveNonExistentProductFromCart_thenThrowException() {
-        when(userService.findById(anyLong())).thenReturn(user);
-        when(productService.findById(anyLong())).thenReturn(product);
+        // Given: 장바구니에 상품이 없다고 가정
         when(cartItemRepository.findByUserAndProduct(user, product)).thenReturn(Optional.empty());
 
+        // When & Then: 장바구니에 없는 상품을 삭제하려 할 때 IllegalArgumentException이 발생해야 함
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             cartItemService.removeFromCart(user.getId(), product.getId());
         });
