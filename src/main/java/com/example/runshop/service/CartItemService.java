@@ -52,7 +52,7 @@ public class CartItemService {
 
     @RoleCheck("CUSTOMER")
     public void removeFromCart(Long userId, Long productId) {
-        User user = userService.findById(userId);
+        User user = userService.findUserOrThrow(userId, "장바구니에서 상품 삭제");
         Product product = productService.findById(productId);
 
         Optional<CartItem> existingCartItem = cartItemRepository.findByUserAndProduct(user, product);
