@@ -8,6 +8,7 @@ import com.example.runshop.repository.CartItemRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -61,4 +62,9 @@ public class CartItemService {
         }
     }
 
+    public List<CartItem> getCartItems(Long userId) {
+        User user = userService.findById(userId);
+        return cartItemRepository.findByUser(user);
+
+    }
 }

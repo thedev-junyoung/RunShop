@@ -140,4 +140,31 @@ class CartItemServiceTest {
 
         assertEquals("장바구니에 존재하지 않는 상품입니다.", exception.getMessage());
     }
+
+    @Test
+    @DisplayName("장바구니를 조회하면 해당 사용자의 장바구니 목록을 반환한다.")
+    public void whenViewCart_thenReturnCartItems() {
+        // Given: 장바구니에 상품이 추가된 상태
+        CartItem cartItem1 = new CartItem();
+        cartItem1.setProduct(product);
+        cartItem1.setQuantity(1);
+        user.getCartItems().add(cartItem1);
+
+        CartItem cartItem2 = new CartItem();
+        cartItem2.setProduct(product);
+        cartItem2.setQuantity(2);
+        user.getCartItems().add(cartItem2);
+
+        when(userService.findById(anyLong())).thenReturn(user);
+        when(cartItemRepository.findByUser(user)).thenReturn(user.getCartItems());
+
+        // When: 장바구니 조회
+        var cartItems = cartItemService.getCartItems(user.getId());
+
+        // Then: 장바구니 목록이 반환되는지 확인
+        assertNotNull(cartItems);
+        assertEquals(2, cartItems.size());
+        assertTrue(cartItems.contains(cartItem1));
+        assertTrue(cartItems.contains(cartItem2));
+    }
 }
