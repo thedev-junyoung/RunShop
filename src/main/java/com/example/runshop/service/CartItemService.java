@@ -1,6 +1,7 @@
 package com.example.runshop.service;
 
 import com.example.runshop.config.RoleCheck;
+import com.example.runshop.exception.cart.CartItemNotFoundException;
 import com.example.runshop.model.entity.CartItem;
 import com.example.runshop.model.entity.Product;
 import com.example.runshop.model.entity.User;
@@ -58,7 +59,7 @@ public class CartItemService {
         if (existingCartItem.isPresent()) {
             cartItemRepository.delete(existingCartItem.get());
         } else {
-            throw new IllegalArgumentException("장바구니에 존재하지 않는 상품입니다.");
+            throw new CartItemNotFoundException("장바구니에 존재하지 않는 상품입니다.");
         }
     }
 

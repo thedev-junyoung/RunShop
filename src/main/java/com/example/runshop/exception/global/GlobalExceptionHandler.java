@@ -1,5 +1,7 @@
 package com.example.runshop.exception.global;
 
+import com.example.runshop.exception.cart.CartItemAlreadyExistsException;
+import com.example.runshop.exception.cart.CartItemNotFoundException;
 import com.example.runshop.exception.user.IncorrectPasswordException;
 import com.example.runshop.exception.user.UserAlreadyExistsException;
 import com.example.runshop.exception.user.UserNotFoundException;
@@ -14,6 +16,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(CartItemNotFoundException.class)
+    public ResponseEntity<SuccessResponse<Void>> handleCartItemNotFoundException(CartItemNotFoundException ex, HttpServletRequest request) {
+        return SuccessResponse.error(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(CartItemAlreadyExistsException.class)
+    public ResponseEntity<SuccessResponse<Void>> handleCartItemAlreadyExistsException(CartItemAlreadyExistsException ex, HttpServletRequest request) {
+        return SuccessResponse.error(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI());
+    }
     @ExceptionHandler(SecurityException.class)
     public ResponseEntity<SuccessResponse<Void>> handleSecurityException(SecurityException ex, HttpServletRequest request) {
         return SuccessResponse.error(HttpStatus.FORBIDDEN, ex.getMessage(), request.getRequestURI());
