@@ -40,8 +40,8 @@ public class Product {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "enabled", nullable = false, columnDefinition = "boolean default true")
-    private boolean enabled;
+    @Column(name = "enabled", nullable = false)
+    private boolean enabled=true;
 
     @PrePersist
     protected void onCreate() {
