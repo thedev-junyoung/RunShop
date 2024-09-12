@@ -1,4 +1,4 @@
-package com.example.runshop.service;
+package com.example.runshop.repository;
 
 import com.example.runshop.model.entity.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
