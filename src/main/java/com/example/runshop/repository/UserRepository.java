@@ -8,11 +8,9 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByName(String username);
-    User findByEmail(String email);
-    Optional<User> findByNameAndPassword(String username, String password);
-    Optional<User> findByEmailAndPassword(String email, String password);
+    Optional<User> findByEmail(String email);
     Boolean existsByEmail(String email);
+
     // JPA 메서드 네이밍 전략에 따른 메서드 정의
     // findBy: 특정 조건을 기준으로 데이터를 조회
     // existsBy: 특정 조건에 따라 데이터의 존재 여부를 확인

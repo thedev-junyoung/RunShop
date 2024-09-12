@@ -94,4 +94,8 @@ public class ProductService{
         product.setEnabled(false);
         productRepository.save(product);
     }
+
+    public Product findById(long l) {
+        return productRepository.findById(l).orElseThrow(() -> new IllegalArgumentException("해당 상품을 찾을 수 없습니다."));
+    }
 }

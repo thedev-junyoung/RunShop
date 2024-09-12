@@ -140,5 +140,8 @@ public class UserService {
         log.info("유저 계정 비활성화 완료 userId: {}", userId);
     }
 
-
+    public User findById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다: " + userId));
+    }
 }
