@@ -11,7 +11,8 @@ public class Inventory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private int quantity;
+    // 재고 수량
+    private int stockQuantity;
 
     // - **Product** 1 : 1 **Inventory**
     // (하나의 상품에 대해 하나의 재고가 관리됨)
