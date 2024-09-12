@@ -56,8 +56,7 @@ public class UserService {
     // 특정 유저 조회
     public UserDTO getUserById(Long userId) {
         // userId로 유저를 조회하고, 존재하지 않으면 예외 발생
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다: " + userId)); // 해당 ID의 사용자가 존재하지 않을 경우 발생하는 예외
+        User user = findUserOrThrow(userId, "유저 조회");
         return userMapper.userToUserDTO(user);
     }
 
@@ -72,14 +71,11 @@ public class UserService {
     @Transactional()
     public void updateUserDetails(Long userId, UpdateUserRequest request) {
         // userId로 유저를 조회하고, 존재하지 않으면 예외 발생
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다: " + userId));
-
+        User user = findUserOrThrow(userId, "유저 정보 수정");
         // 사용자 정보 업데이트
         user.setName(request.getName());
         user.setPhone(request.getPhone());
         user.setAddress(request.getAddress());
-
         // 영속성 컨텍스트에서 엔티티의 변경사항을 감지하고, 트랜잭션이 종료되는 시점에 변경사항을 DB에 반영
         // 따라서 별도의 save() 메서드 호출이 필요 없음
         // 변경된 User 엔티티 저장 -> userRepository.save(user)가 필요 없음
@@ -91,8 +87,7 @@ public class UserService {
     @Transactional
     public void updatePassword(Long userId, UpdatePasswordRequest request) {
         // userId로 유저를 조회하고, 존재하지 않으면 예외 발생
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다: " + userId));
+        User user = findUserOrThrow(userId, "패스워드 업데이트");
 
         // 기존 패스워드가 일치하는지 확인
         if (!user.checkPassword(request.getOldPassword(), user.getPassword())) {
@@ -109,8 +104,7 @@ public class UserService {
     @Transactional
     public void updateUserRole(Long userId, UpdateRoleRequest request) {
         // userId로 유저를 조회하고, 존재하지 않으면 예외 발생
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다: " + userId));
+        User user = findUserOrThrow(userId, "유저 역할 수정");
 
         // 새로운 역할을 설정 (여기서는 단일 역할로 처리)
         user.setRole(request.getRole());  // 유저의 역할 필드가 String이라면 그대로 저장
@@ -126,9 +120,7 @@ public class UserService {
     @Transactional
     public void disabled(Long userId) {
         // userId로 유저를 조회하고, 존재하지 않으면 예외 발생
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다: " + userId));
-
+        User user = findUserOrThrow(userId, "계정 비활성화");
         // 계정 비활성화 (enabled를 false로 설정)
         user.setEnabled(false);
 
@@ -144,4 +136,15 @@ public class UserService {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다: " + userId));
     }
+
+
+    // 유저 검증 메서드
+    public User findUserOrThrow(Long userId, String operationContext) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> {
+                    log.error("User not found. User ID: {}, Operation: {}", userId, operationContext);
+                    return new UserNotFoundException(String.format("User not found for operation: %s", operationContext));
+                });
+    }
+
 }
