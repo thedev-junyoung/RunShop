@@ -32,7 +32,7 @@ class LoginFilterTest {
     }
 
     @Test
-    void 유효한_인증정보로_인증을_시도한다() throws Exception {
+    void 유효한_인증정보로_인증을_시도한다() {
         // Given
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);

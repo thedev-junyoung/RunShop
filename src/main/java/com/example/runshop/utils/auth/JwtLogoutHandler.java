@@ -1,13 +1,11 @@
 package com.example.runshop.utils.auth;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import javax.crypto.SecretKey;
 
 @Slf4j
 public class JwtLogoutHandler implements LogoutHandler {
