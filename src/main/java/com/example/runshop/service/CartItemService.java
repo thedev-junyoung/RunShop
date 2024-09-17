@@ -34,21 +34,28 @@ public class CartItemService {
         // 장바구니에 해당 상품이 이미 있는지 확인
         Optional<CartItem> existingCartItemOpt = cartItemRepository.findByUserAndProduct(user, product);
 
+
         if (existingCartItemOpt.isPresent()) {
             // 이미 존재하는 CartItem이 있을 경우 수량 증가
-            CartItem existingCartItem = existingCartItemOpt.get();
-            existingCartItem.setQuantity(existingCartItem.getQuantity() + quantity);
-            return cartItemRepository.save(existingCartItem);
+            return IncreaseQuantityCartItemAlreadyExists(quantity, existingCartItemOpt);
         } else {
-            // 새로운 CartItem을 생성
-            CartItem newCartItem = new CartItem();
-            newCartItem.setUser(user);
-            newCartItem.setProduct(product);
-            newCartItem.setQuantity(quantity);
-            return cartItemRepository.save(newCartItem);
+            // 없을 경우 새로운 CartItem을 생성
+            return NotPresentCreateCartItem(quantity, user, product);
         }
     }
 
+    private CartItem IncreaseQuantityCartItemAlreadyExists(int quantity, Optional<CartItem> existingCartItemOpt) {
+        CartItem existingCartItem = existingCartItemOpt.get();
+        existingCartItem.setQuantity(existingCartItem.getQuantity() + quantity);
+        return cartItemRepository.save(existingCartItem);
+    }
+    private CartItem NotPresentCreateCartItem(int quantity, User user, Product product) {
+        CartItem newCartItem = new CartItem();
+        newCartItem.setUser(user);
+        newCartItem.setProduct(product);
+        newCartItem.setQuantity(quantity);
+        return cartItemRepository.save(newCartItem);
+    }
     @RoleCheck("CUSTOMER")
     public void removeFromCart(Long userId, Long productId) {
         User user = userService.findUserOrThrow(userId, "Remove from Cart");

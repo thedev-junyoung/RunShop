@@ -32,34 +32,45 @@ public class PaymentService {
     @Transactional
     public void processPayment(Long orderId, OrderRequest orderRequest) {
         Order order = orderService.findOrderOrThrow(orderId);
+        validateOrderStatus(order);
 
-        // 주문 상태 확인
+        Payment payment = createPayment(orderRequest, order);
+        boolean paymentSuccess = processPayment(orderRequest);
+
+        updateOrderAndPaymentStatus(order, payment, paymentSuccess, orderId);
+        saveEntities(payment, order);
+    }
+
+    private void validateOrderStatus(Order order) {
         if (order.getStatus() != OrderStatus.PENDING) {
             throw new IllegalArgumentException("주문이 결제 가능한 상태가 아닙니다.");
         }
+    }
 
-        // 결제 엔티티 생성 및 설정
+    private Payment createPayment(OrderRequest orderRequest, Order order) {
         Payment payment = new Payment();
         payment.setMethod(orderRequest.getPaymentMethod());
         payment.setOrder(order);
         payment.setAmount(orderRequest.getAmount());
+        return payment;
+    }
 
-        // 결제 처리
-        boolean paymentSuccess = paymentGateway.processPayment(orderRequest.getPaymentMethod(), orderRequest.getAmount());
+    private boolean processPayment(OrderRequest orderRequest) {
+        return paymentGateway.processPayment(orderRequest.getPaymentMethod(), orderRequest.getAmount());
+    }
 
-        // 결제 성공 처리
+    private void updateOrderAndPaymentStatus(Order order, Payment payment, boolean paymentSuccess, Long orderId) {
         if (paymentSuccess) {
             payment.setStatus(PaymentStatus.PAYMENT_SUCCESS);
             order.setStatus(OrderStatus.PAYMENT_COMPLETE);
             log.info("결제가 성공적으로 처리되었습니다. 주문 ID: {}", orderId);
-        }
-        // 결제 실패 처리
-        else {
+        } else {
             payment.setStatus(PaymentStatus.PAYMENT_FAIL);
             log.warn("결제가 실패했습니다. 주문 ID: {}", orderId);
         }
+    }
 
-        // 결제 정보 및 주문 정보 저장
+    private void saveEntities(Payment payment, Order order) {
         paymentRepository.save(payment);
         orderRepository.save(order);
     }
