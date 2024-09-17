@@ -1,5 +1,6 @@
 package com.example.runshop.Integration;
 
+import com.example.runshop.exception.cart.CartItemNotFoundException;
 import com.example.runshop.model.entity.CartItem;
 import com.example.runshop.model.entity.Inventory;
 import com.example.runshop.model.entity.Product;
@@ -128,13 +129,16 @@ class IntegrationCartItemServiceTest {
     @WithMockUser(roles = "CUSTOMER")
     @DisplayName("장바구니에서 상품을 성공적으로 삭제할 수 있다.")
     public void whenRemoveProductFromCart_thenCartItemRemoved() {
-        // Given: 장바구니에 상품이 추가된 상태로 가정
+        // Given: 장바구니에 상품이 추가된 상태
         CartItem existingCartItem = new CartItem();
         existingCartItem.setProduct(product);
         existingCartItem.setQuantity(1);
         user.getCartItems().add(existingCartItem);
 
-        // Mocking the repository behavior
+        // findUserOrThrow 메서드를 사용한 stubbing
+        when(userService.findUserOrThrow(anyLong(), anyString())).thenReturn(user);
+        when(productService.findById(anyLong())).thenReturn(product);
+
         when(cartItemRepository.findByUserAndProduct(user, product)).thenReturn(Optional.of(existingCartItem));
 
         // When: 장바구니에서 해당 상품을 삭제
@@ -148,10 +152,12 @@ class IntegrationCartItemServiceTest {
     @WithMockUser(roles = "CUSTOMER")
     @DisplayName("장바구니에 없는 상품을 삭제하려 하면 예외가 발생한다.")
     public void whenRemoveNonExistentProductFromCart_thenThrowException() {
-        // Given: 장바구니에 상품이 없다고 가정
+        // findUserOrThrow 메서드를 사용한 stubbing
+        when(userService.findUserOrThrow(anyLong(), anyString())).thenReturn(user);
+        when(productService.findById(anyLong())).thenReturn(product);
         when(cartItemRepository.findByUserAndProduct(user, product)).thenReturn(Optional.empty());
 
-        // When & Then: 장바구니에 없는 상품을 삭제하려 할 때 IllegalArgumentException이 발생해야 함
+        // When & Then: 장바구니에 없는 상품을 삭제하려 할 때 예외가 발생해야 함
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             cartItemService.removeFromCart(user.getId(), product.getId());
         });

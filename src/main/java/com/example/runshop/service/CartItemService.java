@@ -52,15 +52,13 @@ public class CartItemService {
 
     @RoleCheck("CUSTOMER")
     public void removeFromCart(Long userId, Long productId) {
-        User user = userService.findUserOrThrow(userId, "장바구니에서 상품 삭제");
+        User user = userService.findUserOrThrow(userId, "Remove from Cart");
         Product product = productService.findById(productId);
 
-        Optional<CartItem> existingCartItem = cartItemRepository.findByUserAndProduct(user, product);
-        if (existingCartItem.isPresent()) {
-            cartItemRepository.delete(existingCartItem.get());
-        } else {
-            throw new CartItemNotFoundException("장바구니에 존재하지 않는 상품입니다.");
-        }
+        CartItem cartItem = cartItemRepository.findByUserAndProduct(user, product)
+                .orElseThrow(() -> new IllegalArgumentException("장바구니에 존재하지 않는 상품입니다."));
+
+        cartItemRepository.delete(cartItem);
     }
 
     public List<CartItem> getCartItems(Long userId) {

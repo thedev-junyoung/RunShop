@@ -22,8 +22,10 @@ public class OrderItem {
     private PaymentStatus paymentStatus;
     @Column(name = "payment_date", nullable = false)
     private LocalDateTime paymentDate;
-    @Column(name = "amount", nullable = false)
-    private BigDecimal amount;
+    // 주문 상품의 수량
+    @Column(name = "quantity", nullable = false)
+    private int quantity;
+
 
     @PrePersist
     protected void onCreate() {

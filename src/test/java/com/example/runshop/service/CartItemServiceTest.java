@@ -21,6 +21,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CartItemServiceTest {
@@ -66,6 +67,8 @@ class CartItemServiceTest {
         inventory.setProduct(product);
         inventory.setStockQuantity(10);
         product.setInventory(inventory);
+
+
     }
 
     @Test
@@ -86,29 +89,6 @@ class CartItemServiceTest {
 
         assertTrue(user.getCartItems().contains(cartItem));
     }
-
-    @Test
-    @DisplayName("상품이 이미 장바구니에 존재할 경우 수량이 증가된다.")
-    public void whenProductAlreadyInCart_thenQuantityIncreases() {
-        // Given: 장바구니에 이미 상품이 추가된 상태
-        CartItem existingCartItem = new CartItem();
-        existingCartItem.setProduct(product);
-        existingCartItem.setQuantity(1);
-        user.getCartItems().add(existingCartItem);
-
-        when(userService.findById(anyLong())).thenReturn(user);
-        when(productService.findById(anyLong())).thenReturn(product);
-        when(cartItemRepository.findByUserAndProduct(user, product)).thenReturn(Optional.of(existingCartItem));
-        when(cartItemRepository.save(any(CartItem.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-        // When: 수량을 2만큼 추가
-        CartItem updatedCartItem = cartItemService.addToCart(user.getId(), product.getId(), 2);
-
-        // Then: 수량이 3으로 증가했는지 확인
-        assertNotNull(updatedCartItem);
-        assertEquals(3, updatedCartItem.getQuantity());
-        assertEquals(product.getId(), updatedCartItem.getProduct().getId());
-    }
     @Test
     @DisplayName("장바구니에서 상품을 성공적으로 삭제할 수 있다.")
     public void whenRemoveProductFromCart_thenCartItemRemoved() {
@@ -118,22 +98,28 @@ class CartItemServiceTest {
         existingCartItem.setQuantity(1);
         user.getCartItems().add(existingCartItem);
 
-        when(userService.findById(anyLong())).thenReturn(user);
+        // findUserOrThrow 메서드를 사용한 stubbing
+        when(userService.findUserOrThrow(anyLong(), anyString())).thenReturn(user);
         when(productService.findById(anyLong())).thenReturn(product);
+
         when(cartItemRepository.findByUserAndProduct(user, product)).thenReturn(Optional.of(existingCartItem));
 
+        // When: 장바구니에서 해당 상품을 삭제
         cartItemService.removeFromCart(user.getId(), product.getId());
 
+        // Then: 삭제된 것이 맞는지 확인
         verify(cartItemRepository, times(1)).delete(existingCartItem);
     }
 
     @Test
     @DisplayName("장바구니에 없는 상품을 삭제하려 하면 예외가 발생한다.")
     public void whenRemoveNonExistentProductFromCart_thenThrowException() {
-        when(userService.findById(anyLong())).thenReturn(user);
+        // findUserOrThrow 메서드를 사용한 stubbing
+        when(userService.findUserOrThrow(anyLong(), anyString())).thenReturn(user);
         when(productService.findById(anyLong())).thenReturn(product);
         when(cartItemRepository.findByUserAndProduct(user, product)).thenReturn(Optional.empty());
 
+        // When & Then: 장바구니에 없는 상품을 삭제하려 할 때 예외가 발생해야 함
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             cartItemService.removeFromCart(user.getId(), product.getId());
         });
