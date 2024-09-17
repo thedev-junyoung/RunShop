@@ -7,6 +7,7 @@ import com.example.runshop.model.vo.Address;
 import com.example.runshop.model.vo.Email;
 import com.example.runshop.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -45,7 +46,8 @@ public class UserControllerTest {
     }
 
     @Test
-    void 사용자정보_조회() throws Exception {
+    @DisplayName("사용자 정보 조회")
+    void SelectUser() throws Exception {
         // Given
         Long userId = 1L;
         UserDTO userDTO = UserDTO.builder()
@@ -81,7 +83,8 @@ public class UserControllerTest {
 
 
     @Test
-    void 모든사용자_조회() throws Exception {
+    @DisplayName("모든 사용자 정보 조회")
+    void SelectAllUsers() throws Exception {
         // Given
         UserDTO user1 = UserDTO.builder()
                 .id(1L)
@@ -131,7 +134,8 @@ public class UserControllerTest {
     }
 
     @Test
-    void 사용자정보_수정() throws Exception {
+    @DisplayName("사용자정보_수정")
+    void UpdateUser() throws Exception {
         // Given
         Long userId = 1L;
         // When & Then
@@ -145,7 +149,8 @@ public class UserControllerTest {
     }
 
     @Test
-    void 비밀번호_변경() throws Exception {
+    @DisplayName("비밀번호 변경")
+    void UpdatePassword() throws Exception {
         // Given
         Long userId = 1L;
         // When & Then
@@ -159,7 +164,8 @@ public class UserControllerTest {
     }
 
     @Test
-    void 사용자_비활성화() throws Exception {
+    @DisplayName("사용자_비활성화")
+    void DisabledUser() throws Exception {
         // Given
         Long userId = 1L;
         // When & Then

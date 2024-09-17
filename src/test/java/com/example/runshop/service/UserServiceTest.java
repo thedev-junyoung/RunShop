@@ -125,8 +125,4 @@ public class UserServiceTest {
 
     }
 
-    // 테스트 클래스에서 유틸리티 메서드를 활용할 수 있도록 추가
-    private String hashPassword(String password) {
-        return BCrypt.hashpw(password, BCrypt.gensalt());
-    }
 }
