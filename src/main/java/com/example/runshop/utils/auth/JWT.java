@@ -95,9 +95,9 @@ public class JWT {
         invalidatedTokens.add(token);
     }
 
-    public boolean isTokenValid(String token) {
-        return !invalidatedTokens.contains(token) && isValidToken(token);
-    }
+//    public boolean isTokenValid(String token) {
+//        return !invalidatedTokens.contains(token) && isValidToken(token);
+//    }
 
     // JWT 토큰에서 사용자 정보 추출 (이메일 또는 사용자 ID)
     public String getUsernameFromToken(String token) {
