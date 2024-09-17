@@ -19,5 +19,7 @@ public class UserDTO extends BaseUserDTO {
     private String createdAt;
     private String updatedAt;
     private boolean enabled;
+    private String name;
+    private String phone;
     // 기본 생성자 수동 추가
 }

@@ -7,6 +7,9 @@ import com.example.runshop.model.entity.Product;
 import com.example.runshop.model.entity.User;
 import com.example.runshop.model.enums.Category;
 import com.example.runshop.model.enums.UserRole;
+import com.example.runshop.model.vo.product.ProductDescription;
+import com.example.runshop.model.vo.product.ProductName;
+import com.example.runshop.model.vo.product.ProductPrice;
 import com.example.runshop.model.vo.user.Address;
 import com.example.runshop.model.vo.user.Email;
 import com.example.runshop.model.vo.user.Password;
@@ -62,9 +65,9 @@ class CartItemServiceTest {
         // Given: Product 및 Inventory 설정
         product = new Product();
         product.setId(1L);
-        product.setName("테스트 상품");
-        product.setDescription("테스트 상품입니다.");
-        product.setPrice(BigDecimal.valueOf(10000));
+        product.setName(new ProductName("테스트 상품"));
+        product.setDescription(new ProductDescription("테스트 상품 설명"));
+        product.setPrice(new ProductPrice(BigDecimal.valueOf(10000)));
         product.setCategory(Category.TOP);
         product.setBrand("테스트 브랜드");
 

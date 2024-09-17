@@ -1,9 +1,9 @@
 package com.example.runshop.model.entity;
 
 import com.example.runshop.model.enums.Category;
-import com.example.runshop.model.vo.product.Description;
-import com.example.runshop.model.vo.product.Name;
-import com.example.runshop.model.vo.product.Price;
+import com.example.runshop.model.vo.product.ProductDescription;
+import com.example.runshop.model.vo.product.ProductName;
+import com.example.runshop.model.vo.product.ProductPrice;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,13 +24,13 @@ public class Product {
     private Long id;
 
     @Embedded
-    private Name name;
+    private ProductName name;
 
     @Embedded
-    private Description description;
+    private ProductDescription description;
 
     @Embedded
-    private Price price;
+    private ProductPrice price;
 
     @Column(name = "category", nullable = false)
     @Enumerated(EnumType.STRING)

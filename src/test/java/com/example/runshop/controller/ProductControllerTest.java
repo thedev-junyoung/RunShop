@@ -3,7 +3,11 @@ package com.example.runshop.controller;
 import com.example.runshop.model.dto.product.ProductDTO;
 import com.example.runshop.model.dto.product.UpdateProductRequest;
 import com.example.runshop.model.dto.product.AddProductRequest;
+import com.example.runshop.model.entity.Product;
 import com.example.runshop.model.enums.Category;
+import com.example.runshop.model.vo.product.ProductDescription;
+import com.example.runshop.model.vo.product.ProductName;
+import com.example.runshop.model.vo.product.ProductPrice;
 import com.example.runshop.service.ProductService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,9 +41,9 @@ public class ProductControllerTest {
     @Test
     public void 상품등록_API_성공() throws Exception {
         AddProductRequest request = new AddProductRequest(
-                "나이키 운동화",
-                "나이키 에어맥스",
-                BigDecimal.valueOf(100000),
+                new ProductName("나이키 운동화"),
+                new ProductDescription("나이키 에어맥스"),
+                new ProductPrice(BigDecimal.valueOf(100000)),
                 Category.SHOES,
                 "나이키");
 
@@ -58,9 +62,9 @@ public class ProductControllerTest {
         Long productId = 1L;
         ProductDTO product = ProductDTO.builder()
                 .id(productId)
-                .name("나이키 운동화")
-                .description("나이키 에어맥스")
-                .price(BigDecimal.valueOf(100000))
+                .name(new ProductName("나이키 운동화"))
+                .description(new ProductDescription("나이키 에어맥스"))
+                .price(new ProductPrice(BigDecimal.valueOf(100000)))
                 .category(Category.SHOES)
                 .brand("나이키")
                 .build();
@@ -80,9 +84,9 @@ public class ProductControllerTest {
     public void 상품수정_API_성공() throws Exception {
         Long productId = 1L;
         UpdateProductRequest updateRequest = new UpdateProductRequest(
-                "수정된 이름",
-                "수정된 설명",
-                BigDecimal.valueOf(120000),
+                new ProductName("수정된 이름"),
+                new ProductDescription("수정된 설명"),
+                new ProductPrice(BigDecimal.valueOf(120000)),
                 Category.SHOES,
                 "나이키"
         );

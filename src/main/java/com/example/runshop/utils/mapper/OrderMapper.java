@@ -43,7 +43,7 @@ public interface OrderMapper {
                 .id(item.getId())
                 .product(item.getProduct())  // 필요한 필드만 추가
                 .quantity(item.getQuantity())
-                .price(item.getProduct().getPrice())
+                .price(item.getProduct().getPrice().getValue())
                 .build();
     }
 }

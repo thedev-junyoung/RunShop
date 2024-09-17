@@ -9,6 +9,7 @@ import com.example.runshop.model.entity.OrderItem;
 import com.example.runshop.model.entity.Product;
 import com.example.runshop.model.entity.User;
 import com.example.runshop.model.enums.OrderStatus;
+import com.example.runshop.model.vo.product.ProductName;
 import com.example.runshop.repository.OrderRepository;
 import com.example.runshop.utils.mapper.OrderMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,11 +61,11 @@ class OrderServiceTest {
         // Given: 두 개의 Product 설정
         product1 = new Product();
         product1.setId(1L);
-        product1.setName("상품1");
+        product1.setName(new ProductName("상품1"));
 
         product2 = new Product();
         product2.setId(2L);
-        product2.setName("상품2");
+        product2.setName(new ProductName("상품2"));
 
         // Given: 두 개의 OrderItem 설정
         orderItem1 = new OrderItem();

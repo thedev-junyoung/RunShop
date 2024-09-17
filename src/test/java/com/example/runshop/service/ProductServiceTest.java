@@ -1,10 +1,15 @@
 package com.example.runshop.service;
 
+import com.example.runshop.exception.product.CharactersArrangeException;
+import com.example.runshop.exception.product.PriceNegativeException;
 import com.example.runshop.exception.product.ProductNotFoundException;
 import com.example.runshop.model.dto.product.ProductDTO;
 import com.example.runshop.model.dto.product.UpdateProductRequest;
 import com.example.runshop.model.dto.product.AddProductRequest;
 import com.example.runshop.model.enums.Category;
+import com.example.runshop.model.vo.product.ProductDescription;
+import com.example.runshop.model.vo.product.ProductName;
+import com.example.runshop.model.vo.product.ProductPrice;
 import com.example.runshop.repository.ProductRepository;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
@@ -37,14 +42,14 @@ public class ProductServiceTest {
     private Validator validator;
 
     @Test
-    @WithMockUser(roles = "SELLER")  // SELLER 권한을 가진 사용자로 테스트
+    @WithMockUser(roles = "SELLER")
     @DisplayName("상품을 성공적으로 등록한다")
     public void addProductSuccessfully() {
         // given
         AddProductRequest request = new AddProductRequest(
-                "나이키운동화",
-                "나이키 에어맥스",
-                BigDecimal.valueOf(100000),
+                new ProductName("나이키 운동화"),  // VO 사용
+                new ProductDescription("나이키 에어맥스"),  // VO 사용
+                new ProductPrice(BigDecimal.valueOf(100000)),  // VO 사용
                 Category.SHOES,
                 "나이키"
         );
@@ -53,40 +58,45 @@ public class ProductServiceTest {
         productService.addProduct(request);
 
         // then
-        verify(productRepository, times(1)).save(any(Product.class)); // 상품이 저장되었는지 검증
+        verify(productRepository, times(1)).save(any(Product.class));  // 저장 여부 검증
     }
-
     @Test
     @DisplayName("상품 등록 실패 - 이름이 없는 경우")
     public void failToAddProductDueToMissingName() {
-        // given
-        AddProductRequest request = new AddProductRequest(
-                "",  // 이름 없음
-                "나이키 에어맥스",
-                BigDecimal.valueOf(100000),
-                Category.SHOES,
-                "나이키"
-        );
-
         // when & then
-        Set<ConstraintViolation<AddProductRequest>> violations = validator.validate(request);
-        assertFalse(violations.isEmpty()); // 검증에 실패하는지 확인
-    }
+        CharactersArrangeException exception = assertThrows(CharactersArrangeException.class, () -> {
+            AddProductRequest request = new AddProductRequest(
+                    new ProductName(""),  // 빈 이름으로 VO 생성, 예외 발생 예상
+                    new ProductDescription("나이키 에어맥스"),
+                    new ProductPrice(BigDecimal.valueOf(100000)),
+                    Category.SHOES,
+                    "나이키"
+            );
 
+            productService.addProduct(request);
+        });
+
+        // 예외 메시지 확인
+        assertEquals("Name must be between 3 and 255 characters", exception.getMessage());
+    }
     @Test
     @DisplayName("상품 등록 실패 - 가격이 음수인 경우")
     public void failToAddProductDueToNegativePrice() {
-        // given
-        AddProductRequest request = new AddProductRequest(
-                "나이키운동화",
-                "나이키 에어맥스",
-                BigDecimal.valueOf(-1000),                Category.SHOES,
-                "나이키"
-        );
-
         // when & then
-        Set<ConstraintViolation<AddProductRequest>> violations = validator.validate(request);
-        assertFalse(violations.isEmpty()); // 검증에 실패하는지 확인
+        PriceNegativeException exception = assertThrows(PriceNegativeException.class, () -> {
+            AddProductRequest request = new AddProductRequest(
+                    new ProductName("나이키 운동화"),
+                    new ProductDescription("나이키 에어맥스"),
+                    new ProductPrice(BigDecimal.valueOf(-100000)),  // 음수 가격으로 VO 생성
+                    Category.SHOES,
+                    "나이키"
+            );
+
+            productService.addProduct(request);
+        });
+
+        // 예외 메시지 확인
+        assertEquals("Price cannot be negative", exception.getMessage());
     }
 
     @Test
@@ -95,9 +105,9 @@ public class ProductServiceTest {
         // given
         Long productId = 1L;
         Product product = Product.builder()
-                .name("나이키 운동화")
-                .description("나이키 에어맥스")
-                .price(BigDecimal.valueOf(100000))
+                .name(new ProductName("나이키 운동화"))
+                .description(new ProductDescription("나이키 에어맥스"))
+                .price(new ProductPrice(BigDecimal.valueOf(100000)))
                 .category(Category.SHOES)
                 .brand("나이키")
                 .build();
@@ -107,10 +117,9 @@ public class ProductServiceTest {
         ProductDTO foundProduct = productService.getProduct(productId);
 
         // then
-        assertEquals("나이키 운동화", foundProduct.getName());
+        assertEquals("나이키 운동화", foundProduct.getName().getValue());  // VO에서 값 가져옴
         verify(productRepository, times(1)).findById(productId);
     }
-
     @Test
     @DisplayName("상품 조회 실패 - 존재하지 않는 상품")
     public void failToGetProductWhenNotFound() {
@@ -132,9 +141,9 @@ public class ProductServiceTest {
         // given
         Long productId = 1L;
         Product existingProduct = Product.builder()
-                .name("나이키 운동화")
-                .description("나이키 에어맥스")
-                .price(BigDecimal.valueOf(100000))
+                .name(new ProductName("나이키 운동화"))
+                .description(new ProductDescription("나이키 에어맥스"))
+                .price(new ProductPrice(BigDecimal.valueOf(100000)))
                 .category(Category.SHOES)
                 .brand("나이키")
                 .build();
@@ -142,9 +151,9 @@ public class ProductServiceTest {
         when(productRepository.findById(productId)).thenReturn(Optional.of(existingProduct));
 
         UpdateProductRequest updateRequest = new UpdateProductRequest(
-                "수정된 이름",
-                "수정된 설명",
-                BigDecimal.valueOf(120000),
+                new ProductName("수정된 이름"),
+                new ProductDescription("수정된 설명"),
+                new ProductPrice(BigDecimal.valueOf(120000)),
                 Category.SHOES,
                 "나이키"
         );
@@ -153,28 +162,27 @@ public class ProductServiceTest {
         productService.updateProduct(productId, updateRequest);
 
         // then
-        assertEquals("수정된 이름", existingProduct.getName());
+        assertEquals("수정된 이름", existingProduct.getName().getValue());  // VO에서 값 가져오기
         verify(productRepository, times(1)).save(existingProduct);
     }
-
     @Test
     @DisplayName("권한이 없으면 상품 수정을 실패한다")
     public void failToUpdateProductWithoutProperRole() {
         // given
         Long productId = 1L;
         Product existingProduct = Product.builder()
-                .name("나이키 운동화")
-                .description("나이키 에어맥스")
-                .price(BigDecimal.valueOf(100000))
+                .name(new ProductName("나이키 운동화"))
+                .description(new ProductDescription("나이키 에어맥스"))
+                .price(new ProductPrice(BigDecimal.valueOf(100000)))
                 .category(Category.SHOES)
                 .brand("나이키")
                 .build();
         when(productRepository.findById(productId)).thenReturn(Optional.of(existingProduct));
 
         UpdateProductRequest updateRequest = new UpdateProductRequest(
-                "수정된 이름",
-                "수정된 설명",
-                BigDecimal.valueOf(120000),
+                new ProductName("수정된 이름"),
+                new ProductDescription("수정된 설명"),
+                new ProductPrice(BigDecimal.valueOf(120000)),
                 Category.SHOES,
                 "나이키"
         );
@@ -195,9 +203,9 @@ public class ProductServiceTest {
         // given
         Long productId = 1L;
         Product existingProduct = Product.builder()
-                .name("나이키 운동화")
-                .description("나이키 에어맥스")
-                .price(BigDecimal.valueOf(100000))
+                .name(new ProductName("나이키 운동화"))
+                .description(new ProductDescription("나이키 에어맥스"))
+                .price(new ProductPrice(BigDecimal.valueOf(100000)))
                 .category(Category.SHOES)
                 .brand("나이키")
                 .build();
@@ -216,9 +224,9 @@ public class ProductServiceTest {
         // given
         Long productId = 1L;
         Product existingProduct = Product.builder()
-                .name("나이키 운동화")
-                .description("나이키 에어맥스")
-                .price(BigDecimal.valueOf(100000))
+                .name(new ProductName("나이키 운동화"))
+                .description(new ProductDescription("나이키 에어맥스"))
+                .price(new ProductPrice(BigDecimal.valueOf(100000)))
                 .category(Category.SHOES)
                 .brand("나이키")
                 .build();

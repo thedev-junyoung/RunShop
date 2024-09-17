@@ -2,20 +2,31 @@ package com.example.runshop.utils.mapper;
 
 import com.example.runshop.model.dto.product.ProductDTO;
 import com.example.runshop.model.entity.Product;
+import com.example.runshop.model.vo.product.ProductDescription;
+import com.example.runshop.model.vo.product.ProductName;
+import com.example.runshop.model.vo.product.ProductPrice;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
+
+import java.math.BigDecimal;
 
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
-    ProductMapper INSTANCE = Mappers.getMapper(ProductMapper.class);
-    // Product -> ProductDTO 매핑 (필요한 필드만 매핑)
+
     @Mapping(target = "name", source = "name")
     @Mapping(target = "price", source = "price")
-    @Mapping(target = "category", source = "category")
-    @Mapping(target = "brand", source = "brand")
-    @Mapping(target = "createdAt", source = "createdAt")
-    @Mapping(target = "updatedAt", source = "updatedAt")
+    @Mapping(target = "description", source = "description")
     ProductDTO productToProductDTO(Product product);
-    Product productDTOToProduct(ProductDTO productDTO);
+
+    default String map(ProductName productName) {
+        return productName.getValue();
+    }
+
+    default BigDecimal map(ProductPrice productPrice) {
+        return productPrice.getValue();
+    }
+
+    default String map(ProductDescription productDescription) {
+        return productDescription.getValue();
+    }
 }
