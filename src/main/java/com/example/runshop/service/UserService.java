@@ -1,15 +1,16 @@
 package com.example.runshop.service;
 
+import com.example.runshop.exception.user.DuplicateEmailException;
 import com.example.runshop.exception.user.IncorrectPasswordException;
 import com.example.runshop.exception.user.UserNotFoundException;
 import com.example.runshop.model.dto.user.*;
+import com.example.runshop.model.entity.User;
+import com.example.runshop.repository.UserRepository;
 import com.example.runshop.utils.SecurityContextUtil;
 import com.example.runshop.utils.mapper.UserMapper;
-import com.example.runshop.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.example.runshop.model.entity.User;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -37,7 +38,7 @@ public class UserService {
     public void signUp(SignUpRequest request) {
         // 이메일 중복 확인
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("중복된 이메일 입니다.");
+            throw new DuplicateEmailException("중복된 이메일 입니다.");
         }
 
         // 새로운 User 엔티티 생성 및 필드 설정

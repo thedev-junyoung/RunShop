@@ -1,6 +1,7 @@
 package com.example.runshop.Integration;
 
 import com.example.runshop.exception.cart.CartItemNotFoundException;
+import com.example.runshop.exception.order.OrderAlreadyBeenCancelledException;
 import com.example.runshop.model.entity.CartItem;
 import com.example.runshop.model.entity.Inventory;
 import com.example.runshop.model.entity.Product;
@@ -158,7 +159,7 @@ class IntegrationCartItemServiceTest {
         when(cartItemRepository.findByUserAndProduct(user, product)).thenReturn(Optional.empty());
 
         // When & Then: 장바구니에 없는 상품을 삭제하려 할 때 예외가 발생해야 함
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        CartItemNotFoundException exception = assertThrows(CartItemNotFoundException.class, () -> {
             cartItemService.removeFromCart(user.getId(), product.getId());
         });
 

@@ -1,6 +1,8 @@
 package com.example.runshop.service;
 
 import com.example.runshop.config.RoleCheck;
+import com.example.runshop.exception.order.OrderAlreadyBeenCancelledException;
+import com.example.runshop.exception.order.OrderNotFoundException;
 import com.example.runshop.model.dto.order.OrderDetailDTO;
 import com.example.runshop.model.dto.order.OrderListDTO;
 import com.example.runshop.model.entity.Order;
@@ -81,13 +83,13 @@ public class OrderService {
     // 주문 조회 메서드
     public Order findOrderOrThrow(Long orderId) {
         return orderRepository.findById(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("주문을 찾을 수 없습니다. 주문 ID: " + orderId));
+                .orElseThrow(() -> new OrderNotFoundException(orderId));
     }
 
     // 주문 상태 검증 메서드
     private void validateOrderState(Order order) {
         if (order.getStatus() == OrderStatus.ORDER_CANCELLATION) {
-            throw new IllegalArgumentException("이미 취소된 주문입니다.");
+            throw new OrderAlreadyBeenCancelledException("이미 취소된 주문입니다.");
         }
     }
 }

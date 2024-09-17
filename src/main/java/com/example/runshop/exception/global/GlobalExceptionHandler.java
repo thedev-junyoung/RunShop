@@ -2,9 +2,10 @@ package com.example.runshop.exception.global;
 
 import com.example.runshop.exception.cart.CartItemAlreadyExistsException;
 import com.example.runshop.exception.cart.CartItemNotFoundException;
-import com.example.runshop.exception.order.OrderAlreadyBeenCancelled;
+import com.example.runshop.exception.order.OrderAlreadyBeenCancelledException;
 import com.example.runshop.exception.order.OrderNotFoundException;
 import com.example.runshop.exception.product.ProductNotFoundException;
+import com.example.runshop.exception.user.DuplicateEmailException;
 import com.example.runshop.exception.user.IncorrectPasswordException;
 import com.example.runshop.exception.user.UserAlreadyExistsException;
 import com.example.runshop.exception.user.UserNotFoundException;
@@ -19,8 +20,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(OrderAlreadyBeenCancelled.class)
-    public ResponseEntity<SuccessResponse<Void>> handleOrderAlreadyBeenCancelled(OrderAlreadyBeenCancelled ex, HttpServletRequest request) {
+    @ExceptionHandler(OrderAlreadyBeenCancelledException.class)
+    public ResponseEntity<SuccessResponse<Void>> handleOrderAlreadyBeenCancelled(OrderAlreadyBeenCancelledException ex, HttpServletRequest request) {
         return SuccessResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
     }
 
@@ -64,6 +65,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IncorrectPasswordException.class)
     public ResponseEntity<SuccessResponse<Void>> handleIncorrectPasswordException(IncorrectPasswordException ex, HttpServletRequest request) {
         return SuccessResponse.error(HttpStatus.UNAUTHORIZED, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(DuplicateEmailException.class)
+    public ResponseEntity<SuccessResponse<Void>> handleDuplicateEmailException(DuplicateEmailException ex, HttpServletRequest request) {
+        return SuccessResponse.error(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

@@ -1,5 +1,6 @@
 package com.example.runshop.service;
 
+import com.example.runshop.exception.order.OrderAlreadyBeenCancelledException;
 import com.example.runshop.model.dto.order.OrderDetailDTO;
 import com.example.runshop.model.dto.order.OrderListDTO;
 import com.example.runshop.model.entity.Order;
@@ -132,7 +133,7 @@ class OrderServiceTest {
         when(orderRepository.findById(anyLong())).thenReturn(java.util.Optional.of(order));
 
         // When & Then: 이미 취소된 주문을 다시 취소할 때 IllegalArgumentException 예외가 발생하는지 확인
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        OrderAlreadyBeenCancelledException exception = assertThrows(OrderAlreadyBeenCancelledException.class, () -> {
             orderService.cancelOrder(order.getId());
         });
 

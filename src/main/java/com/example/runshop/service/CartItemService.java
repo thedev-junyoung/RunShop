@@ -56,7 +56,7 @@ public class CartItemService {
         Product product = productService.findProductOrThrow(productId);
 
         CartItem cartItem = cartItemRepository.findByUserAndProduct(user, product)
-                .orElseThrow(() -> new IllegalArgumentException("장바구니에 존재하지 않는 상품입니다."));
+                .orElseThrow(() -> new CartItemNotFoundException("장바구니에 존재하지 않는 상품입니다."));
 
         cartItemRepository.delete(cartItem);
     }
