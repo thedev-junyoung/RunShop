@@ -1,15 +1,21 @@
 package com.example.runshop.controller;
 
+import com.example.runshop.gateway.PaymentGateway;
 import com.example.runshop.model.dto.order.OrderDetailDTO;
 import com.example.runshop.model.dto.order.OrderListDTO;
+import com.example.runshop.model.dto.payment.OrderRequest;
 import com.example.runshop.model.dto.response.SuccessResponse;
 import com.example.runshop.model.enums.OrderStatus;
+import com.example.runshop.model.enums.PaymentMethod;
+import com.example.runshop.model.enums.PaymentStatus;
 import com.example.runshop.service.OrderService;
+import com.example.runshop.service.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -18,14 +24,16 @@ import java.util.List;
 public class OrderController {
 
     private final OrderService orderService;
+    private final PaymentService paymentService;
 
-    public OrderController(OrderService orderService) {
+    public OrderController(OrderService orderService, PaymentService paymentService) {
         this.orderService = orderService;
+        this.paymentService = paymentService;
     }
 
     // 주문 생성
     @PostMapping
-    public ResponseEntity<?> createOrder(@RequestParam Long userId, @RequestParam double totalPrice, HttpServletRequest httpRequest) {
+    public ResponseEntity<?> createOrder(@RequestParam Long userId, @RequestParam BigDecimal totalPrice, HttpServletRequest httpRequest) {
         orderService.createOrder(userId, totalPrice);
         return SuccessResponse.ok("주문이 성공적으로 생성되었습니다.", httpRequest.getRequestURI());
     }
@@ -64,4 +72,16 @@ public class OrderController {
         orderService.cancelOrder(id);
         return SuccessResponse.ok("주문이 성공적으로 취소되었습니다.", httpRequest.getRequestURI());
     }
+
+    // 결제 처리 (수정된 부분)
+    @PostMapping("/{id}/payment")
+    public ResponseEntity<?> processPayment(
+            @PathVariable Long id,
+            @RequestBody OrderRequest orderRequest,
+            HttpServletRequest httpRequest) {
+
+        paymentService.processPayment(id,orderRequest);
+        return SuccessResponse.ok("결제가 성공적으로 처리되었습니다.", httpRequest.getRequestURI());
+    }
+
 }

@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -48,7 +49,7 @@ class OrderServiceTest {
         order = new Order();
         order.setUser(user);
         order.setStatus(OrderStatus.PENDING);
-        order.setTotalPrice(10000.0);
+        order.setTotalPrice(BigDecimal.valueOf(10000.0));
         order.setId(1L);
     }
 
@@ -64,7 +65,7 @@ class OrderServiceTest {
         });
 
         // When: 주문 생성
-        orderService.createOrder(user.getId(), 10000.0);
+        orderService.createOrder(user.getId(), BigDecimal.valueOf(10000.0));
 
         // Then: 주문이 정상적으로 생성되었는지 검증
         verify(orderRepository, times(1)).save(any(Order.class));

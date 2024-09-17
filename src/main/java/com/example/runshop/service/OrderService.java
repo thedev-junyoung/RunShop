@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,7 +35,7 @@ public class OrderService {
 
     // 주문 생성
     @RoleCheck("CUSTOMER")
-    public void createOrder(Long userId, double totalPrice) {
+    public void createOrder(Long userId, BigDecimal totalPrice) {
         User user = userService.findUserOrThrow(userId, "주문 생성");
         createNewOrder(user, totalPrice);
     }
@@ -71,7 +72,7 @@ public class OrderService {
     }
 
     // 주문 생성 메서드
-    private void createNewOrder(User user, double totalPrice) {
+    private void createNewOrder(User user, BigDecimal totalPrice) {
         Order order = new Order();
         order.setUser(user);
         order.setStatus(OrderStatus.PENDING);

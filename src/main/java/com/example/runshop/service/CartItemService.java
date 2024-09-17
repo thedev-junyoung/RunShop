@@ -49,7 +49,6 @@ public class CartItemService {
         }
     }
 
-
     @RoleCheck("CUSTOMER")
     public void removeFromCart(Long userId, Long productId) {
         User user = userService.findUserOrThrow(userId, "Remove from Cart");
@@ -64,6 +63,5 @@ public class CartItemService {
     public List<CartItem> getCartItems(Long userId) {
         User user = userService.findById(userId);
         return cartItemRepository.findByUser(user);
-
     }
 }

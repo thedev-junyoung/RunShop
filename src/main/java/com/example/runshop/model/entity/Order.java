@@ -5,6 +5,7 @@ import com.example.runshop.model.enums.OrderStatus;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@Table(name = "orders") // 테이블 이름을 'orders'로 변경
+@Table(name = "orders") // 테이블 이름을 'orders' 로 변경
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,8 +22,11 @@ public class Order {
     OrderStatus status;
     @Column(name = "order_date", nullable = false)
     LocalDateTime orderDate;
+    @Column(name = "payment_date")
+    LocalDateTime paymentDate;
+
     @Column(name = "total_price", nullable = false)
-    double totalPrice;
+    BigDecimal totalPrice;
 
     @PrePersist
     protected void onCreate() {
