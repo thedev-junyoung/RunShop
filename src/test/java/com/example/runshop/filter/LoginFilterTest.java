@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -32,7 +33,8 @@ class LoginFilterTest {
     }
 
     @Test
-    void 유효한_인증정보로_인증을_시도한다() {
+    @DisplayName("유효한 인증 정보로 인증 시도")
+    void attemptAuthentication_withValidCredentials() {
         // Given
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
@@ -54,7 +56,8 @@ class LoginFilterTest {
     }
 
     @Test
-    void 인증_성공시_JWT토큰을_헤더에_추가한다() {
+    @DisplayName("인증 성공 시 JWT 토큰을 헤더에 추가")
+    void successfulAuthentication_addsJwtTokenToHeader() {
         // Given
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
@@ -64,7 +67,7 @@ class LoginFilterTest {
 
         when(auth.getPrincipal()).thenReturn(userDetails);
         when(userDetails.getUsername()).thenReturn("user@example.com");
-        log.info("auth.getPrincipal(),{}",auth.getPrincipal());
+        log.info("auth.getPrincipal(),{}", auth.getPrincipal());
         // 빈 권한 목록 설정
         when(auth.getAuthorities()).thenReturn(Collections.emptyList());
 
@@ -80,5 +83,4 @@ class LoginFilterTest {
         verify(jwt).createJwt(eq("user@example.com"), eq("CUSTOMER"), anyLong());
         log.info("JWT 토큰 생성 테스트 완료: 헤더에 토큰 추가 확인");
     }
-
 }

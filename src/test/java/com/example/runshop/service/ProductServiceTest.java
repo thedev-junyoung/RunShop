@@ -21,7 +21,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-public class ProductServiceImplTest {
+public class ProductServiceTest {
 
     @Autowired
     private ProductService productService;  // 실제 ProductService 빈을 사용

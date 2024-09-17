@@ -2,6 +2,7 @@ package com.example.runshop.utils;
 
 import com.example.runshop.utils.auth.JWT;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,7 +15,7 @@ public class JwtTest {
     private JWT jwt;
 
     @Value("${spring.jwt.secret}")
-    private String secretKey; // application.yml에 정의된 secret key
+    private String secretKey; // application.properties에서 설정한 JWT 키
 
     @BeforeEach
     public void setUp() {
@@ -22,7 +23,8 @@ public class JwtTest {
     }
 
     @Test
-    public void 토큰생성_성공() {
+    @DisplayName("토큰 생성 성공")
+    public void shouldCreateTokenSuccessfully() {
         // given
         String username = "testuser";
         String role = "ROLE_SELLER";
@@ -36,7 +38,8 @@ public class JwtTest {
     }
 
     @Test
-    public void 토큰유효성검증_성공() {
+    @DisplayName("토큰 유효성 검증 성공")
+    public void shouldValidateTokenSuccessfully() {
         // given
         String username = "testuser";
         String role = "ROLE_SELLER";
@@ -53,7 +56,8 @@ public class JwtTest {
     }
 
     @Test
-    public void 토큰에서_유저이름_추출_성공() {
+    @DisplayName("토큰에서 유저 이름 추출 성공")
+    public void shouldExtractUsernameFromTokenSuccessfully() {
         // given
         String username = "testuser";
         String role = "ROLE_SELLER";
@@ -70,7 +74,8 @@ public class JwtTest {
     }
 
     @Test
-    public void 토큰에서_역할_추출_성공() {
+    @DisplayName("토큰에서 역할 추출 성공")
+    public void shouldExtractRoleFromTokenSuccessfully() {
         // given
         String username = "testuser";
         String role = "ROLE_SELLER";
@@ -87,7 +92,8 @@ public class JwtTest {
     }
 
     @Test
-    public void 유효하지않은토큰_검증_실패() {
+    @DisplayName("유효하지 않은 토큰 검증 실패")
+    public void shouldFailToValidateInvalidToken() {
         // given
         String invalidToken = "invalid.token.here";
 
