@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -30,8 +29,8 @@ public class OrderController {
 
     // 주문 생성
     @PostMapping
-    public ResponseEntity<?> createOrder(@RequestParam Long userId, @RequestParam BigDecimal totalPrice, HttpServletRequest httpRequest) {
-        orderService.createOrder(userId, totalPrice);
+    public ResponseEntity<?> createOrder(@RequestBody OrderRequest orderRequest, HttpServletRequest httpRequest) {
+        orderService.createOrder(orderRequest.getUserId(), orderRequest.getAmount(), orderRequest.getOrderItems());
         return SuccessResponse.ok("주문이 성공적으로 생성되었습니다.", httpRequest.getRequestURI());
     }
 
@@ -43,12 +42,12 @@ public class OrderController {
     }
 
     // 유저의 주문 목록 조회
-    // 주문 목록 조회
     @GetMapping
     public ResponseEntity<?> getOrderList(@RequestParam Long userId, HttpServletRequest httpRequest) {
         List<OrderListDTO> orders = orderService.getOrderList(userId);
         return SuccessResponse.ok("주문 목록 조회 성공", orders, httpRequest.getRequestURI());
     }
+
     // 주문 상세 조회
     @GetMapping("/{orderId}")
     public ResponseEntity<?> getOrderDetail(@PathVariable Long orderId, HttpServletRequest httpRequest) {
@@ -70,15 +69,14 @@ public class OrderController {
         return SuccessResponse.ok("주문이 성공적으로 취소되었습니다.", httpRequest.getRequestURI());
     }
 
-    // 결제 처리 (수정된 부분)
+    // 결제 처리
     @PostMapping("/{id}/payment")
     public ResponseEntity<?> processPayment(
             @PathVariable Long id,
             @RequestBody OrderRequest orderRequest,
             HttpServletRequest httpRequest) {
 
-        paymentService.processPayment(id,orderRequest);
+        paymentService.processPayment(id, orderRequest);
         return SuccessResponse.ok("결제가 성공적으로 처리되었습니다.", httpRequest.getRequestURI());
     }
-
 }

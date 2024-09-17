@@ -6,6 +6,8 @@ import com.example.runshop.exception.order.OrderNotFoundException;
 import com.example.runshop.model.dto.order.OrderDetailDTO;
 import com.example.runshop.model.dto.order.OrderListDTO;
 import com.example.runshop.model.entity.Order;
+import com.example.runshop.model.entity.OrderItem;
+import com.example.runshop.model.entity.Product;
 import com.example.runshop.model.entity.User;
 import com.example.runshop.model.enums.OrderStatus;
 import com.example.runshop.repository.OrderRepository;
@@ -18,6 +20,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+
 @Service
 @Slf4j
 @Transactional(readOnly = true)
@@ -26,24 +29,34 @@ public class OrderService {
     private final UserService userService;
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
+    private final InventoryService inventoryService;
 
-    public OrderService(UserService userService, OrderRepository orderRepository, OrderMapper orderMapper) {
+    public OrderService(UserService userService, OrderRepository orderRepository,
+                        OrderMapper orderMapper, InventoryService inventoryService) {
         this.userService = userService;
         this.orderRepository = orderRepository;
         this.orderMapper = orderMapper;
+        this.inventoryService = inventoryService;
     }
 
     // 주문 생성
     @RoleCheck("CUSTOMER")
-    public void createOrder(Long userId, BigDecimal totalPrice) {
+    @Transactional
+    public void createOrder(Long userId, BigDecimal totalPrice, List<OrderItem> orderItems) {
         User user = userService.findUserOrThrow(userId, "주문 생성");
-        createNewOrder(user, totalPrice);
+
+        // 각 주문 항목의 재고 감소
+        for (OrderItem item : orderItems) {
+            inventoryService.reduceStock(item.getProduct().getId(), item.getQuantity());
+        }
+
+        // 주문 생성
+        createNewOrder(user, totalPrice, orderItems);
     }
 
     // 주문 목록 조회
     public List<OrderListDTO> getOrderList(Long userId) {
-        List<Order> orders = orderRepository.findByUserId(userId);
-        return orders.stream()
+        return orderRepository.findByUserId(userId).stream()
                 .map(orderMapper::toOrderListDTO)
                 .collect(Collectors.toList());
     }
@@ -59,6 +72,14 @@ public class OrderService {
     public void cancelOrder(Long orderId) {
         Order order = findOrderOrThrow(orderId);
         validateOrderState(order);
+
+        // 각 주문 항목의 재고 복구
+        for (OrderItem item : order.getOrderItems()) {
+            Product product = item.getProduct();
+            inventoryService.increaseStock(product.getId(), item.getQuantity());
+        }
+
+        // 주문 상태 변경
         order.setStatus(OrderStatus.ORDER_CANCELLATION);
         log.info("주문이 성공적으로 취소되었습니다. 주문 ID: {}", orderId);
     }
@@ -72,12 +93,13 @@ public class OrderService {
     }
 
     // 주문 생성 메서드
-    private void createNewOrder(User user, BigDecimal totalPrice) {
+    private void createNewOrder(User user, BigDecimal totalPrice, List<OrderItem> orderItems) {
         Order order = new Order();
         order.setUser(user);
         order.setStatus(OrderStatus.PENDING);
         order.setTotalPrice(totalPrice);
         order.setOrderDate(LocalDateTime.now());
+        order.setOrderItems(orderItems);  // 주문 항목 추가
         orderRepository.save(order);
     }
 

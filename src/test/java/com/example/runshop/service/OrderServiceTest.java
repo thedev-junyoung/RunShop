@@ -3,7 +3,10 @@ package com.example.runshop.service;
 import com.example.runshop.exception.order.OrderAlreadyBeenCancelledException;
 import com.example.runshop.model.dto.order.OrderDetailDTO;
 import com.example.runshop.model.dto.order.OrderListDTO;
+import com.example.runshop.model.dto.payment.OrderRequest;
 import com.example.runshop.model.entity.Order;
+import com.example.runshop.model.entity.OrderItem;
+import com.example.runshop.model.entity.Product;
 import com.example.runshop.model.entity.User;
 import com.example.runshop.model.enums.OrderStatus;
 import com.example.runshop.repository.OrderRepository;
@@ -34,29 +37,59 @@ class OrderServiceTest {
     @Mock
     private OrderMapper orderMapper;
 
+    @Mock
+    private InventoryService inventoryService;
+
     private User user;
     private Order order;
+    private OrderItem orderItem1; // 추가
+    private OrderItem orderItem2; // 추가
+
+    private Product product1; // Product 추가
+    private Product product2; // Product 추가
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        // Given: 사용자와 주문 설정
+        // Given: 사용자 설정
         user = new User();
         user.setId(1L);
         user.setName("테스트 유저");
 
+        // Given: 두 개의 Product 설정
+        product1 = new Product();
+        product1.setId(1L);
+        product1.setName("상품1");
+
+        product2 = new Product();
+        product2.setId(2L);
+        product2.setName("상품2");
+
+        // Given: 두 개의 OrderItem 설정
+        orderItem1 = new OrderItem();
+        orderItem1.setId(1L);
+        orderItem1.setProduct(product1); // Product 설정
+        orderItem1.setQuantity(2);
+
+        orderItem2 = new OrderItem();
+        orderItem2.setId(2L);
+        orderItem2.setProduct(product2); // Product 설정
+        orderItem2.setQuantity(1);
+
+        // Given: 주문 설정
         order = new Order();
         order.setUser(user);
         order.setStatus(OrderStatus.PENDING);
         order.setTotalPrice(BigDecimal.valueOf(10000.0));
         order.setId(1L);
+        order.setOrderItems(List.of(orderItem1, orderItem2)); // OrderItems 설정
     }
 
     @Test
     @DisplayName("주문을 성공적으로 생성한다")
     public void createOrderSuccessfully() {
-        // Given: userService에서 user를 반환하도록 설정
+        // Given: 사용자 및 OrderRequest 설정
         when(userService.findUserOrThrow(anyLong(), anyString())).thenReturn(user);
         when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> {
             Order savedOrder = invocation.getArgument(0);
@@ -64,11 +97,24 @@ class OrderServiceTest {
             return savedOrder;
         });
 
+        // InventoryService에서 재고 감소를 모킹 (Product ID 전달)
+        doNothing().when(inventoryService).reduceStock(eq(product1.getId()), anyInt());
+        doNothing().when(inventoryService).reduceStock(eq(product2.getId()), anyInt());
+
+        // 주문 요청 객체 생성 (OrderRequest)
+        OrderRequest orderRequest = new OrderRequest();
+        orderRequest.setUserId(user.getId());
+        orderRequest.setAmount(BigDecimal.valueOf(10000.0));
+        orderRequest.setOrderItems(List.of(orderItem1, orderItem2)); // 예시로 두 개의 주문 아이템 설정
+
         // When: 주문 생성
-        orderService.createOrder(user.getId(), BigDecimal.valueOf(10000.0));
+        orderService.createOrder(orderRequest.getUserId(), orderRequest.getAmount(), orderRequest.getOrderItems());
 
         // Then: 주문이 정상적으로 생성되었는지 검증
         verify(orderRepository, times(1)).save(any(Order.class));
+        // 실제 Product ID를 사용하여 reduceStock 호출 검증
+        verify(inventoryService, times(1)).reduceStock(eq(product1.getId()), eq(orderItem1.getQuantity()));
+        verify(inventoryService, times(1)).reduceStock(eq(product2.getId()), eq(orderItem2.getQuantity()));
         verify(userService, times(1)).findUserOrThrow(anyLong(), anyString());
     }
 

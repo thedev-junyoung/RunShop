@@ -1,5 +1,6 @@
 package com.example.runshop.exception.global;
 
+import com.example.runshop.exception.Inventory.InventoryNotFoundException;
 import com.example.runshop.exception.cart.CartItemAlreadyExistsException;
 import com.example.runshop.exception.cart.CartItemNotFoundException;
 import com.example.runshop.exception.order.OrderAlreadyBeenCancelledException;
@@ -20,6 +21,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+
+    @ExceptionHandler(InventoryNotFoundException.class)
+    public ResponseEntity<SuccessResponse<Void>> handleInventoryNotFoundException(InventoryNotFoundException ex, HttpServletRequest request) {
+        return SuccessResponse.error(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
+    }
     @ExceptionHandler(OrderAlreadyBeenCancelledException.class)
     public ResponseEntity<SuccessResponse<Void>> handleOrderAlreadyBeenCancelled(OrderAlreadyBeenCancelledException ex, HttpServletRequest request) {
         return SuccessResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());

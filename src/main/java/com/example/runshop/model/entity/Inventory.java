@@ -12,6 +12,7 @@ public class Inventory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     // 재고 수량
+    @Column(nullable = false)
     private int stockQuantity;
 
     // - **Product** 1 : 1 **Inventory**
@@ -20,4 +21,17 @@ public class Inventory {
     @OneToOne
     @JoinColumn(name = "product_id")
     private Product product;
+
+    // 재고 증가 메서드
+    public void increaseStock(int quantity) {
+        this.stockQuantity += quantity;
+    }
+
+    // 재고 감소 메서드
+    public void decreaseStock(int quantity) {
+        if (this.stockQuantity < quantity) {
+            throw new IllegalArgumentException("재고가 부족합니다.");
+        }
+        this.stockQuantity -= quantity;
+    }
 }

@@ -25,6 +25,9 @@ public class OrderItem {
     // 주문 상품의 수량
     @Column(name = "quantity", nullable = false)
     private int quantity;
+    // 주문에 포함된 상품의 이름 (Product 엔티티의 필드에 직접 접근)
+    @Transient // 데이터베이스에 저장되지 않도록 설정
+    private String productName;
 
 
     @PrePersist
