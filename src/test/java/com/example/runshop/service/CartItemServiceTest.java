@@ -1,7 +1,6 @@
 package com.example.runshop.service;
 
 import com.example.runshop.exception.cart.CartItemNotFoundException;
-import com.example.runshop.exception.order.OrderAlreadyBeenCancelledException;
 import com.example.runshop.model.entity.CartItem;
 import com.example.runshop.model.entity.Inventory;
 import com.example.runshop.model.entity.Product;
@@ -121,9 +120,9 @@ class CartItemServiceTest {
         when(cartItemRepository.findByUserAndProduct(user, product)).thenReturn(Optional.empty());
 
         // When & Then: 장바구니에 없는 상품을 삭제하려 할 때 예외가 발생해야 함
-        CartItemNotFoundException exception = assertThrows(CartItemNotFoundException.class, () -> {
-            cartItemService.removeFromCart(user.getId(), product.getId());
-        });
+        CartItemNotFoundException exception = assertThrows(
+                CartItemNotFoundException.class, ()
+                        -> cartItemService.removeFromCart(user.getId(), product.getId()));
 
         assertEquals("장바구니에 존재하지 않는 상품입니다.", exception.getMessage());
     }

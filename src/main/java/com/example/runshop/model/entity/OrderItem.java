@@ -6,7 +6,6 @@ import lombok.Setter;
 import com.example.runshop.model.enums.PaymentMethod;
 import com.example.runshop.model.enums.PaymentStatus;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity

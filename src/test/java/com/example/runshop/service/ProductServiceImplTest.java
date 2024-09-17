@@ -110,9 +110,7 @@ public class ProductServiceImplTest {
         when(productRepository.findById(productId)).thenReturn(Optional.empty());  // 상품이 없을 때
 
         // when & then
-        Exception exception = assertThrows(ProductNotFoundException.class, () -> {
-            productService.getProduct(productId);
-        });
+        Exception exception = assertThrows(ProductNotFoundException.class, () -> productService.getProduct(productId));
 
         assertEquals("해당 상품을 찾을 수 없습니다.", exception.getMessage());
         verify(productRepository, times(1)).findById(productId);
