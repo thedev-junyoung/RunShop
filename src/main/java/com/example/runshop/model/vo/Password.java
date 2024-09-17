@@ -18,7 +18,4 @@ public class Password {
         this.passwordValue = passwordValue;
     }
 
-    public boolean checkPassword(String rawPassword) {
-        return BCrypt.checkpw(rawPassword, this.passwordValue);
-    }
 }
