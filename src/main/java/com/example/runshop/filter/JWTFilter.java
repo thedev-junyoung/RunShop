@@ -3,7 +3,7 @@ package com.example.runshop.filter;
 import com.example.runshop.model.dto.user.UsersDetails;
 import com.example.runshop.model.entity.User;
 import com.example.runshop.model.enums.UserRole;
-import com.example.runshop.model.vo.Email;
+import com.example.runshop.model.vo.user.Email;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

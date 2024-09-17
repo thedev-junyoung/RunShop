@@ -1,8 +1,8 @@
 package com.example.runshop.model.dto.user;
 
 import com.example.runshop.model.enums.UserRole;
-import com.example.runshop.model.vo.Address;
-import com.example.runshop.model.vo.Email;
+import com.example.runshop.model.vo.user.Address;
+import com.example.runshop.model.vo.user.Email;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 

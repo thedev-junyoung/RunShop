@@ -1,8 +1,8 @@
 package com.example.runshop.service;
 
 import com.example.runshop.model.entity.User;
-import com.example.runshop.model.vo.Email;
-import com.example.runshop.model.vo.Password;
+import com.example.runshop.model.vo.user.Email;
+import com.example.runshop.model.vo.user.Password;
 import com.example.runshop.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;

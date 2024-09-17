@@ -1,4 +1,4 @@
-package com.example.runshop.model.vo;
+package com.example.runshop.model.vo.user;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

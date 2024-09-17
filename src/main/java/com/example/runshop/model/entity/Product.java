@@ -1,35 +1,39 @@
 package com.example.runshop.model.entity;
 
 import com.example.runshop.model.enums.Category;
+import com.example.runshop.model.vo.product.Description;
+import com.example.runshop.model.vo.product.Name;
+import com.example.runshop.model.vo.product.Price;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
-@Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(name = "product")
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Embedded
+    private Name name;
 
-    @Column(name = "description")
-    private String description;
+    @Embedded
+    private Description description;
 
-    @Column(name = "price", nullable = false)
-    private BigDecimal price;
+    @Embedded
+    private Price price;
 
     @Column(name = "category", nullable = false)
     @Enumerated(EnumType.STRING)
-
     private Category category;
 
     @Column(name = "brand")
@@ -43,7 +47,7 @@ public class Product {
 
     @Column(name = "enabled", nullable = false)
     @Builder.Default
-    private boolean enabled=true;
+    private boolean enabled = true;
 
     @PrePersist
     protected void onCreate() {
@@ -54,26 +58,19 @@ public class Product {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
-    // 재고 관계 추가
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_id")
     private Seller seller;
 
-    // - **Product** 1 : N **CartItem**
-    // (한 상품이 여러 장바구니에 포함될 수 있음)
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     @Builder.Default
     private List<CartItem> cartItems = new ArrayList<>();
 
-    // - **Product** 1 : N **OrderItem**
-    // (한 상품이 여러 주문에 포함될 수 있음)
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     @Builder.Default
     private List<OrderItem> orderItems = new ArrayList<>();
 
-    // - **Product** 1 : 1 **Inventory**
-    // (하나의 상품에 대해 하나의 재고가 관리됨)
     @OneToOne(mappedBy = "product")
     private Inventory inventory;
 

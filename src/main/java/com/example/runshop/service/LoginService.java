@@ -2,7 +2,7 @@ package com.example.runshop.service;
 
 import com.example.runshop.model.dto.user.UsersDetails;
 import com.example.runshop.model.entity.User;
-import com.example.runshop.model.vo.Email;
+import com.example.runshop.model.vo.user.Email;
 import com.example.runshop.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

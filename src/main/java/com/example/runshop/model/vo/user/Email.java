@@ -1,4 +1,4 @@
-package com.example.runshop.model.vo;
+package com.example.runshop.model.vo.user;
 
 import com.example.runshop.exception.user.InvalidEmailException;
 import com.fasterxml.jackson.annotation.JsonValue; // 추가

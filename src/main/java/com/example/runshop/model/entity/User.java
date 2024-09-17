@@ -1,8 +1,8 @@
 package com.example.runshop.model.entity;
 
-import com.example.runshop.model.vo.Address;
-import com.example.runshop.model.vo.Email;
-import com.example.runshop.model.vo.Password;
+import com.example.runshop.model.vo.user.Address;
+import com.example.runshop.model.vo.user.Email;
+import com.example.runshop.model.vo.user.Password;
 import com.example.runshop.model.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;

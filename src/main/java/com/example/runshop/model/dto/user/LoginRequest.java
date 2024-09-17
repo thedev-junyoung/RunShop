@@ -1,6 +1,6 @@
 package com.example.runshop.model.dto.user;
 
-import com.example.runshop.model.vo.Email;
+import com.example.runshop.model.vo.user.Email;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

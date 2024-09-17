@@ -1,6 +1,6 @@
 package com.example.runshop.repository;
 
-import com.example.runshop.model.vo.Email;
+import com.example.runshop.model.vo.user.Email;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import com.example.runshop.model.entity.User;
