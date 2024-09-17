@@ -46,8 +46,8 @@ dependencies {
 	testAnnotationProcessor 'org.projectlombok:lombok'
 
 	// mapstruct
-	implementation 'org.mapstruct:mapstruct:1.6.0'
-	annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.0'
+	implementation 'org.mapstruct:mapstruct:1.6.1'
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.1'
 }
 
 tasks.named('test') {
