@@ -1,7 +1,6 @@
 package com.example.runshop.repository;
 
 import com.example.runshop.model.entity.Order;
-import com.example.runshop.model.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

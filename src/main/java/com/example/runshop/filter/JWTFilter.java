@@ -7,6 +7,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,7 +29,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
     // 필터에서 매 요청마다 호출되며, 보안 작업(토큰 검증, 인증 정보 설정 등)을 수행한 후 요청을 다음 필터로 넘기는 역할
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
             throws ServletException, IOException {
         // 요청의 Authorization 헤더에서 토큰을 추출
         String authorization = request.getHeader("Authorization");

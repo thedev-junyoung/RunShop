@@ -54,7 +54,7 @@ class LoginFilterTest {
     }
 
     @Test
-    void 인증_성공시_JWT토큰을_헤더에_추가한다() throws Exception {
+    void 인증_성공시_JWT토큰을_헤더에_추가한다() {
         // Given
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);

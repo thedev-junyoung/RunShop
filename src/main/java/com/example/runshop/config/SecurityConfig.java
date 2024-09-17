@@ -64,9 +64,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated() // 나머지 요청들은 인증 필요
         )            .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessHandler((request, response, authentication) -> {
-                            response.setStatus(HttpServletResponse.SC_OK);
-                        })
+                        .logoutSuccessHandler((request, response, authentication) -> response.setStatus(HttpServletResponse.SC_OK))
                         .addLogoutHandler(new JwtLogoutHandler(jwt))
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

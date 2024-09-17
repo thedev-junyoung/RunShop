@@ -12,9 +12,6 @@ import javax.crypto.SecretKey;
 @Slf4j
 public class JwtLogoutHandler implements LogoutHandler {
     private final JWT jwt;
-    // application.properties에서 비밀키를 주입받음
-    @Value("${spring.jwt.secret}")
-    private SecretKey secretKey;
     public JwtLogoutHandler(JWT jwt) {
         this.jwt = jwt;
     }
