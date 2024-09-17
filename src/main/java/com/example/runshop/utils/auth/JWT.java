@@ -1,4 +1,4 @@
-package com.example.runshop.utils;
+package com.example.runshop.utils.auth;
 
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;

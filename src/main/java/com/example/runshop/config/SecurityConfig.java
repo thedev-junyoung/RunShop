@@ -2,8 +2,8 @@ package com.example.runshop.config;
 
 import com.example.runshop.filter.JWTFilter;
 import com.example.runshop.filter.LoginFilter;
-import com.example.runshop.utils.JWT;
-import com.example.runshop.utils.JwtLogoutHandler;
+import com.example.runshop.utils.auth.JWT;
+import com.example.runshop.utils.auth.JwtLogoutHandler;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;

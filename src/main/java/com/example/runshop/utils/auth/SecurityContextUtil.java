@@ -1,4 +1,4 @@
-package com.example.runshop.utils;
+package com.example.runshop.utils.auth;
 
 import com.example.runshop.model.enums.UserRole;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

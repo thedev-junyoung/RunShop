@@ -1,4 +1,4 @@
-package com.example.runshop.utils;
+package com.example.runshop.utils.auth;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

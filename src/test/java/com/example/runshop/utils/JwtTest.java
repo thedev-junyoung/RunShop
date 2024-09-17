@@ -1,5 +1,6 @@
 package com.example.runshop.utils;
 
+import com.example.runshop.utils.auth.JWT;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;

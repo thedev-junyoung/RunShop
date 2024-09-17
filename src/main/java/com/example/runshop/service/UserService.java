@@ -6,7 +6,7 @@ import com.example.runshop.exception.user.UserNotFoundException;
 import com.example.runshop.model.dto.user.*;
 import com.example.runshop.model.entity.User;
 import com.example.runshop.repository.UserRepository;
-import com.example.runshop.utils.SecurityContextUtil;
+import com.example.runshop.utils.auth.SecurityContextUtil;
 import com.example.runshop.utils.mapper.UserMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

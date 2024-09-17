@@ -1,7 +1,7 @@
 package com.example.runshop.filter;
 
 import com.example.runshop.model.dto.user.UsersDetails;
-import com.example.runshop.utils.JWT;
+import com.example.runshop.utils.auth.JWT;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
