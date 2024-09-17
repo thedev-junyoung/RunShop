@@ -7,6 +7,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
+@Table(name = "inventory")
 public class Inventory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

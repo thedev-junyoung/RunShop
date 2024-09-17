@@ -5,6 +5,7 @@ import lombok.*;
 
 @Entity @Getter @Setter
 @Builder @AllArgsConstructor @NoArgsConstructor
+@Table(name = "cart_item")
 public class CartItem {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

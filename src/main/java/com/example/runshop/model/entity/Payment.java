@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Entity
 @Setter
 @Getter
+@Table(name = "payment")
 public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -16,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
 @AllArgsConstructor // 조인 전략 사용
+@Table(name = "user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
