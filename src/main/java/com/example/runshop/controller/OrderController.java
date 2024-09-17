@@ -1,13 +1,10 @@
 package com.example.runshop.controller;
 
-import com.example.runshop.gateway.PaymentGateway;
 import com.example.runshop.model.dto.order.OrderDetailDTO;
 import com.example.runshop.model.dto.order.OrderListDTO;
 import com.example.runshop.model.dto.payment.OrderRequest;
 import com.example.runshop.model.dto.response.SuccessResponse;
 import com.example.runshop.model.enums.OrderStatus;
-import com.example.runshop.model.enums.PaymentMethod;
-import com.example.runshop.model.enums.PaymentStatus;
 import com.example.runshop.service.OrderService;
 import com.example.runshop.service.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;

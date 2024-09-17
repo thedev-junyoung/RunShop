@@ -134,9 +134,7 @@ class OrderServiceTest {
         when(orderRepository.findById(anyLong())).thenReturn(java.util.Optional.of(order));
 
         // When & Then: 이미 취소된 주문을 다시 취소할 때 IllegalArgumentException 예외가 발생하는지 확인
-        OrderAlreadyBeenCancelledException exception = assertThrows(OrderAlreadyBeenCancelledException.class, () -> {
-            orderService.cancelOrder(order.getId());
-        });
+        OrderAlreadyBeenCancelledException exception = assertThrows(OrderAlreadyBeenCancelledException.class, () -> orderService.cancelOrder(order.getId()));
 
         assertEquals("이미 취소된 주문입니다.", exception.getMessage());
 

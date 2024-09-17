@@ -5,7 +5,6 @@ import com.example.runshop.model.dto.payment.OrderRequest;
 import com.example.runshop.model.entity.Order;
 import com.example.runshop.model.entity.Payment;
 import com.example.runshop.model.enums.OrderStatus;
-import com.example.runshop.model.enums.PaymentMethod;
 import com.example.runshop.model.enums.PaymentStatus;
 import com.example.runshop.repository.OrderRepository;
 import com.example.runshop.repository.PaymentRepository;
@@ -13,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 
 @Service
 @Slf4j

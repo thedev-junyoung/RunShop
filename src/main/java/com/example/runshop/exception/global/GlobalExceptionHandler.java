@@ -78,7 +78,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<SuccessResponse<Void>> handleGeneralException(Exception ex, HttpServletRequest request) {
+    public ResponseEntity<SuccessResponse<Void>> handleGeneralException(HttpServletRequest request) {
         return SuccessResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다.", request.getRequestURI());
     }
 }

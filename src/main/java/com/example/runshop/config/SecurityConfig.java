@@ -12,6 +12,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -53,9 +54,9 @@ public class SecurityConfig {
         log.info("filterChain() in SecurityConfig"); // 필터 체인 설정 메서드 호출 로그
 
         // CSRF 보호를 비활성화, 폼 로그인과 HTTP 기본 인증을 비활성화
-        http.csrf(csrf -> csrf.disable());
-        http.formLogin(form -> form.disable());
-        http.httpBasic(basic -> basic.disable());
+        http.csrf(AbstractHttpConfigurer::disable);
+        http.formLogin(AbstractHttpConfigurer::disable);
+        http.httpBasic(AbstractHttpConfigurer::disable);
 
         // 특정 엔드포인트를 허용: 회원가입, 로그인 엔드포인트 등
         http.authorizeHttpRequests(auth -> auth

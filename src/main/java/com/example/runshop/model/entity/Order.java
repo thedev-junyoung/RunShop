@@ -44,6 +44,6 @@ public class Order {
 
     // - **Order** 1 : 1 **Payment**
     // (한 주문에 대해 하나의 결제가 이루어짐)
-    @OneToOne(mappedBy = "order", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "order")
     private Payment payment;
 }

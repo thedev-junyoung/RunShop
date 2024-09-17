@@ -20,7 +20,7 @@ public class JWT {
 
     private static final Logger logger = LoggerFactory.getLogger(JWT.class); // 로그 출력을 위한 Logger 설정
     private final SecretKey secretKey; // JWT 토큰 서명을 위한 비밀키
-    private Set<String> invalidatedTokens = new HashSet<>();
+    private final Set<String> invalidatedTokens = new HashSet<>();
 
     // 생성자에서 비밀키를 초기화
     // secret 애플리케이션 설정에서 주입된 비밀키 값
