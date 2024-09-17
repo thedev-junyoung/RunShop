@@ -5,9 +5,8 @@ import com.example.runshop.model.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring") // 스프링 빈으로 등록되도록 설정
 public interface UserMapper {
-    UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
     UserDTO userToUserDTO(User user);
     User userDTOToUser(UserDTO userDTO);
 }
