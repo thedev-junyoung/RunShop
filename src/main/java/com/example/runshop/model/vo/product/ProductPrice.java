@@ -3,7 +3,6 @@ package com.example.runshop.model.vo.product;
 import com.example.runshop.exception.product.PriceNegativeException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

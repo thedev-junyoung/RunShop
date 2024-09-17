@@ -11,7 +11,6 @@ import com.example.runshop.model.vo.product.ProductDescription;
 import com.example.runshop.model.vo.product.ProductName;
 import com.example.runshop.model.vo.product.ProductPrice;
 import com.example.runshop.repository.ProductRepository;
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,7 +22,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 
 import java.math.BigDecimal;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -37,9 +35,6 @@ public class ProductServiceTest {
 
     @MockBean
     private ProductRepository productRepository;
-
-    @Autowired
-    private Validator validator;
 
     @Test
     @WithMockUser(roles = "SELLER")

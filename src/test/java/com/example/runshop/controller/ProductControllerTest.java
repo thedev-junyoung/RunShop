@@ -3,13 +3,13 @@ package com.example.runshop.controller;
 import com.example.runshop.model.dto.product.ProductDTO;
 import com.example.runshop.model.dto.product.UpdateProductRequest;
 import com.example.runshop.model.dto.product.AddProductRequest;
-import com.example.runshop.model.entity.Product;
 import com.example.runshop.model.enums.Category;
 import com.example.runshop.model.vo.product.ProductDescription;
 import com.example.runshop.model.vo.product.ProductName;
 import com.example.runshop.model.vo.product.ProductPrice;
 import com.example.runshop.service.ProductService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -39,7 +39,8 @@ public class ProductControllerTest {
     }
 
     @Test
-    public void 상품등록_API_성공() throws Exception {
+    @DisplayName("상품 등록 API 성공")
+    public void SubmitProduct_API_Success() throws Exception {
         AddProductRequest request = new AddProductRequest(
                 new ProductName("나이키 운동화"),
                 new ProductDescription("나이키 에어맥스"),
@@ -58,7 +59,8 @@ public class ProductControllerTest {
     }
 
     @Test
-    public void 상품조회_API_성공() throws Exception {
+    @DisplayName("상품 조회 API 성공")
+    public void GetProduct_API_Success() throws Exception {
         Long productId = 1L;
         ProductDTO product = ProductDTO.builder()
                 .id(productId)
@@ -81,7 +83,8 @@ public class ProductControllerTest {
     }
 
     @Test
-    public void 상품수정_API_성공() throws Exception {
+    @DisplayName("상품 수정 API 성공")
+    public void UpdateProduct_API_Success() throws Exception {
         Long productId = 1L;
         UpdateProductRequest updateRequest = new UpdateProductRequest(
                 new ProductName("수정된 이름"),
@@ -102,7 +105,8 @@ public class ProductControllerTest {
     }
 
     @Test
-    public void 상품삭제_API_성공() throws Exception {
+    @DisplayName("상품 삭제 API 성공")
+    public void DeleteProduct_API_Success() throws Exception {
         Long productId = 1L;
 
         mockMvc.perform(patch("/api/products/{id}/disabled", productId)
