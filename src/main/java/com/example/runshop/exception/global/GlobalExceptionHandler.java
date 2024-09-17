@@ -6,10 +6,7 @@ import com.example.runshop.exception.cart.CartItemNotFoundException;
 import com.example.runshop.exception.order.OrderAlreadyBeenCancelledException;
 import com.example.runshop.exception.order.OrderNotFoundException;
 import com.example.runshop.exception.product.ProductNotFoundException;
-import com.example.runshop.exception.user.DuplicateEmailException;
-import com.example.runshop.exception.user.IncorrectPasswordException;
-import com.example.runshop.exception.user.UserAlreadyExistsException;
-import com.example.runshop.exception.user.UserNotFoundException;
+import com.example.runshop.exception.user.*;
 import com.example.runshop.model.dto.response.SuccessResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
@@ -22,6 +19,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
 
+    @ExceptionHandler(InvalidEmailException.class)
+    public ResponseEntity<SuccessResponse<Void>> handleInvalidEmailException(InvalidEmailException ex, HttpServletRequest request) {
+        return SuccessResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+    }
     @ExceptionHandler(InventoryNotFoundException.class)
     public ResponseEntity<SuccessResponse<Void>> handleInventoryNotFoundException(InventoryNotFoundException ex, HttpServletRequest request) {
         return SuccessResponse.error(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());

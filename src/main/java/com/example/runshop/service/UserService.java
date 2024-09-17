@@ -5,6 +5,9 @@ import com.example.runshop.exception.user.IncorrectPasswordException;
 import com.example.runshop.exception.user.UserNotFoundException;
 import com.example.runshop.model.dto.user.*;
 import com.example.runshop.model.entity.User;
+import com.example.runshop.model.vo.Address;
+import com.example.runshop.model.vo.Email;
+import com.example.runshop.model.vo.Password;
 import com.example.runshop.repository.UserRepository;
 import com.example.runshop.utils.auth.SecurityContextUtil;
 import com.example.runshop.utils.mapper.UserMapper;
@@ -37,17 +40,23 @@ public class UserService {
     @Transactional
     public void signUp(SignUpRequest request) {
         // 이메일 중복 확인
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(new Email(request.getEmail()))) {
             throw new DuplicateEmailException("중복된 이메일 입니다.");
         }
 
         // 새로운 User 엔티티 생성 및 필드 설정
         User user = new User();
-        user.setEmail(request.getEmail());
-        user.setPassword(bCryptPasswordEncoder.encode(request.getPassword())); // 비밀번호 암호화
+        user.setEmail(new Email(request.getEmail()));
+        user.setPassword(new Password(bCryptPasswordEncoder.encode(request.getPassword())));
         user.setName(request.getName());
         user.setPhone(request.getPhone());
-        user.setAddress(request.getAddress());
+        user.setAddress(Address.builder()
+                .street(request.getStreet())
+                .detailedAddress(request.getDetailedAddress())
+                .city(request.getCity())
+                .region(request.getRegion())
+                .zipCode(request.getZipCode())
+                .build());
 
         // User 엔티티 저장
         userRepository.save(user);
@@ -76,12 +85,17 @@ public class UserService {
         // 사용자 정보 업데이트
         user.setName(request.getName());
         user.setPhone(request.getPhone());
-        user.setAddress(request.getAddress());
+        user.setAddress(Address.builder()
+                .street(request.getAddress().getStreet())
+                .detailedAddress(request.getAddress().getDetailedAddress())
+                .city(request.getAddress().getCity())
+                .region(request.getAddress().getRegion())
+                .zipCode(request.getAddress().getZipCode())
+                .build());
         // 영속성 컨텍스트에서 엔티티의 변경사항을 감지하고, 트랜잭션이 종료되는 시점에 변경사항을 DB에 반영
         // 따라서 별도의 save() 메서드 호출이 필요 없음
         // 변경된 User 엔티티 저장 -> userRepository.save(user)가 필요 없음
         // userRepository.save(user);
-        log.info("유저 상세 정보 수정 완료 userId: {}", userId);
     }
 
     // 패스워드 업데이트
@@ -91,12 +105,12 @@ public class UserService {
         User user = findUserOrThrow(userId, "패스워드 업데이트");
 
         // 기존 패스워드가 일치하는지 확인
-        if (!user.checkPassword(request.getOldPassword(), user.getPassword())) {
+        if (!bCryptPasswordEncoder.matches(request.getOldPassword(), user.getPassword().getPasswordValue())) {
             throw new IncorrectPasswordException("기존 비밀번호가 일치하지 않습니다.");
         }
 
         // 새로운 비밀번호 설정 및 암호화
-        user.setPassword(bCryptPasswordEncoder.encode(request.getNewPassword()));
+        user.setPassword(new Password(bCryptPasswordEncoder.encode(request.getNewPassword())));
 
         // 변경된 User 엔티티 저장
         // userRepository.save(user); -> 필요없음 (Dirty Checking으로 인해)
@@ -112,7 +126,6 @@ public class UserService {
         // 변경된 User 엔티티 저장
         // userRepository.save(user); -> 필요 없음. Dirty Checking으로 인해 트랜잭션 종료 시
         // flush() 메서드가 호출되어 변경사항이 DB에 반영됨
-        log.info("유저 역할 수정 완료 userId: {}, newRole: {}", userId, request.getRole());
         // SecurityContext에서 인증 정보 업데이트
         SecurityContextUtil.updateAuthentication(request.getRole());
     }
@@ -130,7 +143,6 @@ public class UserService {
         // 따라서 별도의 save() 메서드 호출이 필요 없음
         // 즉, 영속성 컨텍스트에서 엔티티의 변경사항을 감지하고, 트랜잭션이 종료되는 시점에 변경사항을 DB에 반영
         // userRepository.save(user);
-        log.info("유저 계정 비활성화 완료 userId: {}", userId);
     }
 
     public User findById(Long userId) {

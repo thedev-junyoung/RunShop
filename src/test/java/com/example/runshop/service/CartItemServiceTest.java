@@ -7,6 +7,9 @@ import com.example.runshop.model.entity.Product;
 import com.example.runshop.model.entity.User;
 import com.example.runshop.model.enums.Category;
 import com.example.runshop.model.enums.UserRole;
+import com.example.runshop.model.vo.Address;
+import com.example.runshop.model.vo.Email;
+import com.example.runshop.model.vo.Password;
 import com.example.runshop.repository.CartItemRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -47,11 +50,11 @@ class CartItemServiceTest {
         // Given: User 설정
         user = new User();
         user.setId(1L);
-        user.setEmail("test@gmail.com");
-        user.setPassword("1234");
+        user.setEmail(new Email("test@gmail.com")); // Email VO 사용
+        user.setPassword(new Password("1234")); // Password VO 사용
         user.setName("테스트");
         user.setPhone("010-1234-5678");
-        user.setAddress("서울시 강남구");
+        user.setAddress(new Address("서울시 강남구 도로명", "101호", "강남구", "서울", "12345")); // Address VO 사용
         user.setRole(UserRole.CUSTOMER);
         user.setCartItems(new ArrayList<>());
 
@@ -68,8 +71,6 @@ class CartItemServiceTest {
         inventory.setProduct(product);
         inventory.setStockQuantity(10);
         product.setInventory(inventory);
-
-
     }
 
     @Test
@@ -90,6 +91,7 @@ class CartItemServiceTest {
 
         assertTrue(user.getCartItems().contains(cartItem));
     }
+
     @Test
     @DisplayName("장바구니에서 상품을 성공적으로 삭제할 수 있다.")
     public void whenRemoveProductFromCart_thenCartItemRemoved() {
@@ -99,27 +101,22 @@ class CartItemServiceTest {
         existingCartItem.setQuantity(1);
         user.getCartItems().add(existingCartItem);
 
-        // findUserOrThrow 메서드를 사용한 stubbing
         when(userService.findUserOrThrow(anyLong(), anyString())).thenReturn(user);
         when(productService.findProductOrThrow(anyLong())).thenReturn(product);
         when(cartItemRepository.findByUserAndProduct(user, product)).thenReturn(Optional.of(existingCartItem));
 
-        // When: 장바구니에서 해당 상품을 삭제
         cartItemService.removeFromCart(user.getId(), product.getId());
 
-        // Then: 삭제된 것이 맞는지 확인
         verify(cartItemRepository, times(1)).delete(existingCartItem);
     }
 
     @Test
     @DisplayName("장바구니에 없는 상품을 삭제하려 하면 예외가 발생한다.")
     public void whenRemoveNonExistentProductFromCart_thenThrowException() {
-        // findUserOrThrow 메서드를 사용한 stubbing
         when(userService.findUserOrThrow(anyLong(), anyString())).thenReturn(user);
         when(productService.findProductOrThrow(anyLong())).thenReturn(product);
         when(cartItemRepository.findByUserAndProduct(user, product)).thenReturn(Optional.empty());
 
-        // When & Then: 장바구니에 없는 상품을 삭제하려 할 때 예외가 발생해야 함
         CartItemNotFoundException exception = assertThrows(
                 CartItemNotFoundException.class, ()
                         -> cartItemService.removeFromCart(user.getId(), product.getId()));
@@ -130,7 +127,6 @@ class CartItemServiceTest {
     @Test
     @DisplayName("장바구니를 조회하면 해당 사용자의 장바구니 목록을 반환한다.")
     public void whenViewCart_thenReturnCartItems() {
-        // Given: 장바구니에 상품이 추가된 상태
         CartItem cartItem1 = new CartItem();
         cartItem1.setProduct(product);
         cartItem1.setQuantity(1);
@@ -144,13 +140,12 @@ class CartItemServiceTest {
         when(userService.findById(anyLong())).thenReturn(user);
         when(cartItemRepository.findByUser(user)).thenReturn(user.getCartItems());
 
-        // When: 장바구니 조회
         var cartItems = cartItemService.getCartItems(user.getId());
 
-        // Then: 장바구니 목록이 반환되는지 확인
         assertNotNull(cartItems);
         assertEquals(2, cartItems.size());
         assertTrue(cartItems.contains(cartItem1));
         assertTrue(cartItems.contains(cartItem2));
     }
 }
+

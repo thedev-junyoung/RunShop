@@ -3,8 +3,12 @@ package com.example.runshop.service;
 import com.example.runshop.model.dto.user.UpdatePasswordRequest;
 import com.example.runshop.model.dto.user.UpdateUserRequest;
 import com.example.runshop.model.entity.User;
+import com.example.runshop.model.vo.Address;
+import com.example.runshop.model.vo.Email;
+import com.example.runshop.model.vo.Password;
 import com.example.runshop.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mindrot.jbcrypt.BCrypt;
 import org.mockito.Mockito;
@@ -32,81 +36,93 @@ public class UserServiceTest {
     private BCryptPasswordEncoder bCryptPasswordEncoder; // BCryptPasswordEncoder의 모의 객체 생성
 
     @Test
-    void 사용자_정보_수정_성공() {
-        // Given: 테스트 데이터 및 환경 설정
+    @DisplayName("사용자 정보 수정 성공")
+    void SuccessUpdatedUserInfo() {
+        // Given
         UpdateUserRequest updateUserRequest = new UpdateUserRequest();
         updateUserRequest.setName("Updated User");
         updateUserRequest.setPhone("0987654321");
-        updateUserRequest.setAddress("Updated Address");
+        updateUserRequest.setAddress(new Address("Updated Street", "Apt 202", "Updated City", "Updated Region", "12345"));
+
         User user = new User();
         user.setId(1L);
         user.setName("Test User");
         user.setPhone("1234567890");
-        user.setAddress("Test Address");
-        user.setEmail("test@example.com");
+        user.setAddress(new Address("Test Street", "Apt 101", "Test City", "Test Region", "54321"));
+        user.setEmail(new Email("test@example.com"));
 
-        // Mocking: UserRepository의 동작 정의
+        // Mocking
         Mockito.when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(user);
 
-        // When: 테스트 대상 메서드 실행
+        // When
         log.info("유저 수정 시작: {}", user.getId());
         userService.updateUserDetails(user.getId(), updateUserRequest);
 
-        // Then: 테스트 결과 검증
-//        Mockito.verify(userRepository, Mockito.times(1)).save(Mockito.any(User.class)); // save 메서드가 한 번 호출되었는지 확인
+        // Then
         assertEquals("Updated User", user.getName());
         assertEquals("0987654321", user.getPhone());
-        assertEquals("Updated Address", user.getAddress());
+        assertEquals("Updated Street", user.getAddress().getStreet());
+        assertEquals("Apt 202", user.getAddress().getDetailedAddress());
         log.info("유저 수정 성공: {}", user.getId());
     }
-
     @Test
-    void 비밀번호_변경_성공() {
-        // Given: 테스트 데이터 및 환경 설정
+    @DisplayName("비밀번호 변경 성공")
+    void SuccessUpdatePassword() {
+        // Given
         UpdatePasswordRequest updatePasswordRequest = new UpdatePasswordRequest("password123", "newPassword123");
-        String oldHashedPassword = hashPassword("password123");
+
+        // 기존 비밀번호를 암호화한 값
+        String oldHashedPassword = BCrypt.hashpw("password123", BCrypt.gensalt());
+
+        // User 엔티티 설정
         User user = new User();
         user.setId(1L);
-        user.setPassword(oldHashedPassword);
-        user.setEmail("test@example.com");
+        user.setPassword(new Password(oldHashedPassword)); // 기존 비밀번호 설정
+        user.setEmail(new Email("test@example.com"));
 
-        // Mocking: UserRepository와 BCryptPasswordEncoder의 동작 정의
+        // Mocking: userRepository와 bCryptPasswordEncoder의 동작을 설정
         Mockito.when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-        Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(user);
-        Mockito.when(bCryptPasswordEncoder.matches(Mockito.anyString(), Mockito.anyString())).thenReturn(true);
-        Mockito.when(bCryptPasswordEncoder.encode(Mockito.anyString())).thenReturn("newHashedPassword");
+        Mockito.when(bCryptPasswordEncoder.matches("password123", oldHashedPassword)).thenReturn(true);
+        Mockito.when(bCryptPasswordEncoder.encode("newPassword123")).thenReturn("newHashedPassword");
 
-        // When: 테스트 대상 메서드 실행
+        // When
         log.info("userId에 대한 암호 업데이트 프로세스를 시작하는 중: {}", user.getId());
         userService.updatePassword(user.getId(), updatePasswordRequest);
 
-        // Then: 테스트 결과 검증
-//        Mockito.verify(userRepository, Mockito.times(1)).save(Mockito.any(User.class)); // save 메서드가 한 번 호출되었는지 확인
-        Mockito.verify(bCryptPasswordEncoder, Mockito.times(1)).encode(Mockito.anyString()); // encode 메서드가 한 번 호출되었는지 확인
-        assertNotEquals(oldHashedPassword, user.getPassword()); // 비밀번호가 변경되었는지 확인
+        // Then
+        // 비밀번호 암호화가 제대로 되었는지 확인
+        Mockito.verify(bCryptPasswordEncoder, Mockito.times(1)).encode("newPassword123");
+
+        // 새로운 비밀번호가 저장되었는지 확인
+        assertNotEquals(oldHashedPassword, user.getPassword().getPasswordValue());
+
+        // 암호화된 새 비밀번호가 저장되었는지 확인
+        assertEquals("newHashedPassword", user.getPassword().getPasswordValue());
+
         log.info("userId에 대한 암호 업데이트 테스트 통과: {}", user.getId());
     }
 
     @Test
-    void 유저_계정_비활성화_성공() {
-        // Given: 테스트 데이터 및 환경 설정
+    @DisplayName("유저 계정 비활성화 성공")
+    void SuccessDisabledUser() {
+        // Given
         User user = new User();
         user.setId(1L);
-        user.setEnabled(true); // 초기값은 활성화 상태
+        user.setEnabled(true);
 
-        // Mocking: UserRepository의 동작 정의
+        // Mocking
         Mockito.when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(user);
 
-        // When: 테스트 대상 메서드 실행
+        // When
         log.info("Starting user deactivation process for userId: {}", user.getId());
         userService.disabled(user.getId());
 
-        // Then: 테스트 결과 검증
-//        Mockito.verify(userRepository, Mockito.times(1)).save(Mockito.any(User.class)); // save 메서드가 한 번 호출되었는지 확인
-        assertFalse(user.isEnabled()); // 계정이 비활성화되었는지 확인
+        // Then
+        assertFalse(user.isEnabled());
         log.info("User deactivation test passed for userId: {}", user.getId());
+
     }
 
     // 테스트 클래스에서 유틸리티 메서드를 활용할 수 있도록 추가

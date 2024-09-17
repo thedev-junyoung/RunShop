@@ -2,6 +2,7 @@ package com.example.runshop.service;
 
 import com.example.runshop.model.dto.user.UsersDetails;
 import com.example.runshop.model.entity.User;
+import com.example.runshop.model.vo.Email;
 import com.example.runshop.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,15 +24,18 @@ public class LoginService implements UserDetailsService {
      * Spring Security의 UserDetailsService 인터페이스 구현 메서드
      * 사용자가 로그인 시, 입력한 이메일을 통해 사용자 정보를 로드함
      *
-     * @param email 사용자가 입력한 이메일 (username 역할)
+     * @param emailString 사용자가 입력한 이메일 (username 역할)
      * @return UserDetails 인터페이스를 구현한 UsersDetails 객체 반환
      * @throws UsernameNotFoundException 주어진 이메일로 사용자를 찾을 수 없을 때 발생
      */
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String emailString) throws UsernameNotFoundException {
+        // 문자열로 받은 이메일을 Email VO로 변환
+        Email email = new Email(emailString);
+
         // 사용자 이메일을 통해 User 엔티티 조회 및 예외 처리
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + email));
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + emailString));
 
         // 조회된 사용자 정보를 UserDetails 객체로 변환하여 반환
         return new UsersDetails(user);

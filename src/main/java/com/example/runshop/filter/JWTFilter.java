@@ -3,6 +3,7 @@ package com.example.runshop.filter;
 import com.example.runshop.model.dto.user.UsersDetails;
 import com.example.runshop.model.entity.User;
 import com.example.runshop.model.enums.UserRole;
+import com.example.runshop.model.vo.Email;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -63,7 +64,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         // 사용자 엔터티를 생성하고, 이메일과 역할을 설정
         User user = new User();
-        user.setEmail(username);
+        user.setEmail(new Email(username));
         user.setRole(UserRole.valueOf(role));
         log.info("인증된 유저: " + username);
         log.info("인증된 역할: " + role);

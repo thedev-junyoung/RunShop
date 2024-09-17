@@ -1,5 +1,6 @@
 package com.example.runshop.model.dto.user;
 
+import com.example.runshop.model.vo.Address;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,5 +13,5 @@ import lombok.experimental.SuperBuilder;
 public abstract class BaseUserDTO {
     private String name;
     private String phone;
-    private String address;
+    private Address address;
 }
