@@ -9,6 +9,7 @@ import com.example.runshop.model.entity.OrderItem;
 import com.example.runshop.model.entity.Product;
 import com.example.runshop.model.entity.User;
 import com.example.runshop.model.enums.OrderStatus;
+import com.example.runshop.model.vo.orderitem.OrderQuantity;
 import com.example.runshop.model.vo.product.ProductName;
 import com.example.runshop.repository.OrderRepository;
 import com.example.runshop.utils.mapper.OrderMapper;
@@ -71,12 +72,12 @@ class OrderServiceTest {
         orderItem1 = new OrderItem();
         orderItem1.setId(1L);
         orderItem1.setProduct(product1); // Product 설정
-        orderItem1.setQuantity(2);
+        orderItem1.setQuantity(new OrderQuantity(2));
 
         orderItem2 = new OrderItem();
         orderItem2.setId(2L);
         orderItem2.setProduct(product2); // Product 설정
-        orderItem2.setQuantity(1);
+        orderItem2.setQuantity(new OrderQuantity(1));
 
         // Given: 주문 설정
         order = new Order();
@@ -114,8 +115,8 @@ class OrderServiceTest {
         // Then: 주문이 정상적으로 생성되었는지 검증
         verify(orderRepository, times(1)).save(any(Order.class));
         // 실제 Product ID를 사용하여 reduceStock 호출 검증
-        verify(inventoryService, times(1)).reduceStock(eq(product1.getId()), eq(orderItem1.getQuantity()));
-        verify(inventoryService, times(1)).reduceStock(eq(product2.getId()), eq(orderItem2.getQuantity()));
+        verify(inventoryService, times(1)).reduceStock(eq(product1.getId()), eq(orderItem1.getQuantity().getValue()));
+        verify(inventoryService, times(1)).reduceStock(eq(product2.getId()), eq(orderItem2.getQuantity().getValue()));
         verify(userService, times(1)).findUserOrThrow(anyLong(), anyString());
     }
 

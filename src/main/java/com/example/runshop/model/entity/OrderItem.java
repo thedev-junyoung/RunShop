@@ -1,5 +1,7 @@
 package com.example.runshop.model.entity;
 
+import com.example.runshop.model.vo.orderitem.OrderQuantity;
+import com.example.runshop.model.vo.product.ProductName;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,10 +26,12 @@ public class OrderItem {
     private LocalDateTime paymentDate;
     // 주문 상품의 수량
     @Column(name = "quantity", nullable = false)
-    private int quantity;
+    @Embedded
+    private OrderQuantity quantity;
     // 주문에 포함된 상품의 이름 (Product 엔티티의 필드에 직접 접근)
     @Transient // 데이터베이스에 저장되지 않도록 설정
-    private String productName;
+    @Embedded
+    private ProductName productName;
 
 
     @PrePersist

@@ -1,6 +1,7 @@
 package com.example.runshop.model.dto;
 
 import com.example.runshop.model.entity.Product;
+import com.example.runshop.model.vo.orderitem.OrderQuantity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,6 +13,6 @@ import java.math.BigDecimal;
 public class OrderItemDTO {
     private Long id;
     private Product product;
-    private int quantity;
+    private OrderQuantity quantity;
     private BigDecimal price;
 }

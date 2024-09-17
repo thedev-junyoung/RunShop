@@ -5,13 +5,18 @@ import com.example.runshop.model.dto.order.OrderDetailDTO;
 import com.example.runshop.model.dto.order.OrderListDTO;
 import com.example.runshop.model.entity.Order;
 import com.example.runshop.model.entity.OrderItem;
+import com.example.runshop.model.vo.orderitem.OrderQuantity;
+import com.example.runshop.model.vo.product.ProductName;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public interface OrderMapper {
+
     // 주문 목록 DTO 변환
     default OrderListDTO toOrderListDTO(Order order) {
         return new OrderListDTO(
@@ -37,13 +42,26 @@ public interface OrderMapper {
         );
     }
 
-    // 주문 아이템 DTO 변환
+    // 주문 아이템 DTO 변환 (VO에서 값을 추출하여 매핑)
+    @Mapping(target = "product", source = "productName", qualifiedByName = "productNameToString")
+    @Mapping(target = "quantity", source = "quantity", qualifiedByName = "orderQuantityToInt")
     default OrderItemDTO toOrderItemDTO(OrderItem item) {
         return OrderItemDTO.builder()
                 .id(item.getId())
-                .product(item.getProduct())  // 필요한 필드만 추가
-                .quantity(item.getQuantity())
-                .price(item.getProduct().getPrice().getValue())
+                .product(item.getProduct())
+                .quantity(item.getQuantity())          // OrderQuantity VO에서 값 추출
+                .price(item.getProduct().getPrice().getValue())   // ProductPrice VO에서 값 추출
                 .build();
+    }
+
+    // VO -> 기본 데이터형으로 변환하는 매핑 메서드
+    @Named("productNameToString")
+    default String productNameToString(ProductName productName) {
+        return productName != null ? productName.getValue() : null;
+    }
+
+    @Named("orderQuantityToInt")
+    default int orderQuantityToInt(OrderQuantity orderQuantity) {
+        return orderQuantity != null ? orderQuantity.getValue() : 0;
     }
 }
