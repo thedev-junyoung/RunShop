@@ -5,6 +5,9 @@ import com.example.runshop.exception.cart.CartItemAlreadyExistsException;
 import com.example.runshop.exception.cart.CartItemNotFoundException;
 import com.example.runshop.exception.order.OrderAlreadyBeenCancelledException;
 import com.example.runshop.exception.order.OrderNotFoundException;
+import com.example.runshop.exception.product.CharactersArrangeDescriptionException;
+import com.example.runshop.exception.product.CharactersArrangeException;
+import com.example.runshop.exception.product.PriceNegativeException;
 import com.example.runshop.exception.product.ProductNotFoundException;
 import com.example.runshop.exception.user.*;
 import com.example.runshop.model.dto.response.SuccessResponse;
@@ -18,7 +21,19 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(CharactersArrangeDescriptionException.class)
+    public ResponseEntity<SuccessResponse<Void>> handleCharactersArrangeDescriptionException(CharactersArrangeDescriptionException ex, HttpServletRequest request) {
+        return SuccessResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+    }
 
+    @ExceptionHandler(PriceNegativeException.class)
+    public ResponseEntity<SuccessResponse<Void>> handlePriceNegativeException(PriceNegativeException ex, HttpServletRequest request) {
+        return SuccessResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+    }
+    @ExceptionHandler(CharactersArrangeException.class)
+    public ResponseEntity<SuccessResponse<Void>> handleCharactersArrangeException(CharactersArrangeException ex, HttpServletRequest request) {
+        return SuccessResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+    }
     @ExceptionHandler(InvalidEmailException.class)
     public ResponseEntity<SuccessResponse<Void>> handleInvalidEmailException(InvalidEmailException ex, HttpServletRequest request) {
         return SuccessResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
