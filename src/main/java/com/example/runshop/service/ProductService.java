@@ -1,6 +1,7 @@
 package com.example.runshop.service;
 
 import com.example.runshop.config.RoleCheck;
+import com.example.runshop.exception.product.ProductNotFoundException;
 import com.example.runshop.model.dto.product.ProductDTO;
 import com.example.runshop.model.dto.product.UpdateProductRequest;
 import com.example.runshop.model.dto.product.AddProductRequest;
@@ -44,11 +45,11 @@ public class ProductService{
     // 상품 조회 기능
     @Transactional(readOnly = true)
     public ProductDTO getProduct(Long id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 상품을 찾을 수 없습니다."));
+        Product product = findProductOrThrow(id);
 
         return productMapper.productToProductDTO(product);
     }
+
 
     // 상품 전체 조회 기능
     @Transactional(readOnly = true)
@@ -65,8 +66,7 @@ public class ProductService{
     @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.REPEATABLE_READ)
     @RoleCheck("SELLER")  // "ROLE_SELLER" 권한만 접근 가능
     public void updateProduct(Long id, UpdateProductRequest request) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 상품을 찾을 수 없습니다."));
+        Product product = findProductOrThrow(id);
 
         Optional.ofNullable(request.getName()).ifPresent(product::setName);
         Optional.ofNullable(request.getDescription()).ifPresent(product::setDescription);
@@ -82,20 +82,20 @@ public class ProductService{
     @RoleCheck("SELLER")  // "ROLE_SELLER" 권한만 접근 가능
     @Transactional
     public void deleteProduct(Long id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 상품을 찾을 수 없습니다."));
+        findProductOrThrow(id);
         productRepository.deleteById(id);
     }
     @RoleCheck("SELLER")  // "ROLE_SELLER" 권한만 접근 가능
     @Transactional
     public void disabled(Long id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 상품을 찾을 수 없습니다."));
+        Product product = findProductOrThrow(id);
         product.setEnabled(false);
         productRepository.save(product);
     }
 
-    public Product findById(long l) {
-        return productRepository.findById(l).orElseThrow(() -> new IllegalArgumentException("해당 상품을 찾을 수 없습니다."));
+
+    public Product findProductOrThrow(Long id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("해당 상품을 찾을 수 없습니다."));
     }
 }

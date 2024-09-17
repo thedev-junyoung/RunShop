@@ -76,7 +76,7 @@ class CartItemServiceTest {
     public void whenAddValidProductToCart_thenCartItemCreated() {
         // 필요한 곳에만 stubbing 적용
         when(userService.findById(anyLong())).thenReturn(user);
-        when(productService.findById(anyLong())).thenReturn(product);
+        when(productService.findProductOrThrow(anyLong())).thenReturn(product);
         when(cartItemRepository.findByUserAndProduct(user, product)).thenReturn(Optional.empty());
         when(cartItemRepository.save(any(CartItem.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -100,8 +100,7 @@ class CartItemServiceTest {
 
         // findUserOrThrow 메서드를 사용한 stubbing
         when(userService.findUserOrThrow(anyLong(), anyString())).thenReturn(user);
-        when(productService.findById(anyLong())).thenReturn(product);
-
+        when(productService.findProductOrThrow(anyLong())).thenReturn(product);
         when(cartItemRepository.findByUserAndProduct(user, product)).thenReturn(Optional.of(existingCartItem));
 
         // When: 장바구니에서 해당 상품을 삭제
@@ -116,8 +115,7 @@ class CartItemServiceTest {
     public void whenRemoveNonExistentProductFromCart_thenThrowException() {
         // findUserOrThrow 메서드를 사용한 stubbing
         when(userService.findUserOrThrow(anyLong(), anyString())).thenReturn(user);
-        when(productService.findById(anyLong())).thenReturn(product);
-        when(cartItemRepository.findByUserAndProduct(user, product)).thenReturn(Optional.empty());
+        when(productService.findProductOrThrow(anyLong())).thenReturn(product);        when(cartItemRepository.findByUserAndProduct(user, product)).thenReturn(Optional.empty());
 
         // When & Then: 장바구니에 없는 상품을 삭제하려 할 때 예외가 발생해야 함
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {

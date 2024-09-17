@@ -1,5 +1,6 @@
 package com.example.runshop.service;
 
+import com.example.runshop.exception.product.ProductNotFoundException;
 import com.example.runshop.model.dto.product.ProductDTO;
 import com.example.runshop.model.dto.product.UpdateProductRequest;
 import com.example.runshop.model.dto.product.AddProductRequest;
@@ -109,7 +110,7 @@ public class ProductServiceImplTest {
         when(productRepository.findById(productId)).thenReturn(Optional.empty());  // 상품이 없을 때
 
         // when & then
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception = assertThrows(ProductNotFoundException.class, () -> {
             productService.getProduct(productId);
         });
 

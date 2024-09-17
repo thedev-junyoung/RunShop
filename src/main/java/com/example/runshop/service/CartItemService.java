@@ -29,7 +29,7 @@ public class CartItemService {
     public CartItem addToCart(Long userId, Long productId, int quantity) {
         // 사용자와 상품 조회
         User user = userService.findById(userId);
-        Product product = productService.findById(productId);
+        Product product = productService.findProductOrThrow(productId);
 
         // 장바구니에 해당 상품이 이미 있는지 확인
         Optional<CartItem> existingCartItemOpt = cartItemRepository.findByUserAndProduct(user, product);
@@ -53,7 +53,7 @@ public class CartItemService {
     @RoleCheck("CUSTOMER")
     public void removeFromCart(Long userId, Long productId) {
         User user = userService.findUserOrThrow(userId, "Remove from Cart");
-        Product product = productService.findById(productId);
+        Product product = productService.findProductOrThrow(productId);
 
         CartItem cartItem = cartItemRepository.findByUserAndProduct(user, product)
                 .orElseThrow(() -> new IllegalArgumentException("장바구니에 존재하지 않는 상품입니다."));

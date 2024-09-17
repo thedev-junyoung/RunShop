@@ -2,6 +2,9 @@ package com.example.runshop.exception.global;
 
 import com.example.runshop.exception.cart.CartItemAlreadyExistsException;
 import com.example.runshop.exception.cart.CartItemNotFoundException;
+import com.example.runshop.exception.order.OrderAlreadyBeenCancelled;
+import com.example.runshop.exception.order.OrderNotFoundException;
+import com.example.runshop.exception.product.ProductNotFoundException;
 import com.example.runshop.exception.user.IncorrectPasswordException;
 import com.example.runshop.exception.user.UserAlreadyExistsException;
 import com.example.runshop.exception.user.UserNotFoundException;
@@ -16,6 +19,20 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(OrderAlreadyBeenCancelled.class)
+    public ResponseEntity<SuccessResponse<Void>> handleOrderAlreadyBeenCancelled(OrderAlreadyBeenCancelled ex, HttpServletRequest request) {
+        return SuccessResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(OrderNotFoundException.class)
+    public ResponseEntity<SuccessResponse<Void>> handleOrderNotFoundException(OrderNotFoundException ex, HttpServletRequest request) {
+        return SuccessResponse.error(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<SuccessResponse<Void>> handleProductNotFoundException(ProductNotFoundException ex, HttpServletRequest request) {
+        return SuccessResponse.error(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
+    }
     @ExceptionHandler(CartItemNotFoundException.class)
     public ResponseEntity<SuccessResponse<Void>> handleCartItemNotFoundException(CartItemNotFoundException ex, HttpServletRequest request) {
         return SuccessResponse.error(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
