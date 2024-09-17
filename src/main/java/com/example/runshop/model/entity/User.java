@@ -3,17 +3,18 @@ package com.example.runshop.model.entity;
 import com.example.runshop.model.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.proxy.HibernateProxy;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @Entity
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
 @AllArgsConstructor // 조인 전략 사용
@@ -76,5 +77,18 @@ public class User {
     // 비밀번호 일치 여부 확인
     public boolean checkPassword(String plaintext, String hashed) {
         return BCrypt.checkpw(plaintext, hashed); // 주어진 평문 비밀번호와 저장된 해시된 비밀번호를 비교
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return id != null && id.equals(user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

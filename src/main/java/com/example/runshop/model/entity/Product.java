@@ -3,10 +3,12 @@ package com.example.runshop.model.entity;
 import com.example.runshop.model.enums.Category;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.proxy.HibernateProxy;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @Entity
@@ -41,6 +43,7 @@ public class Product {
     private LocalDateTime updatedAt;
 
     @Column(name = "enabled", nullable = false)
+    @Builder.Default
     private boolean enabled=true;
 
     @PrePersist
@@ -61,15 +64,30 @@ public class Product {
     // - **Product** 1 : N **CartItem**
     // (한 상품이 여러 장바구니에 포함될 수 있음)
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    @Builder.Default
     private List<CartItem> cartItems = new ArrayList<>();
 
     // - **Product** 1 : N **OrderItem**
     // (한 상품이 여러 주문에 포함될 수 있음)
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    @Builder.Default
     private List<OrderItem> orderItems = new ArrayList<>();
 
     // - **Product** 1 : 1 **Inventory**
     // (하나의 상품에 대해 하나의 재고가 관리됨)
     @OneToOne(mappedBy = "product")
     private Inventory inventory;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Product product = (Product) o;
+        return id != null && id.equals(product.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }
