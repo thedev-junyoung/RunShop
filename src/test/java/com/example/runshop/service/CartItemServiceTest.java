@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -63,7 +64,7 @@ class CartItemServiceTest {
         product.setId(1L);
         product.setName("테스트 상품");
         product.setDescription("테스트 상품입니다.");
-        product.setPrice(10000);
+        product.setPrice(BigDecimal.valueOf(10000));
         product.setCategory(Category.TOP);
         product.setBrand("테스트 브랜드");
 

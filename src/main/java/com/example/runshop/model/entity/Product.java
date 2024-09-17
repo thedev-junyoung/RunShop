@@ -3,6 +3,8 @@ package com.example.runshop.model.entity;
 import com.example.runshop.model.enums.Category;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +25,7 @@ public class Product {
     private String description;
 
     @Column(name = "price", nullable = false)
-    private int price;
+    private BigDecimal price;
 
     @Column(name = "category", nullable = false)
     @Enumerated(EnumType.STRING)

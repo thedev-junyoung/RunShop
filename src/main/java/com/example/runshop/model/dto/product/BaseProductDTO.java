@@ -10,6 +10,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.math.BigDecimal;
+
 @Data
 @SuperBuilder
 @NoArgsConstructor
@@ -22,7 +24,7 @@ public abstract class BaseProductDTO {
 
     @NotNull(message = "가격은 필수값입니다.")
     @Min(value = 1, message = "가격은 1원 이상이어야 합니다.")
-    private Integer price;
+    private BigDecimal price;
 
     @NotNull(message = "카테고리는 필수값입니다.")
     private Category category;

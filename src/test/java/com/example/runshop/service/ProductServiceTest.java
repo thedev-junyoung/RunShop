@@ -16,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import com.example.runshop.model.entity.Product;
 import org.springframework.security.test.context.support.WithMockUser;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.Set;
 
@@ -43,7 +44,7 @@ public class ProductServiceTest {
         AddProductRequest request = new AddProductRequest(
                 "나이키운동화",
                 "나이키 에어맥스",
-                100000,
+                BigDecimal.valueOf(100000),
                 Category.SHOES,
                 "나이키"
         );
@@ -62,7 +63,7 @@ public class ProductServiceTest {
         AddProductRequest request = new AddProductRequest(
                 "",  // 이름 없음
                 "나이키 에어맥스",
-                100000,
+                BigDecimal.valueOf(100000),
                 Category.SHOES,
                 "나이키"
         );
@@ -79,8 +80,7 @@ public class ProductServiceTest {
         AddProductRequest request = new AddProductRequest(
                 "나이키운동화",
                 "나이키 에어맥스",
-                -1000, // 음수 가격
-                Category.SHOES,
+                BigDecimal.valueOf(-1000),                Category.SHOES,
                 "나이키"
         );
 
@@ -97,7 +97,7 @@ public class ProductServiceTest {
         Product product = Product.builder()
                 .name("나이키 운동화")
                 .description("나이키 에어맥스")
-                .price(100000)
+                .price(BigDecimal.valueOf(100000))
                 .category(Category.SHOES)
                 .brand("나이키")
                 .build();
@@ -134,7 +134,7 @@ public class ProductServiceTest {
         Product existingProduct = Product.builder()
                 .name("나이키 운동화")
                 .description("나이키 에어맥스")
-                .price(100000)
+                .price(BigDecimal.valueOf(100000))
                 .category(Category.SHOES)
                 .brand("나이키")
                 .build();
@@ -144,7 +144,7 @@ public class ProductServiceTest {
         UpdateProductRequest updateRequest = new UpdateProductRequest(
                 "수정된 이름",
                 "수정된 설명",
-                120000,
+                BigDecimal.valueOf(120000),
                 Category.SHOES,
                 "나이키"
         );
@@ -165,7 +165,7 @@ public class ProductServiceTest {
         Product existingProduct = Product.builder()
                 .name("나이키 운동화")
                 .description("나이키 에어맥스")
-                .price(100000)
+                .price(BigDecimal.valueOf(100000))
                 .category(Category.SHOES)
                 .brand("나이키")
                 .build();
@@ -174,7 +174,7 @@ public class ProductServiceTest {
         UpdateProductRequest updateRequest = new UpdateProductRequest(
                 "수정된 이름",
                 "수정된 설명",
-                120000,
+                BigDecimal.valueOf(120000),
                 Category.SHOES,
                 "나이키"
         );
@@ -197,7 +197,7 @@ public class ProductServiceTest {
         Product existingProduct = Product.builder()
                 .name("나이키 운동화")
                 .description("나이키 에어맥스")
-                .price(100000)
+                .price(BigDecimal.valueOf(100000))
                 .category(Category.SHOES)
                 .brand("나이키")
                 .build();
@@ -218,7 +218,7 @@ public class ProductServiceTest {
         Product existingProduct = Product.builder()
                 .name("나이키 운동화")
                 .description("나이키 에어맥스")
-                .price(100000)
+                .price(BigDecimal.valueOf(100000))
                 .category(Category.SHOES)
                 .brand("나이키")
                 .build();

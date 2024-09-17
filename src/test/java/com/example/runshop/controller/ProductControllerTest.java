@@ -13,6 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.math.BigDecimal;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -37,7 +39,7 @@ public class ProductControllerTest {
         AddProductRequest request = new AddProductRequest(
                 "나이키 운동화",
                 "나이키 에어맥스",
-                100000,
+                BigDecimal.valueOf(100000),
                 Category.SHOES,
                 "나이키");
 
@@ -58,7 +60,7 @@ public class ProductControllerTest {
                 .id(productId)
                 .name("나이키 운동화")
                 .description("나이키 에어맥스")
-                .price(100000)
+                .price(BigDecimal.valueOf(100000))
                 .category(Category.SHOES)
                 .brand("나이키")
                 .build();
@@ -80,7 +82,7 @@ public class ProductControllerTest {
         UpdateProductRequest updateRequest = new UpdateProductRequest(
                 "수정된 이름",
                 "수정된 설명",
-                120000,
+                BigDecimal.valueOf(120000),
                 Category.SHOES,
                 "나이키"
         );
