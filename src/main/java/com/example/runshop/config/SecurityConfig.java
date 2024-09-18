@@ -62,7 +62,7 @@ public class SecurityConfig {
 
         // 특정 엔드포인트를 허용: 회원가입, 로그인 엔드포인트 등
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/signup", "/login","/h2-console/**").permitAll() // 이 경로들은 인증 없이 접근 허용
+                .requestMatchers("/","/signup", "/login","/h2-console/**","/swagger-ui/**","/v3/api-docs/**").permitAll() // 이 경로들은 인증 없이 접근 허용
                 .anyRequest().authenticated() // 나머지 요청들은 인증 필요
         )            .logout(logout -> logout
                         .logoutUrl("/logout")

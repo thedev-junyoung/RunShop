@@ -37,7 +37,7 @@ services:
       - runshop-network
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "mysql" ]
-      interval: 10s
+      interval: 3s
       retries: 5
 
   redis:
