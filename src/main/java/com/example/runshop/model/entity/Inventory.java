@@ -16,6 +16,7 @@ public class Inventory {
     // 재고 수량
 
     @Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "stock_quantity"))
     private StockQuantity stockQuantity;
 
     // - **Product** 1 : 1 **Inventory**

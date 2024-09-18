@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -57,10 +58,11 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable);
         http.formLogin(AbstractHttpConfigurer::disable);
         http.httpBasic(AbstractHttpConfigurer::disable);
+        http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
 
         // 특정 엔드포인트를 허용: 회원가입, 로그인 엔드포인트 등
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/signup", "/login").permitAll() // 이 경로들은 인증 없이 접근 허용
+                .requestMatchers("/signup", "/login","/h2-console/**").permitAll() // 이 경로들은 인증 없이 접근 허용
                 .anyRequest().authenticated() // 나머지 요청들은 인증 필요
         )            .logout(logout -> logout
                         .logoutUrl("/logout")

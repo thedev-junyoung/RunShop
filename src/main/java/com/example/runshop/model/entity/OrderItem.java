@@ -18,15 +18,21 @@ public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
+
     @Enumerated(EnumType.STRING)
+    @Column(name = "payment_status")
     private PaymentStatus paymentStatus;
+
     @Column(name = "payment_date", nullable = false)
     private LocalDateTime paymentDate;
     // 주문 상품의 수량
-    @Column(name = "quantity", nullable = false)
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "value", column = @Column(name = "quantity"))
+    })
     private OrderQuantity quantity;
     // 주문에 포함된 상품의 이름 (Product 엔티티의 필드에 직접 접근)
     @Transient // 데이터베이스에 저장되지 않도록 설정

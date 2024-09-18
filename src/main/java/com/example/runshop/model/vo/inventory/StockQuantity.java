@@ -25,6 +25,10 @@ public record StockQuantity(int value) {
 
     // 재고 감소 메서드
     public StockQuantity decreaseStock(int quantity) {
+        if (quantity < 0) {
+            throw new IllegalArgumentException("감소할 수량은 음수일 수 없습니다.");
+        }
+
         if (this.value < quantity) {
             throw new IllegalArgumentException("재고가 부족합니다.");
         }

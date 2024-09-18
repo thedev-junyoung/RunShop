@@ -28,6 +28,9 @@ public class Payment {
 
     // 결제 금액을 VO로 변경
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "value", column = @Column(name = "amount"))
+    })
     private PaymentAmount amount;
 
 
