@@ -1,52 +1,20 @@
 package com.example.runshop.model.vo.user;
 
-import com.example.runshop.exception.user.InvalidEmailException;
-import com.fasterxml.jackson.annotation.JsonValue; // 추가
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
-import jakarta.validation.constraints.NotEmpty;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
-@Embeddable
-@Getter
-@NoArgsConstructor
-public class Email {
+public record Email(String value) {
 
-    @NotEmpty
-    @jakarta.validation.constraints.Email
-    @Column(name = "email")
-    private String emailValue;
-
-    // 생성자
-    public Email(String value) {
-        if (!isValidEmail(value)) {
-            throw new InvalidEmailException("유효하지 않은 이메일 형식입니다.");
+    @JsonCreator
+    public Email {
+        if (value == null || !value.contains("@")) {
+            throw new IllegalArgumentException("Invalid email format");
         }
-        this.emailValue = value;
     }
 
-    // 이메일 유효성 검사 메서드
-    private boolean isValidEmail(String value) {
-        return value != null && value.matches("^[A-Za-z0-9+_.-]+@(.+)$");
-    }
-
+    @JsonValue
     @Override
-    @JsonValue // JSON 직렬화 시 이 메서드로 변환
-    public String toString() {
-        return emailValue;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Email email = (Email) o;
-        return emailValue.equals(email.emailValue);
-    }
-
-    @Override
-    public int hashCode() {
-        return emailValue.hashCode();
+    public String value() {
+        return value;
     }
 }

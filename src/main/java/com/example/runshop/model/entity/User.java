@@ -25,9 +25,15 @@ public class User {
     private Long id;
 
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "value", column = @Column(name = "email"))
+    })
     private Email email;
 
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "value", column = @Column(name = "password"))
+    })
     private Password password;
 
     @Column(name= "name", nullable = false)

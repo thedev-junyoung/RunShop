@@ -1,21 +1,20 @@
 package com.example.runshop.model.vo.user;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.mindrot.jbcrypt.BCrypt;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
-@Embeddable
-@Getter
-@NoArgsConstructor
-public class Password {
-
-    @Column(name = "password")
-    private String passwordValue;
-
-    public Password(String passwordValue) {
-        this.passwordValue = passwordValue;
+public record Password(String value) {
+    @JsonCreator
+    public Password {
+        if (value == null || value.length() < 8) {
+            throw new IllegalArgumentException("Password must be at least 8 characters long");
+        }
     }
 
+    @Override
+    @JsonValue
+    public String value() {
+        return value;
+    }
 }
+

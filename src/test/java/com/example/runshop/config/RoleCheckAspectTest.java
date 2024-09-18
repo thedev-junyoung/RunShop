@@ -7,6 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContext;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -15,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
+@ContextConfiguration(classes = {RoleCheckAspect.class})  // 필요한 설정 클래스를 추가
 public class RoleCheckAspectTest {
 
     @Test

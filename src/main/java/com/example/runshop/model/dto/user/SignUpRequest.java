@@ -1,5 +1,6 @@
 package com.example.runshop.model.dto.user;
 
+import com.example.runshop.model.vo.user.Address;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
@@ -22,11 +23,7 @@ public class SignUpRequest {
 
     private String phone;
 
-    // Address
-    private String street;
-    private String detailedAddress;
-    private String city;
-    private String region;
-    private String zipCode;
+    // Address 필드를 하나의 객체로 통합
+    private Address address;
 
 }

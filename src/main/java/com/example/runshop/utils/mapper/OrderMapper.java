@@ -50,18 +50,18 @@ public interface OrderMapper {
                 .id(item.getId())
                 .product(item.getProduct())
                 .quantity(item.getQuantity())          // OrderQuantity VO에서 값 추출
-                .price(item.getProduct().getPrice().getValue())   // ProductPrice VO에서 값 추출
+                .price(item.getProduct().getPrice().value())   // ProductPrice VO에서 값 추출
                 .build();
     }
 
     // VO -> 기본 데이터형으로 변환하는 매핑 메서드
     @Named("productNameToString")
     default String productNameToString(ProductName productName) {
-        return productName != null ? productName.getValue() : null;
+        return productName != null ? productName.value() : null;
     }
 
     @Named("orderQuantityToInt")
     default int orderQuantityToInt(OrderQuantity orderQuantity) {
-        return orderQuantity != null ? orderQuantity.getValue() : 0;
+        return orderQuantity != null ? orderQuantity.value() : 0;
     }
 }

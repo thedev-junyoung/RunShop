@@ -18,7 +18,6 @@ public interface UserMapper {
 
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "password", ignore = true)
     @Mapping(target = "orders", ignore = true)
     @Mapping(target = "cartItems", ignore = true)
     @Mapping(source = "email", target = "email")
@@ -27,7 +26,7 @@ public interface UserMapper {
 
 
     default String emailToString(Email email) {
-        return email.getEmailValue();
+        return email.value();
     }
 
     default Email stringToEmail(String email) {
@@ -43,12 +42,12 @@ public interface UserMapper {
         if (parts.length != 5) {
             throw new IllegalArgumentException("Invalid address format");
         }
-        return Address.builder()
-                .street(parts[0])
-                .detailedAddress(parts[1])
-                .city(parts[2])
-                .region(parts[3])
-                .zipCode(parts[4])
-                .build();
+        return new Address(
+                parts[0],
+                parts[1],
+                parts[2],
+                parts[3],
+                parts[4]
+        );
     }
 }

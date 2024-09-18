@@ -19,14 +19,14 @@ public interface ProductMapper {
     ProductDTO productToProductDTO(Product product);
 
     default String map(ProductName productName) {
-        return productName.getValue();
+        return productName.value();
     }
 
     default BigDecimal map(ProductPrice productPrice) {
-        return productPrice.getValue();
+        return productPrice.value();
     }
 
     default String map(ProductDescription productDescription) {
-        return productDescription.getValue();
+        return productDescription.value();
     }
 }

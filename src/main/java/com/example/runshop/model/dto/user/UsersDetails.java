@@ -36,13 +36,13 @@ public class UsersDetails implements UserDetails {
     @Override
     public String getPassword() {
         // User 엔티티의 비밀번호를 반환
-        return user.getPassword().getPasswordValue();
+        return user.getPassword().value();
     }
 
     @Override
     public String getUsername() {
         // User 엔티티의 이메일을 반환 (이메일을 username으로 사용)
-        return user.getEmail().getEmailValue();
+        return user.getEmail().value();
     }
 
     @Override

@@ -62,10 +62,18 @@ public class UserServiceTest {
         // Then
         assertEquals("Updated User", user.getName());
         assertEquals("0987654321", user.getPhone());
-        assertEquals("Updated Street", user.getAddress().getStreet());
-        assertEquals("Apt 202", user.getAddress().getDetailedAddress());
+
+        // Address는 새로 생성된 Address 레코드로 확인
+        Address updatedAddress = updateUserRequest.getAddress();
+        assertEquals(updatedAddress.street(), user.getAddress().street());
+        assertEquals(updatedAddress.detailedAddress(), user.getAddress().detailedAddress());
+        assertEquals(updatedAddress.city(), user.getAddress().city());
+        assertEquals(updatedAddress.region(), user.getAddress().region());
+        assertEquals(updatedAddress.zipCode(), user.getAddress().zipCode());
+
         log.info("유저 수정 성공: {}", user.getId());
     }
+
     @Test
     @DisplayName("비밀번호 변경 성공")
     void SuccessUpdatePassword() {
@@ -95,10 +103,10 @@ public class UserServiceTest {
         Mockito.verify(bCryptPasswordEncoder, Mockito.times(1)).encode("newPassword123");
 
         // 새로운 비밀번호가 저장되었는지 확인
-        assertNotEquals(oldHashedPassword, user.getPassword().getPasswordValue());
+        assertNotEquals(oldHashedPassword, user.getPassword().value());
 
         // 암호화된 새 비밀번호가 저장되었는지 확인
-        assertEquals("newHashedPassword", user.getPassword().getPasswordValue());
+        assertEquals("newHashedPassword", user.getPassword().value());
 
         log.info("userId에 대한 암호 업데이트 테스트 통과: {}", user.getId());
     }

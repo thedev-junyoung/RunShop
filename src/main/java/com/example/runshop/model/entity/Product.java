@@ -22,15 +22,24 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "value", column = @Column(name = "name"))
+    })
     private ProductName name;
 
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "value", column = @Column(name = "description"))
+    })
     private ProductDescription description;
 
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "value", column = @Column(name = "price"))
+    })
     private ProductPrice price;
+
 
     @Column(name = "category", nullable = false)
     @Enumerated(EnumType.STRING)

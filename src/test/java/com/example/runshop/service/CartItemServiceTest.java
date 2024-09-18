@@ -56,7 +56,7 @@ class CartItemServiceTest {
         user = new User();
         user.setId(1L);
         user.setEmail(new Email("test@gmail.com")); // Email VO 사용
-        user.setPassword(new Password("1234")); // Password VO 사용
+        user.setPassword(new Password("test12341234")); // Password VO 사용
         user.setName("테스트");
         user.setPhone("010-1234-5678");
         user.setAddress(new Address("서울시 강남구 도로명", "101호", "강남구", "서울", "12345")); // Address VO 사용

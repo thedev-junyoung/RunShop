@@ -71,7 +71,7 @@ public class ProductServiceTest {
         });
 
         // 예외 메시지 확인
-        assertEquals("Name must be between 3 and 255 characters", exception.getMessage());
+        assertEquals("제품 이름은 3~255자 사이여야 합니다.", exception.getMessage());
     }
     @Test
     @DisplayName("상품 등록 실패 - 가격이 음수인 경우")
@@ -111,7 +111,7 @@ public class ProductServiceTest {
         ProductDTO foundProduct = productService.getProduct(productId);
 
         // then
-        assertEquals("나이키 운동화", foundProduct.getName().getValue());  // VO에서 값 가져옴
+        assertEquals("나이키 운동화", foundProduct.getName().value());  // VO에서 값 가져옴
         verify(productRepository, times(1)).findById(productId);
     }
     @Test
@@ -156,7 +156,7 @@ public class ProductServiceTest {
         productService.updateProduct(productId, updateRequest);
 
         // then
-        assertEquals("수정된 이름", existingProduct.getName().getValue());  // VO에서 값 가져오기
+        assertEquals("수정된 이름", existingProduct.getName().value());  // VO에서 값 가져오기
         verify(productRepository, times(1)).save(existingProduct);
     }
     @Test

@@ -111,13 +111,13 @@ class OrderServiceTest {
         orderRequest.setOrderItems(List.of(orderItem1, orderItem2)); // 예시로 두 개의 주문 아이템 설정
 
         // When: 주문 생성
-        orderService.createOrder(orderRequest.getUserId(), orderRequest.getAmount().getValue(), orderRequest.getOrderItems());
+        orderService.createOrder(orderRequest.getUserId(), orderRequest.getAmount().value(), orderRequest.getOrderItems());
 
         // Then: 주문이 정상적으로 생성되었는지 검증
         verify(orderRepository, times(1)).save(any(Order.class));
         // 실제 Product ID를 사용하여 reduceStock 호출 검증
-        verify(inventoryService, times(1)).reduceStock(eq(product1.getId()), eq(orderItem1.getQuantity().getValue()));
-        verify(inventoryService, times(1)).reduceStock(eq(product2.getId()), eq(orderItem2.getQuantity().getValue()));
+        verify(inventoryService, times(1)).reduceStock(eq(product1.getId()), eq(orderItem1.getQuantity().value()));
+        verify(inventoryService, times(1)).reduceStock(eq(product2.getId()), eq(orderItem2.getQuantity().value()));
         verify(userService, times(1)).findUserOrThrow(anyLong(), anyString());
     }
 

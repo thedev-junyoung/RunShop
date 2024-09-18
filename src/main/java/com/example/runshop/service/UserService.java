@@ -50,13 +50,13 @@ public class UserService {
         user.setPassword(new Password(bCryptPasswordEncoder.encode(request.getPassword())));
         user.setName(request.getName());
         user.setPhone(request.getPhone());
-        user.setAddress(Address.builder()
-                .street(request.getStreet())
-                .detailedAddress(request.getDetailedAddress())
-                .city(request.getCity())
-                .region(request.getRegion())
-                .zipCode(request.getZipCode())
-                .build());
+        user.setAddress(new Address(
+                request.getAddress().street(),
+                request.getAddress().detailedAddress(),
+                request.getAddress().city(),
+                request.getAddress().region(),
+                request.getAddress().zipCode()
+        ));
 
         // User 엔티티 저장
         userRepository.save(user);
@@ -85,13 +85,8 @@ public class UserService {
         // 사용자 정보 업데이트
         user.setName(request.getName());
         user.setPhone(request.getPhone());
-        user.setAddress(Address.builder()
-                .street(request.getAddress().getStreet())
-                .detailedAddress(request.getAddress().getDetailedAddress())
-                .city(request.getAddress().getCity())
-                .region(request.getAddress().getRegion())
-                .zipCode(request.getAddress().getZipCode())
-                .build());
+        user.setAddress(request.getAddress()); // Address 필드 바로 설정
+
         // 영속성 컨텍스트에서 엔티티의 변경사항을 감지하고, 트랜잭션이 종료되는 시점에 변경사항을 DB에 반영
         // 따라서 별도의 save() 메서드 호출이 필요 없음
         // 변경된 User 엔티티 저장 -> userRepository.save(user)가 필요 없음
@@ -105,7 +100,7 @@ public class UserService {
         User user = findUserOrThrow(userId, "패스워드 업데이트");
 
         // 기존 패스워드가 일치하는지 확인
-        if (!bCryptPasswordEncoder.matches(request.getOldPassword(), user.getPassword().getPasswordValue())) {
+        if (!bCryptPasswordEncoder.matches(request.getOldPassword(), user.getPassword().value())) {
             throw new IncorrectPasswordException("기존 비밀번호가 일치하지 않습니다.");
         }
 

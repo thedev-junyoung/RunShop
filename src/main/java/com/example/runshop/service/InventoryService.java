@@ -20,14 +20,14 @@ public class InventoryService {
     // 재고 조회 메서드
     public int getStock(Long productId) {
         Inventory inventory = findByProductOrThrow(productId);
-        return inventory.getStockQuantity().getValue();
+        return inventory.getStockQuantity().value();
     }
 
     // 재고 감소 메서드
     @Transactional
     public void reduceStock(Long productId, int quantity) {
         Inventory inventory = findByProductOrThrow(productId);
-        if (inventory.getStockQuantity().getValue() < quantity) {
+        if (inventory.getStockQuantity().value() < quantity) {
             throw new OutOfStockException("재고가 부족합니다.");
         }
         inventory.getStockQuantity().decreaseStock(quantity);

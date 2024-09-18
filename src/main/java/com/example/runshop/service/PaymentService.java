@@ -52,12 +52,12 @@ public class PaymentService {
         Payment payment = new Payment();
         payment.setMethod(orderRequest.getPaymentMethod());
         payment.setOrder(order);
-        payment.setAmount(new PaymentAmount(orderRequest.getAmount().getValue()));
+        payment.setAmount(new PaymentAmount(orderRequest.getAmount().value()));
         return payment;
     }
 
     private boolean processPayment(OrderRequest orderRequest) {
-        return paymentGateway.processPayment(orderRequest.getPaymentMethod(), orderRequest.getAmount().getValue());
+        return paymentGateway.processPayment(orderRequest.getPaymentMethod(), orderRequest.getAmount().value());
     }
 
     private void updateOrderAndPaymentStatus(Order order, Payment payment, boolean paymentSuccess, Long orderId) {

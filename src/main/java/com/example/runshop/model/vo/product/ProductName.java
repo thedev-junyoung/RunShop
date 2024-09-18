@@ -6,31 +6,17 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.NoArgsConstructor;
 
 @Embeddable
-@NoArgsConstructor
-public class ProductName {
-
-    @Column(name = "name", nullable = false)
-    @ProductNameValid
-    private String value;
-
+public record ProductName(@ProductNameValid String value) {
     @JsonCreator
-    public ProductName(String value) {
+    public ProductName {
         if (value == null || value.length() < 3 || value.length() > 255) {
-            throw new CharactersArrangeException("Name must be between 3 and 255 characters");
-
+            throw new CharactersArrangeException("제품 이름은 3~255자 사이여야 합니다.");
         }
-        this.value = value;
     }
     @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
+    public String value() {
         return value;
     }
 }
