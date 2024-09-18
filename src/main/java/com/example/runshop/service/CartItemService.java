@@ -7,6 +7,8 @@ import com.example.runshop.model.entity.Product;
 import com.example.runshop.model.entity.User;
 import com.example.runshop.repository.CartItemRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -57,6 +59,7 @@ public class CartItemService {
         return cartItemRepository.save(newCartItem);
     }
     @RoleCheck("CUSTOMER")
+    @CacheEvict(value = "cartItemsCache", key = "#userId")  // 해당 사용자의 장바구니 캐시 무효화
     public void removeFromCart(Long userId, Long productId) {
         User user = userService.findUserOrThrow(userId, "Remove from Cart");
         Product product = productService.findProductOrThrow(productId);
@@ -67,6 +70,7 @@ public class CartItemService {
         cartItemRepository.delete(cartItem);
     }
 
+    @Cacheable(value = "cartItemsCache", key = "#userId")
     public List<CartItem> getCartItems(Long userId) {
         User user = userService.findById(userId);
         return cartItemRepository.findByUser(user);

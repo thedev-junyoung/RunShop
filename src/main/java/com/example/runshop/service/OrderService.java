@@ -13,6 +13,9 @@ import com.example.runshop.model.enums.OrderStatus;
 import com.example.runshop.repository.OrderRepository;
 import com.example.runshop.utils.mapper.OrderMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +45,7 @@ public class OrderService {
     // 주문 생성
     @RoleCheck("CUSTOMER")
     @Transactional
+    @CacheEvict(value = "orderListCache", key = "#userId") // 주문 목록 캐시 무효화
     public void createOrder(Long userId, BigDecimal totalPrice, List<OrderItem> orderItems) {
         User user = userService.findUserOrThrow(userId, "주문 생성");
 
@@ -55,6 +59,7 @@ public class OrderService {
     }
 
     // 주문 목록 조회
+    @Cacheable(value = "orderListCache", key = "#userId")
     public List<OrderListDTO> getOrderList(Long userId) {
         return orderRepository.findByUserId(userId).stream()
                 .map(orderMapper::toOrderListDTO)
@@ -62,6 +67,7 @@ public class OrderService {
     }
 
     // 주문 상세 조회
+    @Cacheable(value = "orderDetailCache", key = "#orderId")
     public OrderDetailDTO getOrderDetail(Long orderId) {
         Order order = findOrderOrThrow(orderId);
         return orderMapper.toOrderDetailDTO(order);
@@ -69,6 +75,10 @@ public class OrderService {
 
     // 주문 취소
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "orderDetailCache", key = "#orderId"),  // 주문 상세 캐시 무효화
+            @CacheEvict(value = "orderListCache", key = "#order.user.id")  // 주문 목록 캐시 무효화
+    })
     public void cancelOrder(Long orderId) {
         Order order = findOrderOrThrow(orderId);
         validateOrderState(order);
