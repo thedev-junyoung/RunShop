@@ -30,7 +30,7 @@ public class OrderController {
     // 주문 생성
     @PostMapping
     public ResponseEntity<?> createOrder(@RequestBody OrderRequest orderRequest, HttpServletRequest httpRequest) {
-        orderService.createOrder(orderRequest.getUserId(), orderRequest.getAmount(), orderRequest.getOrderItems());
+        orderService.createOrder(orderRequest.getUserId(), orderRequest.getAmount().getValue(), orderRequest.getOrderItems());
         return SuccessResponse.ok("주문이 성공적으로 생성되었습니다.", httpRequest.getRequestURI());
     }
 

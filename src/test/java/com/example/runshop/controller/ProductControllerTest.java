@@ -58,6 +58,7 @@ public class ProductControllerTest {
         verify(productService, times(1)).addProduct(any(AddProductRequest.class));
     }
 
+
     @Test
     @DisplayName("상품 조회 API 성공")
     public void GetProduct_API_Success() throws Exception {

@@ -5,6 +5,7 @@ import com.example.runshop.model.dto.payment.OrderRequest;
 import com.example.runshop.model.entity.Order;
 import com.example.runshop.model.enums.OrderStatus;
 import com.example.runshop.model.enums.PaymentMethod;
+import com.example.runshop.model.vo.payment.PaymentAmount;
 import com.example.runshop.repository.OrderRepository;
 import com.example.runshop.repository.PaymentRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,7 +53,7 @@ class PaymentServiceTest {
         // OrderRequest 설정
         orderRequest = new OrderRequest();
         orderRequest.setPaymentMethod(PaymentMethod.CARD);
-        orderRequest.setAmount(BigDecimal.valueOf(10000));
+        orderRequest.setAmount(new PaymentAmount(BigDecimal.valueOf(10000)));
     }
 
     @Test

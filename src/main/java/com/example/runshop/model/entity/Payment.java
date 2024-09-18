@@ -1,5 +1,6 @@
 package com.example.runshop.model.entity;
 
+import com.example.runshop.model.vo.payment.PaymentAmount;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,8 +25,13 @@ public class Payment {
     @Column(name = "payment_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
-    @Column(name = "amount", nullable = false)
-    private BigDecimal amount;
+
+
+    // 결제 금액을 VO로 변경
+    @Embedded
+    private PaymentAmount amount;
+
+
     @Column(name = "payment_date", nullable = false)
     private LocalDateTime paymentDate;
 

@@ -6,6 +6,7 @@ import com.example.runshop.model.entity.Order;
 import com.example.runshop.model.entity.Payment;
 import com.example.runshop.model.enums.OrderStatus;
 import com.example.runshop.model.enums.PaymentStatus;
+import com.example.runshop.model.vo.payment.PaymentAmount;
 import com.example.runshop.repository.OrderRepository;
 import com.example.runshop.repository.PaymentRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -51,12 +52,12 @@ public class PaymentService {
         Payment payment = new Payment();
         payment.setMethod(orderRequest.getPaymentMethod());
         payment.setOrder(order);
-        payment.setAmount(orderRequest.getAmount());
+        payment.setAmount(new PaymentAmount(orderRequest.getAmount().getValue()));
         return payment;
     }
 
     private boolean processPayment(OrderRequest orderRequest) {
-        return paymentGateway.processPayment(orderRequest.getPaymentMethod(), orderRequest.getAmount());
+        return paymentGateway.processPayment(orderRequest.getPaymentMethod(), orderRequest.getAmount().getValue());
     }
 
     private void updateOrderAndPaymentStatus(Order order, Payment payment, boolean paymentSuccess, Long orderId) {

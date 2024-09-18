@@ -10,6 +10,7 @@ import com.example.runshop.model.entity.Product;
 import com.example.runshop.model.entity.User;
 import com.example.runshop.model.enums.OrderStatus;
 import com.example.runshop.model.vo.orderitem.OrderQuantity;
+import com.example.runshop.model.vo.payment.PaymentAmount;
 import com.example.runshop.model.vo.product.ProductName;
 import com.example.runshop.repository.OrderRepository;
 import com.example.runshop.utils.mapper.OrderMapper;
@@ -106,11 +107,11 @@ class OrderServiceTest {
         // 주문 요청 객체 생성 (OrderRequest)
         OrderRequest orderRequest = new OrderRequest();
         orderRequest.setUserId(user.getId());
-        orderRequest.setAmount(BigDecimal.valueOf(10000.0));
+        orderRequest.setAmount(new PaymentAmount(BigDecimal.valueOf(10000.0)));
         orderRequest.setOrderItems(List.of(orderItem1, orderItem2)); // 예시로 두 개의 주문 아이템 설정
 
         // When: 주문 생성
-        orderService.createOrder(orderRequest.getUserId(), orderRequest.getAmount(), orderRequest.getOrderItems());
+        orderService.createOrder(orderRequest.getUserId(), orderRequest.getAmount().getValue(), orderRequest.getOrderItems());
 
         // Then: 주문이 정상적으로 생성되었는지 검증
         verify(orderRepository, times(1)).save(any(Order.class));
