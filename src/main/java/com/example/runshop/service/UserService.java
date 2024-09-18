@@ -18,8 +18,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service // 이 클래스가 Spring의 서비스 컴포넌트임을 나타냄
 @Slf4j // 로그 출력을 위한 Lombok 애노테이션
