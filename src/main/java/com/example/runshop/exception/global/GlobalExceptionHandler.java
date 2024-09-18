@@ -16,12 +16,14 @@ import com.example.runshop.exception.user.*;
 import com.example.runshop.model.dto.response.SuccessResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     // ====================== Payment 관련 예외 ======================
@@ -140,7 +142,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<SuccessResponse<Void>> handleGeneralException(HttpServletRequest request) {
-        return SuccessResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다.", request.getRequestURI());
+    public ResponseEntity<SuccessResponse<Void>> handleGeneralException(Exception ex, HttpServletRequest request) {
+        // 예외 메시지와 스택 트레이스를 로그로 기록
+        log.error("Exception occurred: {}, Path: {}", ex.getMessage(), request.getRequestURI(), ex);
+
+        // 클라이언트에게 구체적인 메시지를 전달할 수 있음 (보안상 너무 많은 정보는 주의해야 함)
+        String detailedMessage = "서버에서 예상치 못한 오류가 발생했습니다. 오류 메시지: " + ex.getMessage();
+
+        return SuccessResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, detailedMessage, request.getRequestURI());
     }
 }
