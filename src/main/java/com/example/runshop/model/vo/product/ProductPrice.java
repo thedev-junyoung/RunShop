@@ -3,7 +3,6 @@ package com.example.runshop.model.vo.product;
 import com.example.runshop.exception.product.PriceNegativeException;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 import java.math.BigDecimal;

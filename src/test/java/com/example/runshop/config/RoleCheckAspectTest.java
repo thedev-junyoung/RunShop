@@ -1,5 +1,6 @@
 package com.example.runshop.config;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.Authentication;
@@ -20,7 +21,8 @@ import static org.mockito.Mockito.*;
 public class RoleCheckAspectTest {
 
     @Test
-    public void 유효한_역할_역할_확인_테스트() {
+    @DisplayName("유효한 역할 확인 테스트")
+    public void ValidRoleCheckTest() {
         // Given: 가짜 SecurityContext를 설정하여 SELLER 역할을 가진 사용자로 가정
         Authentication authentication = mock(Authentication.class);
         when(authentication.isAuthenticated()).thenReturn(true);
@@ -49,7 +51,8 @@ public class RoleCheckAspectTest {
     }
 
     @Test
-    public void 잘못된_역할이_있는지_테스트_역할() {
+    @DisplayName("잘못된 역할 확인 테스트")
+    public void InvalidRoleCheckTest() {
         // Given: 가짜 SecurityContext를 설정하여 CUSTOMER 역할을 가진 사용자로 가정
         Authentication authentication = mock(Authentication.class);
         when(authentication.isAuthenticated()).thenReturn(true);

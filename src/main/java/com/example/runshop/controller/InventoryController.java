@@ -19,7 +19,7 @@ public class InventoryController {
     // 재고 감소
     @PatchMapping("/decrease")
     public ResponseEntity<?> decreaseStock(@RequestParam Long productId, @RequestParam int quantity, HttpServletRequest httpRequest) {
-        inventoryService.reduceStock(productId, quantity);
+        inventoryService.decreaseStock(productId, quantity);
         return SuccessResponse.ok("재고가 성공적으로 감소되었습니다.", httpRequest.getRequestURI());
     }
 

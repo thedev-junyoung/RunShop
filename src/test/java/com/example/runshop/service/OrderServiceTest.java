@@ -101,8 +101,8 @@ class OrderServiceTest {
         });
 
         // InventoryService에서 재고 감소를 모킹 (Product ID 전달)
-        doNothing().when(inventoryService).reduceStock(eq(product1.getId()), anyInt());
-        doNothing().when(inventoryService).reduceStock(eq(product2.getId()), anyInt());
+        doNothing().when(inventoryService).decreaseStock(eq(product1.getId()), anyInt());
+        doNothing().when(inventoryService).decreaseStock(eq(product2.getId()), anyInt());
 
         // 주문 요청 객체 생성 (OrderRequest)
         OrderRequest orderRequest = new OrderRequest();
@@ -116,8 +116,8 @@ class OrderServiceTest {
         // Then: 주문이 정상적으로 생성되었는지 검증
         verify(orderRepository, times(1)).save(any(Order.class));
         // 실제 Product ID를 사용하여 reduceStock 호출 검증
-        verify(inventoryService, times(1)).reduceStock(eq(product1.getId()), eq(orderItem1.getQuantity().value()));
-        verify(inventoryService, times(1)).reduceStock(eq(product2.getId()), eq(orderItem2.getQuantity().value()));
+        verify(inventoryService, times(1)).decreaseStock(eq(product1.getId()), eq(orderItem1.getQuantity().value()));
+        verify(inventoryService, times(1)).decreaseStock(eq(product2.getId()), eq(orderItem2.getQuantity().value()));
         verify(userService, times(1)).findUserOrThrow(anyLong(), anyString());
     }
 

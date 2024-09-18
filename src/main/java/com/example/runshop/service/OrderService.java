@@ -47,7 +47,7 @@ public class OrderService {
 
         // 각 주문 항목의 재고 감소
         for (OrderItem item : orderItems) {
-            inventoryService.reduceStock(item.getProduct().getId(), item.getQuantity().value());
+            inventoryService.decreaseStock(item.getProduct().getId(), item.getQuantity().value());
         }
 
         // 주문 생성

@@ -4,7 +4,6 @@ import com.example.runshop.exception.product.CharactersArrangeException;
 import com.example.runshop.utils.customaonotation.ProductNameValid;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 @Embeddable
