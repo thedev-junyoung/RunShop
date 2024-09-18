@@ -1,6 +1,8 @@
 package com.example.runshop.repository;
 
 import com.example.runshop.model.vo.user.Email;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import com.example.runshop.model.entity.User;
@@ -11,6 +13,7 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(Email email);
     Boolean existsByEmail(Email email);
+    Page<User> findAll(Pageable pageable);
 
     // JPA 메서드 네이밍 전략에 따른 메서드 정의
     // findBy: 특정 조건을 기준으로 데이터를 조회

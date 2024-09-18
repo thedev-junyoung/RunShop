@@ -5,12 +5,13 @@ import com.example.runshop.exception.product.ProductNotFoundException;
 import com.example.runshop.model.dto.product.ProductDTO;
 import com.example.runshop.model.dto.product.UpdateProductRequest;
 import com.example.runshop.model.dto.product.AddProductRequest;
-import com.example.runshop.model.dto.user.UsersDetails;
 import com.example.runshop.model.entity.Product;
 import com.example.runshop.repository.ProductRepository;
 import com.example.runshop.utils.mapper.ProductMapper;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,12 +58,9 @@ public class ProductService {
     // 상품 전체 조회 기능
     @Transactional(readOnly = true)
     @Cacheable(value = "productListCache")
-    public List<ProductDTO> getProducts() {
-        return productRepository.findAll().stream()
-                .map(productMapper::productToProductDTO)
-                .collect(Collectors.toList());
+    public Page<ProductDTO> getProducts(Pageable pageable) {
+        return productRepository.findAll(pageable).map(productMapper::productToProductDTO);
     }
-
     // 상품 수정 기능
     @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.REPEATABLE_READ)
     @RoleCheck("SELLER") // "SELLER" 권한만 접근 가능

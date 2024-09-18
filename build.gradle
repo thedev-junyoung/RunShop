@@ -53,6 +53,9 @@ dependencies {
 	// mapstruct
 	implementation 'org.mapstruct:mapstruct:1.6.1'
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.1'
+
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
 }
 
 tasks.named('test') {

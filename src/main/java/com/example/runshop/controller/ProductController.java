@@ -8,6 +8,9 @@ import com.example.runshop.service.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,9 +39,12 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getProducts(HttpServletRequest httpRequest) {
-        log.info("상품 조회 요청");
-        return SuccessResponse.ok("상품을 성공적으로 조회했습니다.", productService.getProducts(), httpRequest.getRequestURI());
+    public ResponseEntity<?> getProducts(@RequestParam(defaultValue = "0") int page,
+                                         @RequestParam(defaultValue = "10") int size,
+                                         HttpServletRequest httpRequest) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ProductDTO> products = productService.getProducts(pageable);
+        return SuccessResponse.ok("상품 목록을 성공적으로 조회했습니다.", products, httpRequest.getRequestURI());
     }
 
     @PutMapping("/{id}")

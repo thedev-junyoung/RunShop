@@ -12,6 +12,8 @@ import com.example.runshop.repository.UserRepository;
 import com.example.runshop.utils.auth.SecurityContextUtil;
 import com.example.runshop.utils.mapper.UserMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,11 +73,8 @@ public class UserService {
     }
 
     // 전체 유저 조회
-    public List<UserDTO> getAllUsers() {
-        // 모든 유저를 조회하여 반환
-        return userRepository.findAll().stream()
-                .map(userMapper::userToUserDTO)
-                .collect(Collectors.toList());
+    public Page<UserDTO> getAllUsers(Pageable pageable) {
+        return userRepository.findAll(pageable).map(userMapper::userToUserDTO);
     }
     // 유저 정보 업데이트
     @Transactional()

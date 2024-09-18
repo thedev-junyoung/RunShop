@@ -22,9 +22,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -130,8 +135,8 @@ class CartItemServiceTest {
     }
 
     @Test
-    @DisplayName("장바구니를 조회하면 해당 사용자의 장바구니 목록을 반환한다.")
-    public void whenViewCart_thenReturnCartItems() {
+    @DisplayName("장바구니를 조회하면 해당 사용자의 장바구니 목록을 페이징하여 반환한다.")
+    public void whenViewCart_thenReturnPagedCartItems() {
         CartItem cartItem1 = new CartItem();
         cartItem1.setProduct(product);
         cartItem1.setQuantity(1);
@@ -142,15 +147,20 @@ class CartItemServiceTest {
         cartItem2.setQuantity(2);
         user.getCartItems().add(cartItem2);
 
-        when(userService.findById(anyLong())).thenReturn(user);
-        when(cartItemRepository.findByUser(user)).thenReturn(user.getCartItems());
+        // 페이징 처리를 위해 PageRequest 객체 생성
+        Pageable pageable = PageRequest.of(0, 2);
+        Page<CartItem> pagedCartItems = new PageImpl<>(List.of(cartItem1, cartItem2), pageable, user.getCartItems().size());
 
-        var cartItems = cartItemService.getCartItems(user.getId());
+        when(userService.findById(anyLong())).thenReturn(user);
+        when(cartItemRepository.findByUser(user, pageable)).thenReturn(pagedCartItems);
+
+        Page<CartItem> cartItems = cartItemService.getCartItems(user.getId(), pageable);
+
 
         assertNotNull(cartItems);
-        assertEquals(2, cartItems.size());
-        assertTrue(cartItems.contains(cartItem1));
-        assertTrue(cartItems.contains(cartItem2));
+        assertEquals(2, cartItems.getContent().size());  // 페이지 내용 크기 확인
+        assertTrue(cartItems.getContent().contains(cartItem1));  // 첫 번째 항목 포함 확인
+        assertTrue(cartItems.getContent().contains(cartItem2));  // 두 번째 항목 포함 확인
     }
 }
 

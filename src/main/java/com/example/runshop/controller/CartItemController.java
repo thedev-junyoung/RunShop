@@ -4,6 +4,7 @@ import com.example.runshop.model.dto.cart.CartItemRequest;
 import com.example.runshop.model.dto.response.SuccessResponse;
 import com.example.runshop.service.CartItemService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,8 +27,8 @@ public class CartItemController {
 
     // 장바구니 조회
     @GetMapping("/")
-    public ResponseEntity<?> getCartItems(@RequestParam Long userId, HttpServletRequest httpRequest) {
-        return SuccessResponse.ok("장바구니에 담긴 상품을 조회했습니다.", cartItemService.getCartItems(userId), httpRequest.getRequestURI());
+    public ResponseEntity<?> getCartItems(@RequestParam Long userId, Pageable pageable, HttpServletRequest httpRequest) {
+        return SuccessResponse.ok("장바구니에 담긴 상품을 조회했습니다.", cartItemService.getCartItems(userId, pageable), httpRequest.getRequestURI());
     }
 
     // 장바구니에서 상품 제거

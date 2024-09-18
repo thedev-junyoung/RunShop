@@ -7,6 +7,8 @@ import com.example.runshop.model.dto.user.UpdateUserRequest;
 import com.example.runshop.model.dto.user.UserDTO;
 import com.example.runshop.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,8 +31,8 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllUsers(HttpServletRequest request) {
-        List<UserDTO> users = userService.getAllUsers();
+    public ResponseEntity<?> getAllUsers(Pageable pageable, HttpServletRequest request) {
+        Page<UserDTO> users = userService.getAllUsers(pageable);
         return SuccessResponse.ok("모든 사용자 정보를 성공적으로 조회했습니다.", users, request.getRequestURI());
     }
 

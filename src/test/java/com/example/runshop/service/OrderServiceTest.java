@@ -20,6 +20,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -122,23 +126,26 @@ class OrderServiceTest {
     }
 
     @Test
-    @DisplayName("주문 목록을 성공적으로 조회한다")
-    public void getOrderListSuccessfully() {
-        // Given: 사용자의 주문 목록을 반환하도록 설정
+    @DisplayName("주문 목록을 성공적으로 페이징하여 조회한다")
+    public void getPagedOrderListSuccessfully() {
+        // Given: 사용자의 주문 목록을 페이징된 형태로 반환하도록 설정
+        Pageable pageable = PageRequest.of(0, 10); // 0번째 페이지, 페이지 당 10개 항목
         List<Order> orders = List.of(order);
-        when(orderRepository.findByUserId(anyLong())).thenReturn(orders);
+        Page<Order> pagedOrders = new PageImpl<>(orders, pageable, orders.size());
+
+        when(orderRepository.findByUserId(anyLong(), eq(pageable))).thenReturn(pagedOrders);
         when(orderMapper.toOrderListDTO(any(Order.class))).thenReturn(
                 new OrderListDTO(order.getId(), order.getOrderDate(), order.getStatus(), order.getTotalPrice())
         );
 
-        // When: 주문 목록 조회
-        List<OrderListDTO> orderList = orderService.getOrderList(user.getId());
+        // When: 주문 목록 페이징 조회
+        Page<OrderListDTO> orderList = orderService.getOrderList(user.getId(), pageable);
 
-        // Then: 주문 목록이 정상적으로 조회되었는지 검증
+        // Then: 주문 목록이 정상적으로 페이징 처리되었는지 검증
         assertNotNull(orderList);
-        assertEquals(1, orderList.size());
-        assertEquals(order.getId(), orderList.get(0).getOrderId());
-        verify(orderRepository, times(1)).findByUserId(anyLong());
+        assertEquals(1, orderList.getContent().size());
+        assertEquals(order.getId(), orderList.getContent().get(0).getOrderId());
+        verify(orderRepository, times(1)).findByUserId(anyLong(), eq(pageable));
     }
 
     @Test

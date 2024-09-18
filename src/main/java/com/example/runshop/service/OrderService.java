@@ -16,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,10 +62,9 @@ public class OrderService {
 
     // 주문 목록 조회
     @Cacheable(value = "orderListCache", key = "#userId")
-    public List<OrderListDTO> getOrderList(Long userId) {
-        return orderRepository.findByUserId(userId).stream()
-                .map(orderMapper::toOrderListDTO)
-                .collect(Collectors.toList());
+    public Page<OrderListDTO> getOrderList(Long userId, Pageable pageable) {
+        return orderRepository.findByUserId(userId, pageable).map(orderMapper::toOrderListDTO);
+
     }
 
     // 주문 상세 조회

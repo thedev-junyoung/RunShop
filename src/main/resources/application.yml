@@ -15,6 +15,9 @@ spring:
   jwt:
     secret: vmfhaltmskdlstkfkdgodyroqkfwkdbalroqkfwkdbal  # JWT 비밀 키 추가
 
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Seoul
 ---
 ---
 # ?? ?? ???? (dev)

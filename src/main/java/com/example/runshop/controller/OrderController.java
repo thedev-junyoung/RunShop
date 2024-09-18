@@ -9,6 +9,8 @@ import com.example.runshop.service.OrderService;
 import com.example.runshop.service.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,8 +45,8 @@ public class OrderController {
 
     // 유저의 주문 목록 조회
     @GetMapping
-    public ResponseEntity<?> getOrderList(@RequestParam Long userId, HttpServletRequest httpRequest) {
-        List<OrderListDTO> orders = orderService.getOrderList(userId);
+    public ResponseEntity<?> getOrderList(@RequestParam Long userId, Pageable pageable, HttpServletRequest httpRequest) {
+        Page<OrderListDTO> orders = orderService.getOrderList(userId, pageable);
         return SuccessResponse.ok("주문 목록 조회 성공", orders, httpRequest.getRequestURI());
     }
 

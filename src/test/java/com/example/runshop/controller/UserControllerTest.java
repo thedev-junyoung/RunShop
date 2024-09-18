@@ -12,6 +12,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -83,8 +87,8 @@ public class UserControllerTest {
 
 
     @Test
-    @DisplayName("모든 사용자 정보 조회")
-    void SelectAllUsers() throws Exception {
+    @DisplayName("모든 사용자 정보 페이징 조회")
+    void selectAllUsersWithPaging() throws Exception {
         // Given
         UserDTO user1 = UserDTO.builder()
                 .id(1L)
@@ -109,29 +113,36 @@ public class UserControllerTest {
                 .build();
 
         List<UserDTO> users = Arrays.asList(user1, user2);
-        when(userService.getAllUsers()).thenReturn(users);
+        Page<UserDTO> pagedUsers = new PageImpl<>(users); // 페이징된 결과 생성
+        Pageable pageable = PageRequest.of(0, 10); // 0번째 페이지, 10개의 항목
+
+        // 페이징된 결과를 반환하도록 설정
+        when(userService.getAllUsers(any(Pageable.class))).thenReturn(pagedUsers);
 
         // When & Then
-        mockMvc.perform(get("/api/users"))
+        mockMvc.perform(get("/api/users")
+                        .param("page", "0") // 페이지 번호
+                        .param("size", "10")) // 페이지당 항목 수
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("모든 사용자 정보를 성공적으로 조회했습니다."))
-                .andExpect(jsonPath("$.data[0].id").value(1L))
-                .andExpect(jsonPath("$.data[0].name").value("testuser1"))
-                .andExpect(jsonPath("$.data[0].address.street").value("부산광역시 해운대구")) // Address VO 적용
-                .andExpect(jsonPath("$.data[0].address.detailedAddress").value("102호"))
-                .andExpect(jsonPath("$.data[0].address.city").value("해운대구"))
-                .andExpect(jsonPath("$.data[0].address.region").value("부산"))
-                .andExpect(jsonPath("$.data[0].address.zipCode").value("67890"))
-                .andExpect(jsonPath("$.data[1].id").value(2L))
-                .andExpect(jsonPath("$.data[1].name").value("testuser2"))
-                .andExpect(jsonPath("$.data[1].address.street").value("전라북도 남원시")) // Address VO 적용
-                .andExpect(jsonPath("$.data[1].address.detailedAddress").value("103호"))
-                .andExpect(jsonPath("$.data[1].address.city").value("남원시"))
-                .andExpect(jsonPath("$.data[1].address.region").value("전라북도"))
-                .andExpect(jsonPath("$.data[1].address.zipCode").value("12345"));
+                .andExpect(jsonPath("$.data.content[0].id").value(1L))
+                .andExpect(jsonPath("$.data.content[0].name").value("testuser1"))
+                .andExpect(jsonPath("$.data.content[0].address.street").value("부산광역시 해운대구")) // Address VO 적용
+                .andExpect(jsonPath("$.data.content[0].address.detailedAddress").value("102호"))
+                .andExpect(jsonPath("$.data.content[0].address.city").value("해운대구"))
+                .andExpect(jsonPath("$.data.content[0].address.region").value("부산"))
+                .andExpect(jsonPath("$.data.content[0].address.zipCode").value("67890"))
+                .andExpect(jsonPath("$.data.content[1].id").value(2L))
+                .andExpect(jsonPath("$.data.content[1].name").value("testuser2"))
+                .andExpect(jsonPath("$.data.content[1].address.street").value("전라북도 남원시")) // Address VO 적용
+                .andExpect(jsonPath("$.data.content[1].address.detailedAddress").value("103호"))
+                .andExpect(jsonPath("$.data.content[1].address.city").value("남원시"))
+                .andExpect(jsonPath("$.data.content[1].address.region").value("전라북도"))
+                .andExpect(jsonPath("$.data.content[1].address.zipCode").value("12345"));
 
-        verify(userService, times(1)).getAllUsers();
+        verify(userService, times(1)).getAllUsers(any(Pageable.class));
     }
+
 
     @Test
     @DisplayName("사용자정보_수정")
