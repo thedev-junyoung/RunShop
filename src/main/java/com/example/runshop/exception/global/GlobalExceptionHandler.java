@@ -1,10 +1,13 @@
 package com.example.runshop.exception.global;
 
 import com.example.runshop.exception.Inventory.InventoryNotFoundException;
+import com.example.runshop.exception.Inventory.OutOfStockException;
 import com.example.runshop.exception.cart.CartItemAlreadyExistsException;
 import com.example.runshop.exception.cart.CartItemNotFoundException;
 import com.example.runshop.exception.order.OrderAlreadyBeenCancelledException;
 import com.example.runshop.exception.order.OrderNotFoundException;
+import com.example.runshop.exception.orderitem.QuantityNegativeException;
+import com.example.runshop.exception.payment.InvalidPaymentAmountException;
 import com.example.runshop.exception.product.CharactersArrangeDescriptionException;
 import com.example.runshop.exception.product.CharactersArrangeException;
 import com.example.runshop.exception.product.PriceNegativeException;
@@ -21,6 +24,22 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(InvalidPaymentAmountException.class)
+    public ResponseEntity<SuccessResponse<Void>> handleInvalidPaymentAmountException(InvalidPaymentAmountException ex, HttpServletRequest request) {
+        return SuccessResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+    }
+
+
+    @ExceptionHandler(QuantityNegativeException.class)
+    public ResponseEntity<SuccessResponse<Void>> handleQuantityNegativeException(QuantityNegativeException ex, HttpServletRequest request) {
+        return SuccessResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+    }
+
+
+    @ExceptionHandler(OutOfStockException.class)
+    public ResponseEntity<SuccessResponse<Void>> handleOutOfStockException(OutOfStockException ex, HttpServletRequest request) {
+        return SuccessResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+    }
     @ExceptionHandler(CharactersArrangeDescriptionException.class)
     public ResponseEntity<SuccessResponse<Void>> handleCharactersArrangeDescriptionException(CharactersArrangeDescriptionException ex, HttpServletRequest request) {
         return SuccessResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());

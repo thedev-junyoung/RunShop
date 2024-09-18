@@ -1,6 +1,7 @@
 package com.example.runshop.service;
 
 import com.example.runshop.exception.Inventory.InventoryNotFoundException;
+import com.example.runshop.exception.Inventory.OutOfStockException;
 import com.example.runshop.model.entity.Inventory;
 import com.example.runshop.repository.InventoryRepository;
 import org.springframework.stereotype.Service;
@@ -19,17 +20,17 @@ public class InventoryService {
     // 재고 조회 메서드
     public int getStock(Long productId) {
         Inventory inventory = findByProductOrThrow(productId);
-        return inventory.getStockQuantity();
+        return inventory.getStockQuantity().getValue();
     }
 
     // 재고 감소 메서드
     @Transactional
     public void reduceStock(Long productId, int quantity) {
         Inventory inventory = findByProductOrThrow(productId);
-        if (inventory.getStockQuantity() < quantity) {
-            throw new IllegalArgumentException("재고가 부족합니다.");
+        if (inventory.getStockQuantity().getValue() < quantity) {
+            throw new OutOfStockException("재고가 부족합니다.");
         }
-        inventory.decreaseStock(quantity);
+        inventory.getStockQuantity().decreaseStock(quantity);
         inventoryRepository.save(inventory);
     }
 
@@ -37,7 +38,7 @@ public class InventoryService {
     @Transactional
     public void increaseStock(Long productId, int quantity) {
         Inventory inventory = findByProductOrThrow(productId);
-        inventory.increaseStock(quantity);
+        inventory.getStockQuantity().increaseStock(quantity);
         inventoryRepository.save(inventory);
     }
 

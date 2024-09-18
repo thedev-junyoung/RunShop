@@ -7,6 +7,7 @@ import com.example.runshop.model.entity.Product;
 import com.example.runshop.model.entity.User;
 import com.example.runshop.model.enums.Category;
 import com.example.runshop.model.enums.UserRole;
+import com.example.runshop.model.vo.inventory.StockQuantity;
 import com.example.runshop.model.vo.product.ProductDescription;
 import com.example.runshop.model.vo.product.ProductName;
 import com.example.runshop.model.vo.product.ProductPrice;
@@ -73,7 +74,7 @@ class CartItemServiceTest {
 
         Inventory inventory = new Inventory();
         inventory.setProduct(product);
-        inventory.setStockQuantity(10);
+        inventory.setStockQuantity(new StockQuantity(10));
         product.setInventory(inventory);
     }
 
