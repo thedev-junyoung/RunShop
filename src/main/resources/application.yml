@@ -1,0 +1,93 @@
+# ?? ??
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  # ?? ?? ?? (Redis ??? ? ????? ??)
+  cache:
+    type: redis
+    redis:
+      time-to-live: 60000  # ?? ?? ?? (ms)
+      cache-null-values: false
+
+---
+---
+# ?? ?? ???? (dev)
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: password
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+
+  # Redis ?? - ????? localhost ??
+  data:
+    redis:
+      host: localhost
+      port: 6379
+---
+---
+# Docker ???? ??? ???? (docker)
+spring:
+  config:
+    activate:
+      on-profile: docker
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://mysql:3306/shop?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: shop_admin
+    password: passpass
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  # Redis ?? - Docker??? ???? ?? 'redis' ??
+  data:
+    redis:
+      host: redis
+      port: 6379
+
+  jwt:
+    secret: vmfhaltmskdlstkfkdgodyroqkfwkdbalroqkfwkdbal  # ??? ?? JWT ?? ?? ????
+---
+---
+# ??? ???? (test)
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: password
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
+
+  # Redis ?? - ??? ????? ??? ?? localhost ??
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  jwt:
+    secret: vmfhaltmskdlstkfkdgodyroqkfwkdbalroqkfwkdbal  # ??? ?? JWT ?? ?? ????
+
