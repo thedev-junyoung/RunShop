@@ -3,11 +3,16 @@ package com.example.runshop.controller;
 import com.example.runshop.model.dto.product.ProductDTO;
 import com.example.runshop.model.dto.product.UpdateProductRequest;
 import com.example.runshop.model.dto.product.AddProductRequest;
+import com.example.runshop.model.dto.review.AddReviewRequest;
+import com.example.runshop.model.dto.review.ReviewDTO;
 import com.example.runshop.model.enums.Category;
 import com.example.runshop.model.vo.product.ProductDescription;
 import com.example.runshop.model.vo.product.ProductName;
 import com.example.runshop.model.vo.product.ProductPrice;
+import com.example.runshop.model.vo.review.ReviewContent;
+import com.example.runshop.model.vo.review.ReviewRating;
 import com.example.runshop.service.ProductService;
+import com.example.runshop.service.ReviewService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,9 +43,11 @@ public class ProductControllerTest {
     @MockBean
     private ProductService productService;
 
+    @MockBean
+    private ReviewService reviewService;
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(new ProductController(productService)).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(new ProductController(productService, reviewService)).build();
     }
 
     @Test
@@ -169,5 +176,66 @@ public class ProductControllerTest {
                 .andExpect(status().isOk());
 
         verify(productService, times(1)).disabled(productId);
+    }
+
+
+    @Test
+    @DisplayName("리뷰 목록 조회 API 성공")
+    public void GetReviewsByProductId_API_Success() throws Exception {
+        Long productId = 1L;
+        ReviewDTO review1 = ReviewDTO.builder()
+                .userId(1L)
+                .content(new ReviewContent("훌륭한 상품입니다."))
+                .rating(new ReviewRating(5))
+                .build();
+
+        ReviewDTO review2 = ReviewDTO.builder()
+                .userId(2L)
+                .content(new ReviewContent("괜찮은 품질이네요."))
+                .rating(new ReviewRating(4))
+                .build();
+
+        List<ReviewDTO> reviews = List.of(review1, review2);
+
+        when(reviewService.getReviewsByProductId(productId)).thenReturn(reviews);
+
+        mockMvc.perform(get("/api/products/{productId}/reviews", productId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data[0].content").value("훌륭한 상품입니다."))
+                .andExpect(jsonPath("$.data[0].rating").value(5))
+                .andExpect(jsonPath("$.data[1].content").value("괜찮은 품질이네요."))
+                .andExpect(jsonPath("$.data[1].rating").value(4));
+
+        verify(reviewService, times(1)).getReviewsByProductId(productId);
+    }
+
+    @Test
+    @DisplayName("리뷰 수정 API 성공")
+    public void UpdateReview_API_Success() throws Exception {
+        Long reviewId = 1L;
+        Long userId = 1L;
+        AddReviewRequest updateRequest = new AddReviewRequest(userId, new ReviewContent("리뷰 내용 수정 테스트입니다"), new ReviewRating(4));
+
+        mockMvc.perform(put("/api/products/reviews/{reviewId}", reviewId)
+                        .param("userId", String.valueOf(userId))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"userId\":1, \"content\":\"리뷰 내용 수정 테스트입니다\", \"rating\":4}")
+                )
+                .andExpect(status().isOk());
+
+        verify(reviewService, times(1)).updateReview(eq(reviewId), any(AddReviewRequest.class), eq(userId));
+    }
+
+    @Test
+    @DisplayName("리뷰 삭제 API 성공")
+    public void DeleteReview_API_Success() throws Exception {
+        Long reviewId = 1L;
+        Long userId = 1L;
+
+        mockMvc.perform(delete("/api/products/reviews/{reviewId}", reviewId)
+                        .param("userId", String.valueOf(userId)))
+                .andExpect(status().isOk());
+
+        verify(reviewService, times(1)).deleteReview(eq(reviewId), eq(userId));
     }
 }
