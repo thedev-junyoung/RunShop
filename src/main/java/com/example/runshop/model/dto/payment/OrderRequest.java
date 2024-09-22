@@ -1,8 +1,8 @@
 package com.example.runshop.model.dto.payment;
 
-import com.example.runshop.model.entity.OrderItem;
-import com.example.runshop.model.enums.PaymentMethod;
+import com.example.runshop.module.order.domain.OrderItem;
 import com.example.runshop.model.vo.payment.PaymentAmount;
+import com.example.runshop.module.payment.domain.PaymentMethod;
 import lombok.Data;
 
 import java.util.List;

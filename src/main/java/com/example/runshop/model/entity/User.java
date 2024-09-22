@@ -4,6 +4,7 @@ import com.example.runshop.model.vo.user.Address;
 import com.example.runshop.model.vo.user.Email;
 import com.example.runshop.model.vo.user.Password;
 import com.example.runshop.model.enums.UserRole;
+import com.example.runshop.module.order.domain.Order;
 import jakarta.persistence.*;
 import lombok.*;
 

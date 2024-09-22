@@ -4,6 +4,7 @@ import com.example.runshop.model.enums.Category;
 import com.example.runshop.model.vo.product.ProductDescription;
 import com.example.runshop.model.vo.product.ProductName;
 import com.example.runshop.model.vo.product.ProductPrice;
+import com.example.runshop.module.order.domain.OrderItem;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -57,6 +58,7 @@ public class Product {
     @Column(name = "enabled", nullable = false)
     @Builder.Default
     private boolean enabled = true;
+
 
     @PrePersist
     protected void onCreate() {
