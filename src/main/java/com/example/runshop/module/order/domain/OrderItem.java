@@ -1,12 +1,13 @@
-package com.example.runshop.model.entity;
+package com.example.runshop.module.order.domain;
 
+import com.example.runshop.model.entity.Product;
 import com.example.runshop.model.vo.orderitem.OrderQuantity;
 import com.example.runshop.model.vo.product.ProductName;
+import com.example.runshop.module.payment.domain.PaymentMethod;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import com.example.runshop.model.enums.PaymentMethod;
-import com.example.runshop.model.enums.PaymentStatus;
+import com.example.runshop.module.payment.domain.PaymentStatus;
 
 import java.time.LocalDateTime;
 

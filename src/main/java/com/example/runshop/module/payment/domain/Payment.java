@@ -1,11 +1,11 @@
-package com.example.runshop.model.entity;
+package com.example.runshop.module.payment.domain;
 
 import com.example.runshop.model.vo.payment.PaymentAmount;
+import com.example.runshop.module.order.domain.Order;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import com.example.runshop.model.enums.PaymentMethod;
-import com.example.runshop.model.enums.PaymentStatus;
 
 import java.time.LocalDateTime;
 
@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @Table(name = "payment")
+@NoArgsConstructor
 public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,6 +38,7 @@ public class Payment {
     @Column(name = "payment_date", nullable = false)
     private LocalDateTime paymentDate;
 
+
     @PrePersist
     protected void onCreate() {
         paymentDate = LocalDateTime.now();
@@ -47,5 +49,20 @@ public class Payment {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
+    // 생성자 추가
+    public Payment(Order order, PaymentAmount amount) {
+        this.order = order;
+        this.amount = amount;
+        this.status = PaymentStatus.PENDING; // 초기 상태는 PENDING
+    }
 
+    // 결제 성공 시 호출되는 메서드
+    public void markSuccess() {
+        this.status = PaymentStatus.SUCCESS;
+    }
+
+    // 결제 실패 시 호출되는 메서드
+    public void markFailure() {
+        this.status = PaymentStatus.FAILURE;
+    }
 }

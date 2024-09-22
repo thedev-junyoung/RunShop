@@ -1,8 +1,11 @@
-package com.example.runshop.model.entity;
+package com.example.runshop.module.order.domain;
 
+import com.example.runshop.module.payment.domain.Payment;
+import com.example.runshop.model.entity.User;
 import jakarta.persistence.*;
 import com.example.runshop.model.enums.OrderStatus;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
@@ -13,6 +16,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 @Table(name = "orders") // 테이블 이름을 'orders' 로 변경
 public class Order {
     @Id
@@ -46,4 +50,23 @@ public class Order {
     // (한 주문에 대해 하나의 결제가 이루어짐)
     @OneToOne(mappedBy = "order")
     private Payment payment;
+
+    // Business Logic
+    // 주문 생성 시 상태를 PENDING 으로 초기화
+    public Order(User user, BigDecimal totalPrice, List<OrderItem> items) {
+        this.totalPrice = totalPrice;
+        this.user = user;
+        this.status = OrderStatus.PENDING;
+        this.orderItems.addAll(items);
+    }
+
+    public void completePayment() {
+        this.status = OrderStatus.PAYMENT_COMPLETE;
+    }
+
+    public void cancelOrder() {
+        this.status = OrderStatus.ORDER_CANCELLATION;
+    }
+
+
 }
