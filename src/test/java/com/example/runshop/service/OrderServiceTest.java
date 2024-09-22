@@ -55,8 +55,6 @@ class OrderServiceTest {
     private Order order;
     private OrderItem orderItem1;
     private OrderItem orderItem2;
-    private Product product1;
-    private Product product2;
 
     @BeforeEach
     public void setUp() {
@@ -66,11 +64,11 @@ class OrderServiceTest {
         user.setId(1L);
         user.setName("테스트 유저");
 
-        product1 = new Product();
+        Product product1 = new Product();
         product1.setId(1L);
         product1.setName(new ProductName("상품1"));
 
-        product2 = new Product();
+        Product product2 = new Product();
         product2.setId(2L);
         product2.setName(new ProductName("상품2"));
 
