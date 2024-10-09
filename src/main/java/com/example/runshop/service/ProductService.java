@@ -1,6 +1,5 @@
 package com.example.runshop.service;
 
-import com.example.runshop.config.RoleCheck;
 import com.example.runshop.exception.product.ProductNotFoundException;
 import com.example.runshop.model.dto.product.ProductDTO;
 import com.example.runshop.model.dto.product.UpdateProductRequest;
@@ -31,7 +30,6 @@ public class ProductService {
         this.productMapper = productMapper;
     }
 
-    @RoleCheck("SELLER") // "SELLER" 권한만 접근 가능
     @Transactional
     public void addProduct(AddProductRequest request) {
         // 상품을 등록하는 코드
@@ -61,7 +59,6 @@ public class ProductService {
     }
     // 상품 수정 기능
     @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.REPEATABLE_READ)
-    @RoleCheck("SELLER") // "SELLER" 권한만 접근 가능
     @CacheEvict(value = "productCache", key = "#id") // 해당 상품 캐시 삭제
     public void updateProduct(Long id, UpdateProductRequest request) {
         Product product = findProductOrThrow(id);
@@ -76,14 +73,12 @@ public class ProductService {
     }
 
     // 상품 삭제 기능
-    @RoleCheck("SELLER") // "SELLER" 권한만 접근 가능
     @Transactional
     public void deleteProduct(Long id) {
         findProductOrThrow(id);
         productRepository.deleteById(id);
     }
 
-    @RoleCheck("SELLER") // "SELLER" 권한만 접근 가능
     @Transactional
     public void disabled(Long id) {
         Product product = findProductOrThrow(id);

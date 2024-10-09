@@ -1,6 +1,5 @@
 package com.example.runshop.service;
 
-import com.example.runshop.config.RoleCheck;
 import com.example.runshop.exception.cart.CartItemNotFoundException;
 import com.example.runshop.model.entity.CartItem;
 import com.example.runshop.model.entity.Product;
@@ -28,7 +27,6 @@ public class CartItemService {
         this.productService = productService;
     }
 
-    @RoleCheck("CUSTOMER")
     public CartItem addToCart(Long userId, Long productId, int quantity) {
         // 사용자와 상품 조회
         User user = userService.findById(userId);
@@ -59,7 +57,6 @@ public class CartItemService {
         newCartItem.setQuantity(quantity);
         return cartItemRepository.save(newCartItem);
     }
-    @RoleCheck("CUSTOMER")
     @CacheEvict(value = "cartItemsCache", key = "#userId")  // 해당 사용자의 장바구니 캐시 무효화
     public void removeFromCart(Long userId, Long productId) {
         User user = userService.findUserOrThrow(userId, "Remove from Cart");

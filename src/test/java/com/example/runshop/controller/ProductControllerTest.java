@@ -8,7 +8,6 @@ import com.example.runshop.model.vo.product.ProductDescription;
 import com.example.runshop.model.vo.product.ProductName;
 import com.example.runshop.model.vo.product.ProductPrice;
 import com.example.runshop.service.ProductService;
-import com.example.runshop.service.ReviewService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -4,10 +4,7 @@ import com.example.runshop.model.dto.product.ProductDTO;
 import com.example.runshop.model.dto.product.UpdateProductRequest;
 import com.example.runshop.model.dto.product.AddProductRequest;
 import com.example.runshop.model.dto.response.SuccessResponse;
-import com.example.runshop.model.dto.review.AddReviewRequest;
-import com.example.runshop.model.dto.review.ReviewDTO;
 import com.example.runshop.service.ProductService;
-import com.example.runshop.service.ReviewService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")

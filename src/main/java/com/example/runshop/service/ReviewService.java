@@ -1,6 +1,5 @@
 package com.example.runshop.service;
 
-import com.example.runshop.config.RoleCheck;
 import com.example.runshop.exception.product.ProductNotFoundException;
 import com.example.runshop.exception.review.NotHavePermissionReviewException;
 import com.example.runshop.exception.review.ReviewNotFoundException;
@@ -78,7 +77,6 @@ public class ReviewService {
     }
 
     @Transactional
-    @RoleCheck("ADMIN")
     public void deleteReviewByAdmin(Long reviewId) {
         // 리뷰 조회
         Review review = findReviewOrThrow(reviewId);
@@ -112,7 +110,6 @@ public class ReviewService {
     }
 
     @Transactional
-    @RoleCheck("ADMIN")
     public void disableReviewByAdmin(Long reviewId) {
         Review review = findReviewOrThrow(reviewId);
         // 소프트 삭제 - 리뷰를 비활성화

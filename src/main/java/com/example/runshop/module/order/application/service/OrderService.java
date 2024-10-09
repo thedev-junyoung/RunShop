@@ -1,6 +1,5 @@
 package com.example.runshop.module.order.application.service;
 
-import com.example.runshop.config.RoleCheck;
 import com.example.runshop.exception.order.OrderAlreadyBeenCancelledException;
 import com.example.runshop.exception.order.OrderNotFoundException;
 import com.example.runshop.model.dto.order.OrderDetailDTO;
@@ -58,7 +57,6 @@ public class OrderService implements CreateOrderUseCase, CancelOrderUseCase, Get
 
 
     // 주문 생성
-    @RoleCheck("CUSTOMER")
     @Transactional
     @CacheEvict(value = "orderListCache", key = "#userId")
     public void createOrder(Long userId, BigDecimal totalPrice, List<OrderItem> orderItems, PaymentMethod paymentMethod) {
@@ -146,86 +144,3 @@ public class OrderService implements CreateOrderUseCase, CancelOrderUseCase, Get
         }
     }
 }
-
-
-
-
-//
-//    // 주문 생성
-//    @RoleCheck("CUSTOMER")
-//    @Transactional
-//    @CacheEvict(value = "orderListCache", key = "#userId") // 주문 목록 캐시 무효화
-//    public void createOrder(Long userId, BigDecimal totalPrice, List<OrderItem> orderItems) {
-//        User user = userService.findUserOrThrow(userId, "주문 생성");
-//
-//        // 각 주문 항목의 재고 감소
-//        for (OrderItem item : orderItems) {
-//            inventoryService.decreaseStock(item.getProduct().getId(), item.getQuantity().value());
-//        }
-//
-//        // 주문 생성
-//        createNewOrder(user, totalPrice, orderItems);
-//    }
-//
-//    // 주문 목록 조회
-//    @Cacheable(value = "orderListCache", key = "#userId")
-//    public Page<OrderListDTO> getOrderList(Long userId, Pageable pageable) {
-//        return orderRepository.findByUserId(userId, pageable).map(orderMapper::toOrderListDTO);
-//
-//    }
-//
-//    // 주문 상세 조회
-//    @Cacheable(value = "orderDetailCache", key = "#orderId")
-//    public OrderDetailDTO getOrderDetail(Long orderId) {
-//        Order order = findOrderOrThrow(orderId);
-//        return orderMapper.toOrderDetailDTO(order);
-//    }
-//
-//    // 주문 취소
-//    @Transactional
-//    @Caching(evict = {
-//            @CacheEvict(value = "orderDetailCache", key = "#orderId"),  // 주문 상세 캐시 무효화
-//            @CacheEvict(value = "orderListCache", key = "#order.user.id")  // 주문 목록 캐시 무효화
-//    })
-//    public void cancelOrder(Long orderId) {
-//        Order order = findOrderOrThrow(orderId);
-//        validateOrderState(order);
-//
-//        // 각 주문 항목의 재고 복구
-//        for (OrderItem item : order.getOrderItems()) {
-//            Product product = item.getProduct();
-//            inventoryService.increaseStock(product.getId(), item.getQuantity().value());
-//        }
-//
-//        // 주문 상태 변경
-//        order.setStatus(OrderStatus.ORDER_CANCELLATION);
-//        log.info("주문이 성공적으로 취소되었습니다. 주문 ID: {}", orderId);
-//    }
-//
-//    // 주문 상태 변경
-//    @Transactional
-//    public void changeOrderStatus(Long orderId, OrderStatus newStatus) {
-//        Order order = findOrderOrThrow(orderId);
-//        order.setStatus(newStatus);
-//        log.info("주문 상태가 성공적으로 변경되었습니다. 주문 ID: {}, 새로운 상태: {}", orderId, newStatus);
-//    }
-//
-//    // 주문 생성 메서드
-//    private void createNewOrder(User user, BigDecimal totalPrice, List<OrderItem> orderItems) {
-////        Order order = new Order();
-////        order.setUser(user);
-////        order.setStatus(OrderStatus.PENDING);
-////        order.setTotalPrice(totalPrice);
-////        order.setOrderDate(LocalDateTime.now());
-////        order.setOrderItems(orderItems);  // 주문 항목 추가
-////        orderRepository.save(order);
-//    }
-//
-//    // 주문 조회 메서드
-//    public Order findOrderOrThrow(Long orderId) {
-//        return orderRepository.findById(orderId)
-//                .orElseThrow(() -> new OrderNotFoundException(orderId));
-//    }
-//
-
-//}
