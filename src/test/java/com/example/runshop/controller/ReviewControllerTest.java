@@ -4,7 +4,6 @@ import com.example.runshop.model.dto.review.AddReviewRequest;
 import com.example.runshop.model.dto.review.ReviewDTO;
 import com.example.runshop.model.vo.review.ReviewContent;
 import com.example.runshop.model.vo.review.ReviewRating;
-import com.example.runshop.service.ProductService;
 import com.example.runshop.service.ReviewService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -70,7 +69,6 @@ class ReviewControllerTest {
     public void UpdateReview_API_Success() throws Exception {
         Long reviewId = 1L;
         Long userId = 1L;
-        AddReviewRequest updateRequest = new AddReviewRequest(userId, new ReviewContent("리뷰 내용 수정 테스트입니다"), new ReviewRating(4));
 
         mockMvc.perform(put("/api/products/reviews/{reviewId}", reviewId)
                         .param("userId", String.valueOf(userId))

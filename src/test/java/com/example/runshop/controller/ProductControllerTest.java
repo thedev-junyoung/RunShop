@@ -46,12 +46,6 @@ public class ProductControllerTest {
     @Test
     @DisplayName("상품 등록 API 성공")
     public void SubmitProduct_API_Success() throws Exception {
-        AddProductRequest request = new AddProductRequest(
-                new ProductName("나이키 운동화"),
-                new ProductDescription("나이키 에어맥스"),
-                new ProductPrice(BigDecimal.valueOf(100000)),
-                Category.SHOES,
-                "나이키");
 
         mockMvc.perform(post("/api/products")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -140,13 +134,7 @@ public class ProductControllerTest {
     @DisplayName("상품 수정 API 성공")
     public void UpdateProduct_API_Success() throws Exception {
         Long productId = 1L;
-        UpdateProductRequest updateRequest = new UpdateProductRequest(
-                new ProductName("수정된 이름"),
-                new ProductDescription("수정된 설명"),
-                new ProductPrice(BigDecimal.valueOf(120000)),
-                Category.SHOES,
-                "나이키"
-        );
+
 
         mockMvc.perform(put("/api/products/{id}", productId)
                         .param("role", "SELLER")  // role 파라미터 추가

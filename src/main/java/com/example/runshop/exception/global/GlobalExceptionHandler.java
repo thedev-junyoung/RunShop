@@ -14,17 +14,24 @@ import com.example.runshop.exception.product.PriceNegativeException;
 import com.example.runshop.exception.product.ProductNotFoundException;
 import com.example.runshop.exception.user.*;
 import com.example.runshop.model.dto.response.SuccessResponse;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<SuccessResponse<Void>> handleEntityNotFoundException(EntityNotFoundException ex, HttpServletRequest request) {
+        return SuccessResponse.error(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
+    }
 
     // ====================== Payment 관련 예외 ======================
     @ExceptionHandler(InvalidPaymentAmountException.class)

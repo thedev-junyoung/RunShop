@@ -26,7 +26,7 @@ import java.util.Collections;
 @Configuration // 이 클래스가 스프링 설정 클래스임을 나타냄
 @EnableWebSecurity // 웹 보안 활성화를 위한 애노테이션
 @Slf4j // 로깅 기능을 위한 Lombok 애노테이션
-@EnableMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 public class SecurityConfig {
 
     // AuthenticationConfiguration: 인증 설정을 관리하는 클래스, 인증을 처리하는 AuthenticationManager 제공

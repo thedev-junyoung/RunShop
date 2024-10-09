@@ -9,6 +9,7 @@ import com.example.runshop.model.vo.user.Address;
 import com.example.runshop.model.vo.user.Email;
 import com.example.runshop.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,10 +19,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -31,6 +30,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.anonymous;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -135,7 +135,6 @@ public class UserControllerTest {
 
         List<UserDTO> users = Arrays.asList(user1, user2);
         Page<UserDTO> pagedUsers = new PageImpl<>(users); // 페이징된 결과 생성
-        Pageable pageable = PageRequest.of(0, 10); // 0번째 페이지, 10개의 항목
 
         // 페이징된 결과를 반환하도록 설정
         when(userService.getAllUsers(any(Pageable.class))).thenReturn(pagedUsers);
@@ -335,5 +334,35 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.message").value("사용자 계정이 성공적으로 비활성화되었습니다."));
 
         verify(userService, times(1)).disabled(1L);
+    }
+
+
+    @Test
+    @DisplayName("미인증 사용자 정보 조회 시 401 Unauthorized 반환")
+    void getUser_Unauthenticated_ShouldReturnUnauthorized() throws Exception {
+        Long userId = 1L;
+        mockMvc.perform(get("/api/users/{id}", userId).with(anonymous()))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("권한 없는 사용자 정보 조회 시 403 Forbidden 반환")
+    void getUser_WithWrongRole_ShouldReturnForbidden() throws Exception {
+        Long userId = 1L;
+        mockMvc.perform(get("/api/users/{id}", userId).with(user("testuser").roles("USER")))
+                .andExpect(status().isForbidden());
+    }
+    @Test
+    @DisplayName("존재하지 않는 사용자 조회 시 404 Not Found 반환")
+    @WithMockUser(roles = "ADMIN")
+    void getUser_NonExistent_ShouldReturnNotFound() throws Exception {
+        Long nonExistentUserId = 999L;
+        when(userService.getUserById(nonExistentUserId)).thenThrow(new EntityNotFoundException("User not found"));
+
+        mockMvc.perform(get("/api/users/{id}", nonExistentUserId))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("User not found"));
+
+        verify(userService, times(1)).getUserById(nonExistentUserId);
     }
 }
