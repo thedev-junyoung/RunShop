@@ -25,7 +25,7 @@ public class UsersDetails implements UserDetails {
         Collection<GrantedAuthority> collection = new ArrayList<>();
 
         // 유저의 역할(Role)을 SimpleGrantedAuthority로 감싸서 Collection에 추가
-        collection.add(new SimpleGrantedAuthority(""+user.getRole())); // 유저의 역할을 반환
+        collection.add(new SimpleGrantedAuthority("ROLE_"+user.getRole())); // 유저의 역할을 반환
 
         UserRole role = user.getRole();
         log.info("User's role in UsersDetails: {}", role);  // 역할 확인용 로그
@@ -33,6 +33,9 @@ public class UsersDetails implements UserDetails {
         return collection; // 권한 정보를 담은 Collection을 반환
     }
 
+    public Long getId() {
+        return user.getId();
+    }
     @Override
     public String getPassword() {
         // User 엔티티의 비밀번호를 반환

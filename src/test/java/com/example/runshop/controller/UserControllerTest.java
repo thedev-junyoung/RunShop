@@ -1,15 +1,19 @@
 package com.example.runshop.controller;
 
 import com.example.runshop.model.dto.user.UpdatePasswordRequest;
+import com.example.runshop.model.dto.user.UpdateRoleRequest;
 import com.example.runshop.model.dto.user.UpdateUserRequest;
 import com.example.runshop.model.dto.user.UserDTO;
+import com.example.runshop.model.enums.UserRole;
 import com.example.runshop.model.vo.user.Address;
 import com.example.runshop.model.vo.user.Email;
 import com.example.runshop.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
@@ -17,6 +21,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -25,6 +31,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -36,7 +43,10 @@ public class UserControllerTest {
 
     @MockBean
     private UserService userService;
+    @Autowired
+    private ObjectMapper objectMapper;
 
+    private UserDTO testUser;
     private final WebApplicationContext webApplicationContext;
 
     public UserControllerTest(WebApplicationContext webApplicationContext) {
@@ -47,6 +57,17 @@ public class UserControllerTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+
+        testUser = UserDTO.builder()
+                .id(1L)
+                .email(new Email("testuser@example.com"))
+                .name("Test User")
+                .phone("010-1234-5678")
+                .address(new Address("Test Street", "101", "Test City", "Test Region", "12345"))
+                .createdAt("2023-09-01T12:00:00")
+                .enabled(true)
+                .updatedAt("2023-09-01T12:00:00")
+                .build();
     }
 
     @Test
@@ -180,11 +201,139 @@ public class UserControllerTest {
         // Given
         Long userId = 1L;
         // When & Then
-        mockMvc.perform(patch("/api/users/{id}/disabled", userId))
+        mockMvc.perform(delete("/api/users/{id}/disabled", userId))
                 .andDo(print())  // 응답 및 로그 출력
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("사용자 계정이 성공적으로 비활성화되었습니다."));
 
         verify(userService, times(1)).disabled(userId);
+    }
+    @Test
+    @DisplayName("관리자가 사용자 정보 조회")
+    @WithMockUser(roles = "ADMIN")
+    void getUser_AsAdmin() throws Exception {
+        when(userService.getUserById(1L)).thenReturn(testUser);
+
+        mockMvc.perform(get("/api/users/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("사용자 정보를 성공적으로 조회했습니다."))
+                .andExpect(jsonPath("$.data.id").value(1L));
+
+        verify(userService, times(1)).getUserById(1L);
+    }
+
+    @Test
+    @DisplayName("일반 사용자가 자신의 정보 조회")
+    void getUser_AsSelf() throws Exception {
+        when(userService.getUserById(1L)).thenReturn(testUser);
+
+        mockMvc.perform(get("/api/users/1").with(user("1")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("사용자 정보를 성공적으로 조회했습니다."))
+                .andExpect(jsonPath("$.data.id").value(1L));
+
+        verify(userService, times(1)).getUserById(1L);
+    }
+
+    @Test
+    @DisplayName("관리자가 모든 사용자 정보 조회")
+    @WithMockUser(roles = "ADMIN")
+    void getAllUsers() throws Exception {
+        Page<UserDTO> userPage = new PageImpl<>(Arrays.asList(testUser));
+        when(userService.getAllUsers(any())).thenReturn(userPage);
+
+        mockMvc.perform(get("/api/users"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("모든 사용자 정보를 성공적으로 조회했습니다."))
+                .andExpect(jsonPath("$.data.content[0].id").value(1L));
+
+        verify(userService, times(1)).getAllUsers(any());
+    }
+
+    @Test
+    @DisplayName("관리자가 사용자 정보 수정")
+    @WithMockUser(roles = "ADMIN")
+    void updateUser_AsAdmin() throws Exception {
+        UpdateUserRequest updateRequest = UpdateUserRequest.builder()
+                .name("Updated Name")
+                .phone("010-9876-5432")
+                .address(new Address("New Street", "102", "New City", "New Region", "54321"))
+                .build();
+        mockMvc.perform(put("/api/users/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("사용자 정보가 성공적으로 업데이트되었습니다."));
+
+        verify(userService, times(1)).updateUserDetails(eq(1L), any(UpdateUserRequest.class));
+    }
+
+    @Test
+    @DisplayName("일반 사용자가 자신의 정보 수정")
+    void updateUser_AsSelf() throws Exception {
+        UpdateUserRequest updateRequest = UpdateUserRequest.builder()
+                .name("Updated Name")
+                .phone("010-9876-5432")
+                .address(new Address("New Street", "102", "New City", "New Region", "54321"))
+                .build();
+        mockMvc.perform(put("/api/users/1")
+                        .with(user("1"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("사용자 정보가 성공적으로 업데이트되었습니다."));
+
+        verify(userService, times(1)).updateUserDetails(eq(1L), any(UpdateUserRequest.class));
+    }
+
+    @Test
+    @DisplayName("일반 사용자가 비밀번호 변경")
+    void updatePassword() throws Exception {
+        UpdatePasswordRequest passwordRequest = new UpdatePasswordRequest("oldPassword", "newPassword");
+
+        mockMvc.perform(patch("/api/users/1/password")
+                        .with(user("1"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(passwordRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("비밀번호가 성공적으로 변경되었습니다."));
+
+        verify(userService, times(1)).updatePassword(eq(1L), any(UpdatePasswordRequest.class));
+    }
+
+    @Test
+    @DisplayName("관리자가 사용자 권한 변경")
+    @WithMockUser(roles = "ADMIN")
+    void updateRole() throws Exception {
+        UpdateRoleRequest roleRequest = new UpdateRoleRequest(UserRole.SELLER);
+
+        mockMvc.perform(patch("/api/users/1/role")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(roleRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("사용자 권한이 성공적으로 변경되었습니다."));
+
+        verify(userService, times(1)).updateUserRole(eq(1L), any(UpdateRoleRequest.class));
+    }
+
+    @Test
+    @DisplayName("관리자가 사용자 계정 비활성화")
+    @WithMockUser(roles = "ADMIN")
+    void deactivateUser_AsAdmin() throws Exception {
+        mockMvc.perform(delete("/api/users/1/disabled"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("사용자 계정이 성공적으로 비활성화되었습니다."));
+
+        verify(userService, times(1)).disabled(1L);
+    }
+
+    @Test
+    @DisplayName("일반 사용자가 자신의 계정 비활성화")
+    void deactivateUser_AsSelf() throws Exception {
+        mockMvc.perform(delete("/api/users/1/disabled").with(user("1")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("사용자 계정이 성공적으로 비활성화되었습니다."));
+
+        verify(userService, times(1)).disabled(1L);
     }
 }
