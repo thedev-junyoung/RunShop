@@ -1,8 +1,6 @@
 package com.example.runshop.repository;
 
-import com.example.runshop.model.dto.review.ReviewDTO;
 import com.example.runshop.model.entity.Review;
-import com.example.runshop.utils.mapper.ProductMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
