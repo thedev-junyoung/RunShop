@@ -21,17 +21,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.anonymous;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -239,7 +238,7 @@ public class UserControllerTest {
     @DisplayName("관리자가 모든 사용자 정보 조회")
     @WithMockUser(roles = "ADMIN")
     void getAllUsers() throws Exception {
-        Page<UserDTO> userPage = new PageImpl<>(Arrays.asList(testUser));
+        Page<UserDTO> userPage = new PageImpl<>(Collections.singletonList(testUser));
         when(userService.getAllUsers(any())).thenReturn(userPage);
 
         mockMvc.perform(get("/api/users"))
