@@ -116,4 +116,9 @@ public class ReviewService {
         review.setEnabled(false);
         reviewRepository.save(review);  // 명시적으로 호출
     }
+
+    public void deleteReportedReview(Long reviewId) {
+        Review review = findReviewOrThrow(reviewId);
+        review.setEnabled(false);
+    }
 }

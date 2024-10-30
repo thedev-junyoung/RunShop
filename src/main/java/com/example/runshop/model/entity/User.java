@@ -74,4 +74,14 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> cartItems = new ArrayList<>();
+
+
+    public void setApproved(boolean approved) {
+        if (approved) {
+            this.role = UserRole.SELLER;
+        }
+    }
+    public boolean isApproved() {
+        return this.role == UserRole.SELLER;
+    }
 }

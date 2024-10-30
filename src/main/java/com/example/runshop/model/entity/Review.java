@@ -36,4 +36,7 @@ public class Review {
     @Column(nullable = false)
     private boolean enabled = true; // 기본값을 true로 설정하여 활성화된 상태로 시작
 
+    @Column(nullable = false)
+    private boolean reported = false; // 기본값을 false로 설정하여 신고되지 않은 상태로 시작
+
 }
