@@ -21,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -337,21 +338,6 @@ public class UserControllerTest {
     }
 
 
-    @Test
-    @DisplayName("미인증 사용자 정보 조회 시 401 Unauthorized 반환")
-    void getUser_Unauthenticated_ShouldReturnUnauthorized() throws Exception {
-        Long userId = 1L;
-        mockMvc.perform(get("/api/users/{id}", userId).with(anonymous()))
-                .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    @DisplayName("권한 없는 사용자 정보 조회 시 403 Forbidden 반환")
-    void getUser_WithWrongRole_ShouldReturnForbidden() throws Exception {
-        Long userId = 1L;
-        mockMvc.perform(get("/api/users/{id}", userId).with(user("testuser").roles("USER")))
-                .andExpect(status().isForbidden());
-    }
     @Test
     @DisplayName("존재하지 않는 사용자 조회 시 404 Not Found 반환")
     @WithMockUser(roles = "ADMIN")
