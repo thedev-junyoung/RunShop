@@ -74,7 +74,6 @@ public class ProductService {
 
     // 상품 삭제 기능
     @Transactional
-    @RoleCheck("SELLER") // "SELLER" 권한만 접근 가능
     public void deleteProduct(Long id) {
         findProductOrThrow(id);
         productRepository.deleteById(id);
