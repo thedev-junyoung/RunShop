@@ -21,6 +21,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 @Configuration // 이 클래스가 스프링 설정 클래스임을 나타냄
@@ -64,7 +65,7 @@ public class SecurityConfig {
 
         // 특정 엔드포인트를 허용: 회원가입, 로그인 엔드포인트 등
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/","/signup", "/login","/h2-console/**","/swagger-ui/**","/v3/api-docs/**").permitAll() // 이 경로들은 인증 없이 접근 허용
+                .requestMatchers("/", "/signup", "/login", "/h2-console/**", "/swagger-ui/**", "/v3/api-docs/**", "/actuator/**").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN") // /admin 경로는 ADMIN 권한 필요
                         .anyRequest().authenticated() // 나머지 요청들은 인증 필요
         )
@@ -91,7 +92,7 @@ public class SecurityConfig {
         http.cors(cors -> cors.configurationSource(request -> {
             CorsConfiguration config = new CorsConfiguration();
 
-            config.setAllowedOrigins(Collections.singletonList("http://localhost:5000")); // 허용할 출처
+            config.setAllowedOrigins(Arrays.asList("http://localhost:5000", "http://localhost:3000", "http://localhost:9090", "http://prometheus:9090", "http://grafana:3000"));
             config.setAllowedMethods(Collections.singletonList("*")); // 모든 HTTP 메서드 허용
             config.setAllowCredentials(true); // 자격 증명 허용 (쿠키 등)
             config.setAllowedHeaders(Collections.singletonList("*")); // 모든 헤더 허용

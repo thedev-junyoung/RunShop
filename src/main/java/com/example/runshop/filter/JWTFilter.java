@@ -34,7 +34,13 @@ public class JWTFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         // 요청의 Authorization 헤더에서 토큰을 추출
         String authorization = request.getHeader("Authorization");
-
+        // /actuator 경로를 포함한 요청은 JWT 검사를 하지 않도록 예외 처리
+        String requestURI = request.getRequestURI();
+        log.info("requestURI: " + requestURI);
+        if (requestURI.startsWith("/actuator")) {
+            filterChain.doFilter(request, response);
+            return; // /actuator 요청에 대해 더 이상의 작업을 중단
+        }
         // 토큰이 없거나 Bearer로 시작하지 않으면 로그를 남기고 필터 체인을 계속 진행
         if (authorization == null || !authorization.startsWith("Bearer ")) {
             log.info("토큰이 없음");

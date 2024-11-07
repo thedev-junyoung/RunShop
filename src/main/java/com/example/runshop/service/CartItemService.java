@@ -68,7 +68,6 @@ public class CartItemService {
         cartItemRepository.delete(cartItem);
     }
 
-    @Cacheable(value = "cartItemsCache", key = "#userId")
     public Page<CartItem> getCartItems(Long userId, Pageable pageable) {
         User user = userService.findById(userId);
         return cartItemRepository.findByUser(user, pageable);

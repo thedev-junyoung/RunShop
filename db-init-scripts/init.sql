@@ -1,4 +1,4 @@
 CREATE DATABASE IF NOT EXISTS shop;
-CREATE USER 'shop_admin'@'%' IDENTIFIED BY 'passpass';
+CREATE USER IF NOT EXISTS 'shop_admin'@'%' IDENTIFIED BY 'passpass';
 GRANT ALL PRIVILEGES ON shop.* TO 'shop_admin'@'%';
 FLUSH PRIVILEGES;
