@@ -1,5 +1,6 @@
 package com.example.runshop.model.entity;
 
+import com.example.runshop.exception.product.InvalidProductException;
 import com.example.runshop.model.enums.Category;
 import com.example.runshop.model.vo.product.ProductDescription;
 import com.example.runshop.model.vo.product.ProductName;
@@ -14,7 +15,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -85,6 +85,41 @@ public class Product {
     @OneToOne(mappedBy = "product")
     private Inventory inventory;
 
+
+    @Builder
+    public Product(ProductName name, ProductDescription description, ProductPrice price, Category category, String brand, Seller seller) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.category = category;
+        this.brand = brand;
+        this.seller = seller;
+        validateProduct();
+    }
+
+    // 상품 정보 수정
+    public void updateProduct(ProductName name, ProductDescription description, ProductPrice price, Category category, String brand) {
+        if (name != null) this.name = name;
+        if (description != null) this.description = description;
+        if (price != null) this.price = price;
+        if (category != null) this.category = category;
+        if (brand != null) this.brand = brand;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    // 상품 비활성화
+    public void disableProduct() {
+        this.enabled = false;
+    }
+
+
+    // 상품 유효성 검증
+    private void validateProduct() {
+        if (name == null || description == null || price == null || category == null) {
+            throw new InvalidProductException("유효하지 않은 상품 정보입니다.");
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -97,4 +132,6 @@ public class Product {
     public int hashCode() {
         return getClass().hashCode();
     }
+
+
 }

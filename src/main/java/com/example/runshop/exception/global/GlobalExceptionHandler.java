@@ -4,14 +4,12 @@ import com.example.runshop.exception.Inventory.InventoryNotFoundException;
 import com.example.runshop.exception.Inventory.OutOfStockException;
 import com.example.runshop.exception.cart.CartItemAlreadyExistsException;
 import com.example.runshop.exception.cart.CartItemNotFoundException;
+import com.example.runshop.exception.cartitem.InvalidCartItemException;
 import com.example.runshop.exception.order.OrderAlreadyBeenCancelledException;
 import com.example.runshop.exception.order.OrderNotFoundException;
 import com.example.runshop.exception.orderitem.QuantityNegativeException;
 import com.example.runshop.exception.payment.InvalidPaymentAmountException;
-import com.example.runshop.exception.product.CharactersArrangeDescriptionException;
-import com.example.runshop.exception.product.CharactersArrangeException;
-import com.example.runshop.exception.product.PriceNegativeException;
-import com.example.runshop.exception.product.ProductNotFoundException;
+import com.example.runshop.exception.product.*;
 import com.example.runshop.exception.user.*;
 import com.example.runshop.model.dto.response.SuccessResponse;
 import jakarta.persistence.EntityNotFoundException;
@@ -75,12 +73,22 @@ public class GlobalExceptionHandler {
         return SuccessResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
     }
 
+    @ExceptionHandler(InvalidProductException.class)
+    public ResponseEntity<SuccessResponse<Void>> handleInvalidProductException(InvalidProductException ex, HttpServletRequest request) {
+        return SuccessResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+    }
+
     @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<SuccessResponse<Void>> handleProductNotFoundException(ProductNotFoundException ex, HttpServletRequest request) {
         return SuccessResponse.error(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
     }
 
     // ====================== CartItem 관련 예외 ======================
+
+    @ExceptionHandler(InvalidCartItemException.class)
+    public ResponseEntity<SuccessResponse<Void>> handleInvalidCartItemException(InvalidCartItemException ex, HttpServletRequest request) {
+        return SuccessResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+    }
 
     @ExceptionHandler(CartItemNotFoundException.class)
     public ResponseEntity<SuccessResponse<Void>> handleCartItemNotFoundException(CartItemNotFoundException ex, HttpServletRequest request) {

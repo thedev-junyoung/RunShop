@@ -5,8 +5,12 @@ import com.example.runshop.model.dto.product.ProductDTO;
 import com.example.runshop.model.dto.product.UpdateProductRequest;
 import com.example.runshop.model.dto.product.AddProductRequest;
 import com.example.runshop.model.entity.Product;
+import com.example.runshop.model.vo.product.ProductDescription;
+import com.example.runshop.model.vo.product.ProductName;
+import com.example.runshop.model.vo.product.ProductPrice;
 import com.example.runshop.repository.ProductRepository;
 import com.example.runshop.utils.mapper.ProductMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -21,22 +25,18 @@ import java.util.Optional;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
 
-    public ProductService(ProductRepository productRepository, ProductMapper productMapper) {
-        this.productRepository = productRepository;
-        this.productMapper = productMapper;
-    }
 
     @Transactional
     public void addProduct(AddProductRequest request) {
-        // 상품을 등록하는 코드
-        final Product product = Product.builder()
-                .name(request.getName()) // VO 사용
-                .description(request.getDescription()) // VO 사용
-                .price(request.getPrice()) // VO 사용
+        Product product = Product.builder()
+                .name(new ProductName(request.getName().value()))
+                .description(new ProductDescription(request.getDescription().value()))
+                .price(new ProductPrice(request.getPrice().value()))
                 .category(request.getCategory())
                 .brand(request.getBrand())
                 .build();
@@ -62,14 +62,13 @@ public class ProductService {
     @CacheEvict(value = "productCache", key = "#id") // 해당 상품 캐시 삭제
     public void updateProduct(Long id, UpdateProductRequest request) {
         Product product = findProductOrThrow(id);
-
-        Optional.ofNullable(request.getName()).ifPresent(product::setName); // VO 사용
-        Optional.ofNullable(request.getDescription()).ifPresent(product::setDescription); // VO 사용
-        Optional.ofNullable(request.getPrice()).ifPresent(product::setPrice); // VO 사용
-        Optional.ofNullable(request.getCategory()).ifPresent(product::setCategory);
-        Optional.ofNullable(request.getBrand()).ifPresent(product::setBrand);
-
-        productRepository.save(product);
+        product.updateProduct(
+                new ProductName(request.getName().value()),
+                new ProductDescription(request.getDescription().value()),
+                new ProductPrice(request.getPrice().value()),
+                request.getCategory(),
+                request.getBrand()
+        );
     }
 
     // 상품 삭제 기능
@@ -82,8 +81,7 @@ public class ProductService {
     @Transactional
     public void disabled(Long id) {
         Product product = findProductOrThrow(id);
-        product.setEnabled(false);
-        productRepository.save(product);
+        product.disableProduct();
     }
 
     public Product findProductOrThrow(Long id) {

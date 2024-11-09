@@ -26,7 +26,8 @@ public class Inventory {
     @JoinColumn(name = "product_id")
     private Product product;
     // StockQuantity를 받는 생성자 추가
-    public Inventory(StockQuantity stockQuantity) {
+    public Inventory(Product product, StockQuantity stockQuantity) {
+        this.product = product;
         this.stockQuantity = stockQuantity;
     }
     public Inventory() {} // 기본 생성자 필요

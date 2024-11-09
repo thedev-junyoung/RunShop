@@ -5,26 +5,24 @@ import com.example.runshop.model.entity.CartItem;
 import com.example.runshop.model.entity.Product;
 import com.example.runshop.model.entity.User;
 import com.example.runshop.repository.CartItemRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Service
 @Slf4j
+@Transactional
+@RequiredArgsConstructor
 public class CartItemService {
     private final CartItemRepository cartItemRepository;
     private final UserService userService;
     private final ProductService productService;
-
-    public CartItemService(CartItemRepository cartItemRepository, UserService userService, ProductService productService) {
-        this.cartItemRepository = cartItemRepository;
-        this.userService = userService;
-        this.productService = productService;
-    }
 
     public CartItem addToCart(Long userId, Long productId, int quantity) {
         // 사용자와 상품 조회
@@ -34,29 +32,18 @@ public class CartItemService {
         // 장바구니에 해당 상품이 이미 있는지 확인
         Optional<CartItem> existingCartItemOpt = cartItemRepository.findByUserAndProduct(user, product);
 
-
         if (existingCartItemOpt.isPresent()) {
-            // 이미 존재하는 CartItem이 있을 경우 수량 증가
-            return IncreaseQuantityCartItemAlreadyExists(quantity, existingCartItemOpt);
+            // 기존 항목이 있으면 수량 증가
+            CartItem existingCartItem = existingCartItemOpt.get();
+            existingCartItem.increaseQuantity(quantity);
+            return cartItemRepository.save(existingCartItem);
         } else {
-            // 없을 경우 새로운 CartItem을 생성
-            return NotPresentCreateCartItem(quantity, user, product);
+            // 새로운 장바구니 항목 생성
+            CartItem newCartItem = CartItem.createCartItem(user, product, quantity);
+            return cartItemRepository.save(newCartItem);
         }
     }
-
-    private CartItem IncreaseQuantityCartItemAlreadyExists(int quantity, Optional<CartItem> existingCartItemOpt) {
-        CartItem existingCartItem = existingCartItemOpt.get();
-        existingCartItem.setQuantity(existingCartItem.getQuantity() + quantity);
-        return cartItemRepository.save(existingCartItem);
-    }
-    private CartItem NotPresentCreateCartItem(int quantity, User user, Product product) {
-        CartItem newCartItem = new CartItem();
-        newCartItem.setUser(user);
-        newCartItem.setProduct(product);
-        newCartItem.setQuantity(quantity);
-        return cartItemRepository.save(newCartItem);
-    }
-    @CacheEvict(value = "cartItemsCache", key = "#userId")  // 해당 사용자의 장바구니 캐시 무효화
+    @CacheEvict(value = "cartItemsCache", key = "#userId")
     public void removeFromCart(Long userId, Long productId) {
         User user = userService.findUserOrThrow(userId, "Remove from Cart");
         Product product = productService.findProductOrThrow(productId);
@@ -66,6 +53,7 @@ public class CartItemService {
 
         cartItemRepository.delete(cartItem);
     }
+
 
     public Page<CartItem> getCartItems(Long userId, Pageable pageable) {
         User user = userService.findById(userId);
