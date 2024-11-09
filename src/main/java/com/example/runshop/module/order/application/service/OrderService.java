@@ -14,7 +14,6 @@ import com.example.runshop.module.payment.adapters.in.event.PaymentFailedEvent;
 import com.example.runshop.module.payment.adapters.in.event.PaymentRequestEvent;
 import com.example.runshop.module.payment.adapters.in.event.PaymentSuccessEvent;
 import com.example.runshop.module.payment.domain.PaymentMethod;
-import com.example.runshop.service.InventoryService;
 import com.example.runshop.service.UserService;
 import com.example.runshop.utils.mapper.OrderMapper;
 import lombok.RequiredArgsConstructor;
