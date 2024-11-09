@@ -1,11 +1,8 @@
 package com.example.runshop.module.order.application.service;
 
-import com.example.runshop.exception.order.OrderAlreadyBeenCancelledException;
 import com.example.runshop.exception.order.OrderNotFoundException;
 import com.example.runshop.model.dto.order.OrderDetailDTO;
 import com.example.runshop.model.dto.order.OrderListDTO;
-import com.example.runshop.model.entity.Product;
-import com.example.runshop.model.enums.OrderStatus;
 import com.example.runshop.module.order.application.port.in.CancelOrderUseCase;
 import com.example.runshop.module.order.application.port.in.CreateOrderUseCase;
 import com.example.runshop.module.order.application.port.in.GetOrderDetailUseCase;
@@ -43,7 +40,6 @@ public class OrderService implements CreateOrderUseCase, CancelOrderUseCase, Get
 
     private final UserService userService;
     private final OrderRepository orderRepository;  // Use the OrderRepository abstraction
-    private final InventoryService inventoryService;
     private final ApplicationEventPublisher eventPublisher;
     private final OrderMapper orderMapper;
 

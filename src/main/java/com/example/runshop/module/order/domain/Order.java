@@ -6,8 +6,6 @@ import com.example.runshop.model.entity.User;
 import jakarta.persistence.*;
 import com.example.runshop.model.enums.OrderStatus;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

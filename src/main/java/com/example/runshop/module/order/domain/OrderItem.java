@@ -76,18 +76,4 @@ public class OrderItem {
         product.getInventory().increaseStock(quantity.value());
     }
 
-    // 결제 성공 시 상태 변경 메서드
-    public void completePayment() {
-        this.paymentStatus = PaymentStatus.SUCCESS;
-    }
-
-    // 결제 실패 시 상태 변경 메서드
-    public void cancelPayment() {
-        this.paymentStatus = PaymentStatus.FAILURE;
-    }
-
-    // Order 엔티티 설정 메서드
-    public void assignToOrder(Order order) {
-        this.order = order;
-    }
 }

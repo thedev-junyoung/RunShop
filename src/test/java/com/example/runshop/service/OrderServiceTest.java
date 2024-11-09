@@ -8,7 +8,6 @@ import com.example.runshop.model.enums.Category;
 import com.example.runshop.model.enums.OrderStatus;
 import com.example.runshop.model.vo.inventory.StockQuantity;
 import com.example.runshop.model.vo.orderitem.OrderQuantity;
-import com.example.runshop.model.vo.payment.PaymentAmount;
 import com.example.runshop.model.vo.product.ProductDescription;
 import com.example.runshop.model.vo.product.ProductName;
 import com.example.runshop.model.vo.product.ProductPrice;
@@ -18,8 +17,6 @@ import com.example.runshop.module.order.domain.OrderItem;
 import com.example.runshop.module.order.application.port.out.OrderRepository;
 import com.example.runshop.module.payment.adapters.in.event.PaymentRequestEvent;
 import com.example.runshop.module.payment.domain.PaymentMethod;
-import com.example.runshop.service.InventoryService;
-import com.example.runshop.service.UserService;
 import com.example.runshop.utils.mapper.OrderMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -54,8 +51,6 @@ class OrderServiceTest {
     @Mock
     private OrderMapper orderMapper;
 
-    @Mock
-    private InventoryService inventoryService;
 
     @Mock
     private ApplicationEventPublisher eventPublisher;
