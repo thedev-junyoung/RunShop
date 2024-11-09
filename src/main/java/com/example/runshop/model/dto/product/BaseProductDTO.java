@@ -16,7 +16,7 @@ import lombok.experimental.SuperBuilder;
 @Data
 @SuperBuilder
 @NoArgsConstructor
-@AllArgsConstructor  // 모든 필드를 사용하는 생성자 추가
+@AllArgsConstructor
 public abstract class BaseProductDTO {
     private ProductName name;
     private ProductDescription description;  // 설명은 필수가 아니므로 검증 없음

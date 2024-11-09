@@ -42,9 +42,8 @@ public class ReviewController {
     // [추가] 특정 리뷰 삭제 API
     @DeleteMapping("/reviews/{reviewId}")
     public ResponseEntity<?> deleteReview(@PathVariable Long reviewId,
-                                          @RequestParam Long userId,
                                           HttpServletRequest httpRequest) {
-        reviewService.deleteReview(reviewId, userId);
+        reviewService.disableReportedReview(reviewId);
         return SuccessResponse.ok("리뷰가 성공적으로 삭제되었습니다.", httpRequest.getRequestURI());
     }
 }

@@ -21,7 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -53,9 +55,9 @@ public class ProductService {
 
     // 상품 전체 조회 기능
     @Transactional(readOnly = true)
-    @Cacheable(value = "productListCache")
-    public Page<ProductDTO> getProducts(Pageable pageable) {
-        return productRepository.findAll(pageable).map(productMapper::productToProductDTO);
+    @Cacheable(value = "productListCache", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
+    public List<ProductDTO> getProducts(Pageable pageable) {
+        return productRepository.findAll(pageable).map(productMapper::productToProductDTO).getContent();
     }
     // 상품 수정 기능
     @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.REPEATABLE_READ)

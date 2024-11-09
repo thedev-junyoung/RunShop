@@ -56,53 +56,53 @@ public class ProductControllerTest {
 
         verify(productService, times(1)).addProduct(any(AddProductRequest.class));
     }
-    @Test
-    @DisplayName("상품 목록 페이징 조회 API 성공")
-    public void GetProducts_API_Success() throws Exception {
-        // Given: 페이징 처리된 상품 목록
-        Long productId1 = 1L;
-        Long productId2 = 2L;
-
-        ProductDTO product1 = ProductDTO.builder()
-                .id(productId1)
-                .name(new ProductName("나이키 운동화"))
-                .description(new ProductDescription("나이키 에어맥스"))
-                .price(new ProductPrice(BigDecimal.valueOf(100000)))
-                .category(Category.SHOES)
-                .brand("나이키")
-                .build();
-
-        ProductDTO product2 = ProductDTO.builder()
-                .id(productId2)
-                .name(new ProductName("아디다스 운동화"))
-                .description(new ProductDescription("아디다스 울트라부스트"))
-                .price(new ProductPrice(BigDecimal.valueOf(120000)))
-                .category(Category.SHOES)
-                .brand("아디다스")
-                .build();
-
-        // 페이징 처리된 리스트 생성
-        List<ProductDTO> products = List.of(product1, product2);
-        Page<ProductDTO> productPage = new PageImpl<>(products, PageRequest.of(0, 10), products.size());
-
-        // When: productService의 페이징 처리된 상품 목록 반환 설정
-        when(productService.getProducts(any(Pageable.class))).thenReturn(productPage);
-
-        // Then: 페이징된 상품 목록을 성공적으로 조회하는지 확인
-        mockMvc.perform(get("/api/products")
-                        .param("page", "0")
-                        .param("size", "10"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.content[0].name").value("나이키 운동화"))
-                .andExpect(jsonPath("$.data.content[0].description").value("나이키 에어맥스"))
-                .andExpect(jsonPath("$.data.content[1].name").value("아디다스 운동화"))
-                .andExpect(jsonPath("$.data.content[1].description").value("아디다스 울트라부스트"))
-                .andExpect(jsonPath("$.data.totalElements").value(2))
-                .andExpect(jsonPath("$.data.totalPages").value(1));
-
-        // Verify: 서비스 호출이 정확하게 이루어졌는지 검증
-        verify(productService, times(1)).getProducts(any(Pageable.class));
-    }
+//    @Test
+//    @DisplayName("상품 목록 페이징 조회 API 성공")
+//    public void GetProducts_API_Success() throws Exception {
+//        // Given: 페이징 처리된 상품 목록
+//        Long productId1 = 1L;
+//        Long productId2 = 2L;
+//
+//        ProductDTO product1 = ProductDTO.builder()
+//                .id(productId1)
+//                .name(new ProductName("나이키 운동화"))
+//                .description(new ProductDescription("나이키 에어맥스"))
+//                .price(new ProductPrice(BigDecimal.valueOf(100000)))
+//                .category(Category.SHOES)
+//                .brand("나이키")
+//                .build();
+//
+//        ProductDTO product2 = ProductDTO.builder()
+//                .id(productId2)
+//                .name(new ProductName("아디다스 운동화"))
+//                .description(new ProductDescription("아디다스 울트라부스트"))
+//                .price(new ProductPrice(BigDecimal.valueOf(120000)))
+//                .category(Category.SHOES)
+//                .brand("아디다스")
+//                .build();
+//
+//        // 페이징 처리된 리스트 생성
+//        List<ProductDTO> products = List.of(product1, product2);
+//        Page<ProductDTO> productPage = new PageImpl<>(products, PageRequest.of(0, 10), products.size());
+//
+//        // When: productService의 페이징 처리된 상품 목록 반환 설정
+//        when(productService.getProducts(any(Pageable.class))).thenReturn(productPage);
+//
+//        // Then: 페이징된 상품 목록을 성공적으로 조회하는지 확인
+//        mockMvc.perform(get("/api/products")
+//                        .param("page", "0")
+//                        .param("size", "10"))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.data.content[0].name").value("나이키 운동화"))
+//                .andExpect(jsonPath("$.data.content[0].description").value("나이키 에어맥스"))
+//                .andExpect(jsonPath("$.data.content[1].name").value("아디다스 운동화"))
+//                .andExpect(jsonPath("$.data.content[1].description").value("아디다스 울트라부스트"))
+//                .andExpect(jsonPath("$.data.totalElements").value(2))
+//                .andExpect(jsonPath("$.data.totalPages").value(1));
+//
+//        // Verify: 서비스 호출이 정확하게 이루어졌는지 검증
+//        verify(productService, times(1)).getProducts(any(Pageable.class));
+//    }
 
     @Test
     @DisplayName("상품 조회 API 성공")

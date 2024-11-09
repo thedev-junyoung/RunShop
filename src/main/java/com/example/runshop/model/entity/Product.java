@@ -87,13 +87,14 @@ public class Product {
 
 
     @Builder
-    public Product(ProductName name, ProductDescription description, ProductPrice price, Category category, String brand, Seller seller) {
+    public Product(ProductName name, ProductDescription description, ProductPrice price, Category category, String brand, Seller seller, Inventory inventory) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.category = category;
         this.brand = brand;
         this.seller = seller;
+        this.inventory = inventory;
         validateProduct();
     }
 

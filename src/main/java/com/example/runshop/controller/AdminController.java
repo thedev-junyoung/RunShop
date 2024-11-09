@@ -1,6 +1,7 @@
 package com.example.runshop.controller;
 
 import com.example.runshop.model.dto.product.ProductDTO;
+import com.example.runshop.model.dto.product.ProductPageDTO;
 import com.example.runshop.model.dto.response.SuccessResponse;
 import com.example.runshop.model.dto.review.ReviewDTO;
 import com.example.runshop.model.dto.user.UserDTO;
@@ -8,13 +9,17 @@ import com.example.runshop.service.AdminService;
 import com.example.runshop.service.ProductService;
 import com.example.runshop.service.ReviewService;
 import com.example.runshop.service.UserService;
+import com.example.runshop.utils.PaginationUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -56,7 +61,7 @@ public class AdminController {
     // [추가] 신고된 리뷰 삭제 API
     @DeleteMapping("/reported-reviews/{reviewId}")
     public ResponseEntity<?> deleteReportedReview(@PathVariable Long reviewId, HttpServletRequest httpRequest) {
-        reviewService.deleteReportedReview(reviewId);
+        reviewService.disableReportedReview(reviewId);
         return SuccessResponse.ok("신고된 리뷰가 성공적으로 삭제되었습니다.", httpRequest.getRequestURI());
     }
 
@@ -65,8 +70,9 @@ public class AdminController {
     public ResponseEntity<?> getAllProducts(@RequestParam(defaultValue = "0") int page,
                                             @RequestParam(defaultValue = "10") int size,
                                             HttpServletRequest httpRequest) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<ProductDTO> products = productService.getProducts(pageable);
+        Pageable pageable = PaginationUtils.createPageable(page, size);
+        List<ProductDTO> productList = productService.getProducts(pageable);
+        Page<ProductDTO> products = new PageImpl<>(productList, pageable, productList.size());
         return SuccessResponse.ok("상품 목록을 성공적으로 조회했습니다.", products, httpRequest.getRequestURI());
     }
 

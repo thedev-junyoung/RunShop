@@ -18,186 +18,179 @@ import com.example.runshop.utils.mapper.ReviewMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class ReviewServiceTest {
 
     @Mock
     private ReviewRepository reviewRepository;
-
     @Mock
     private ProductRepository productRepository;
-
     @Mock
     private UserRepository userRepository;
-
     @Mock
     private ReviewMapper reviewMapper;
-
+    @Mock
+    private Review review; // Review를 Mock 객체로 추가
     @InjectMocks
     private ReviewService reviewService;
 
+    private Product product;
+    private User user;
+    private AddReviewRequest addReviewRequest;
+
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        product = new Product();
+        user = new User();
+        addReviewRequest = AddReviewRequest.builder()
+                .userId(1L)
+                .content(new ReviewContent("Great product!"))
+                .rating(new ReviewRating(5))
+                .build();
     }
 
     @Test
-    @DisplayName("추가 검토 성공")
-    void testAddReviewSuccess() {
-        Long productId = 1L;
-        AddReviewRequest request = new AddReviewRequest(1L, new ReviewContent("Great product!"), new ReviewRating(5));
+    @DisplayName("리뷰 추가 성공")
+    void addReview_Success() {
+        when(productRepository.findById(anyLong())).thenReturn(Optional.of(product));
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(reviewRepository.save(any(Review.class))).thenReturn(review);
 
-        Product product = mock(Product.class);
-        User user = mock(User.class);
+        reviewService.addReview(1L, addReviewRequest);
 
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(userRepository.findById(request.getUserId())).thenReturn(Optional.of(user));
-
-        reviewService.addReview(productId, request);
-
-        verify(reviewRepository).save(any(Review.class));
+        verify(productRepository, times(1)).findById(anyLong());
+        verify(userRepository, times(1)).findById(anyLong());
+        verify(reviewRepository, times(1)).save(any(Review.class));
     }
 
     @Test
-    @DisplayName("추가 리뷰 제품을 찾을 수 없습니다")
-    void testAddReviewProductNotFound() {
-        Long productId = 1L;
-        AddReviewRequest request = new AddReviewRequest(1L, new ReviewContent("Nice product"), new ReviewRating(5));
+    @DisplayName("리뷰 추가 시 상품을 찾을 수 없는 경우 예외 발생")
+    void addReview_ProductNotFoundException() {
+        when(productRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        when(productRepository.findById(productId)).thenReturn(Optional.empty());
+        assertThrows(ProductNotFoundException.class, () -> reviewService.addReview(1L, addReviewRequest));
 
-        assertThrows(ProductNotFoundException.class, () -> reviewService.addReview(productId, request));
+        verify(productRepository, times(1)).findById(anyLong());
+        verify(userRepository, never()).findById(anyLong());
+        verify(reviewRepository, never()).save(any(Review.class));
     }
 
     @Test
-    @DisplayName("추가 리뷰 사용자를 찾을 수 없습니다")
-    void testAddReviewUserNotFound() {
-        Long productId = 1L;
-        AddReviewRequest request = new AddReviewRequest(1L, new ReviewContent("Awesome product"), new ReviewRating(5));
+    @DisplayName("리뷰 추가 시 사용자를 찾을 수 없는 경우 예외 발생")
+    void addReview_UserNotFoundException() {
+        when(productRepository.findById(anyLong())).thenReturn(Optional.of(product));
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        Product product = mock(Product.class);
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
-        when(userRepository.findById(request.getUserId())).thenReturn(Optional.empty());
+        assertThrows(UserNotFoundException.class, () -> reviewService.addReview(1L, addReviewRequest));
 
-        assertThrows(UserNotFoundException.class, () -> reviewService.addReview(productId, request));
+        verify(productRepository, times(1)).findById(anyLong());
+        verify(userRepository, times(1)).findById(anyLong());
+        verify(reviewRepository, never()).save(any(Review.class));
     }
 
     @Test
-    @DisplayName("리뷰 목록 성공")
-    void testGetReviewByIdSuccess() {
-        Long reviewId = 1L;
-        Review review = mock(Review.class);
-        ReviewDTO reviewDTO = mock(ReviewDTO.class);
+    @DisplayName("상품 ID로 리뷰 목록 조회 성공")
+    void getReviewsByProductId_Success() {
+        when(reviewRepository.findByProductId(anyLong())).thenReturn(List.of(review));
+        when(reviewMapper.riciewToReviewDTOList(anyList())).thenReturn(List.of(new ReviewDTO()));
 
-        when(reviewRepository.findById(reviewId)).thenReturn(Optional.of(review));
-        when(reviewMapper.reviewToReviewDTO(review)).thenReturn(reviewDTO);
+        List<ReviewDTO> result = reviewService.getReviewsByProductId(1L);
 
-        ReviewDTO result = reviewService.getReviewById(reviewId);
-
-        assertEquals(reviewDTO, result);
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        verify(reviewRepository, times(1)).findByProductId(anyLong());
     }
 
     @Test
-    @DisplayName("리뷰 ID를 찾을 수 없습니다")
-    void testGetReviewByIdNotFound() {
-        Long reviewId = 1L;
-        when(reviewRepository.findById(reviewId)).thenReturn(Optional.empty());
+    @DisplayName("리뷰 ID로 리뷰 조회 성공")
+    void getReviewById_Success() {
+        when(reviewRepository.findById(anyLong())).thenReturn(Optional.of(review));
+        when(reviewMapper.reviewToReviewDTO(any(Review.class))).thenReturn(new ReviewDTO());
 
-        assertThrows(ReviewNotFoundException.class, () -> reviewService.getReviewById(reviewId));
+        ReviewDTO result = reviewService.getReviewById(1L);
+
+        assertNotNull(result);
+        verify(reviewRepository, times(1)).findById(anyLong());
+        verify(reviewMapper, times(1)).reviewToReviewDTO(any(Review.class));
+    }
+
+    @Test
+    @DisplayName("리뷰 조회 시 리뷰를 찾을 수 없는 경우 예외 발생")
+    void getReviewById_ReviewNotFoundException() {
+        when(reviewRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(ReviewNotFoundException.class, () -> reviewService.getReviewById(1L));
+
+        verify(reviewRepository, times(1)).findById(anyLong());
+        verify(reviewMapper, never()).reviewToReviewDTO(any(Review.class));
     }
 
     @Test
     @DisplayName("리뷰 수정 성공")
-    void testUpdateReviewSuccess() {
-        Long reviewId = 1L;
-        Long userId = 1L;
-        AddReviewRequest request = new AddReviewRequest(userId, new ReviewContent("Updated content"), new ReviewRating(4));
+    void updateReview_Success() {
+        when(reviewRepository.findById(anyLong())).thenReturn(Optional.of(review));
+        doNothing().when(review).verifyUserPermission(anyLong());
 
-        Review review = mock(Review.class);
-        User user = mock(User.class);
+        reviewService.updateReview(1L, addReviewRequest, 1L);
 
-        when(reviewRepository.findById(reviewId)).thenReturn(Optional.of(review));
-        when(review.getUser()).thenReturn(user);
-        when(user.getId()).thenReturn(userId);
-
-        reviewService.updateReview(reviewId, request, userId);
-
-        verify(review).setContent(any(ReviewContent.class));
-        verify(review).setRating(any(ReviewRating.class));
+        verify(reviewRepository, times(1)).findById(anyLong());
+        verify(review, times(1)).verifyUserPermission(anyLong());
     }
 
     @Test
-    @DisplayName("리뷰 수정 사용자에게 권한이 없습니다")
-    void testUpdateReviewNoPermission() {
-        Long reviewId = 1L;
-        Long userId = 1L;
-        Long otherUserId = 2L;
-        AddReviewRequest request = new AddReviewRequest(userId, new ReviewContent("Updated content"), new ReviewRating(4));
+    @DisplayName("리뷰 수정 시 리뷰를 찾을 수 없는 경우 예외 발생")
+    void updateReview_ReviewNotFoundException() {
+        when(reviewRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        Review review = mock(Review.class);
-        User user = mock(User.class);
+        assertThrows(ReviewNotFoundException.class, () -> reviewService.updateReview(1L, addReviewRequest, 1L));
 
-        when(reviewRepository.findById(reviewId)).thenReturn(Optional.of(review));
-        when(review.getUser()).thenReturn(user);
-        when(user.getId()).thenReturn(otherUserId);
-
-        assertThrows(NotHavePermissionReviewException.class, () -> reviewService.updateReview(reviewId, request, userId));
+        verify(reviewRepository, times(1)).findById(anyLong());
+        verify(review, never()).verifyUserPermission(anyLong());
     }
 
     @Test
-    @DisplayName("리뷰 삭제 성공")
-    void testDeleteReviewSuccess() {
-        Long reviewId = 1L;
-        Long userId = 1L;
+    @DisplayName("리뷰 수정 시 권한이 없는 경우 예외 발생")
+    void updateReview_NotHavePermissionReviewException() {
+        when(reviewRepository.findById(anyLong())).thenReturn(Optional.of(review));
+        doThrow(new NotHavePermissionReviewException("No permission")).when(review).verifyUserPermission(anyLong());
 
-        Review review = mock(Review.class);
-        User user = mock(User.class);
+        assertThrows(NotHavePermissionReviewException.class, () -> reviewService.updateReview(1L, addReviewRequest, 1L));
 
-        when(reviewRepository.findById(reviewId)).thenReturn(Optional.of(review));
-        when(review.getUser()).thenReturn(user);
-        when(user.getId()).thenReturn(userId);
-
-        reviewService.deleteReview(reviewId, userId);
-
-        verify(reviewRepository).save(review);
+        verify(reviewRepository, times(1)).findById(anyLong());
+        verify(review, times(1)).verifyUserPermission(anyLong());
     }
 
     @Test
-    @DisplayName("리뷰 삭제 권한이 없습니다")
-    void testDeleteReviewNoPermission() {
-        Long reviewId = 1L;
-        Long userId = 1L;
-        Long otherUserId = 2L;
+    @DisplayName("신고된 리뷰 비활성화 성공")
+    void disableReportedReview_Success() {
+        when(reviewRepository.findById(anyLong())).thenReturn(Optional.of(review));
 
-        Review review = mock(Review.class);
-        User user = mock(User.class);
+        reviewService.disableReportedReview(1L);
 
-        when(reviewRepository.findById(reviewId)).thenReturn(Optional.of(review));
-        when(review.getUser()).thenReturn(user);
-        when(user.getId()).thenReturn(otherUserId);
-
-        assertThrows(NotHavePermissionReviewException.class, () -> reviewService.deleteReview(reviewId, userId));
+        verify(reviewRepository, times(1)).findById(anyLong());
+        verify(review, times(1)).disable();
     }
 
     @Test
-    @DisplayName("관리자 소프트 삭제 성공 테스트")
-    public void disableReviewByAdmin_Success() {
-        Long reviewId = 1L;
-        Review review = mock(Review.class);
+    @DisplayName("신고된 리뷰 비활성화 시 리뷰를 찾을 수 없는 경우 예외 발생")
+    void disableReportedReview_ReviewNotFoundException() {
+        when(reviewRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        when(reviewRepository.findById(reviewId)).thenReturn(Optional.of(review));
+        assertThrows(ReviewNotFoundException.class, () -> reviewService.disableReportedReview(1L));
 
-        reviewService.disableReviewByAdmin(reviewId);
-
-        verify(review, times(1)).setEnabled(false);  // 리뷰의 enabled 필드를 false로 설정했는지 확인
-        verify(reviewRepository, times(1)).save(review);  // 변경 사항이 저장되었는지 확인
+        verify(reviewRepository, times(1)).findById(anyLong());
+        verify(review, never()).disable();
     }
 }

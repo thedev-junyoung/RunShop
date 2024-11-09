@@ -5,14 +5,18 @@ import com.example.runshop.model.dto.product.UpdateProductRequest;
 import com.example.runshop.model.dto.product.AddProductRequest;
 import com.example.runshop.model.dto.response.SuccessResponse;
 import com.example.runshop.service.ProductService;
+import com.example.runshop.utils.PaginationUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -42,8 +46,9 @@ public class ProductController {
     public ResponseEntity<?> getProducts(@RequestParam(defaultValue = "0") int page,
                                          @RequestParam(defaultValue = "10") int size,
                                          HttpServletRequest httpRequest) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<ProductDTO> products = productService.getProducts(pageable);
+        Pageable pageable = PaginationUtils.createPageable(page, size);
+        List<ProductDTO> productList = productService.getProducts(pageable);
+        Page<ProductDTO> products = new PageImpl<>(productList, pageable, productList.size());
         return SuccessResponse.ok("상품 목록을 성공적으로 조회했습니다.", products, httpRequest.getRequestURI());
     }
 

@@ -43,7 +43,7 @@ public class AdminService {
     @Transactional
     public void deleteReview(Long reviewId) {
         Review review = findReviewOrThrow(reviewId);
-        review.setEnabled(false);
+        review.disable();
 //        reviewRepository.delete(review);
     }
 
