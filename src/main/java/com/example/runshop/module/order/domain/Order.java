@@ -1,5 +1,6 @@
 package com.example.runshop.module.order.domain;
 
+import com.example.runshop.exception.order.OrderAlreadyBeenCancelledException;
 import com.example.runshop.module.payment.domain.Payment;
 import com.example.runshop.model.entity.User;
 import jakarta.persistence.*;
@@ -15,8 +16,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
-@NoArgsConstructor
 @Table(name = "orders") // 테이블 이름을 'orders' 로 변경
 public class Order {
     @Id
@@ -51,13 +50,18 @@ public class Order {
     @OneToOne(mappedBy = "order")
     private Payment payment;
 
-    // Business Logic
-    // 주문 생성 시 상태를 PENDING 으로 초기화
+// Business Logic
+// ==== 메서드 ====================================
+    protected Order() {}
     public Order(User user, BigDecimal totalPrice, List<OrderItem> items) {
         this.totalPrice = totalPrice;
         this.user = user;
         this.status = OrderStatus.PENDING;
         this.orderItems.addAll(items);
+    }
+    public static Order create(User user, BigDecimal totalPrice, List<OrderItem> orderItems) {
+        orderItems.forEach(OrderItem::decreaseStock);
+        return new Order(user, totalPrice, orderItems);
     }
 
     public void completePayment() {
@@ -65,7 +69,11 @@ public class Order {
     }
 
     public void cancelOrder() {
+        if (this.status == OrderStatus.ORDER_CANCELLATION) {
+            throw new OrderAlreadyBeenCancelledException("이미 취소된 주문입니다.");
+        }
         this.status = OrderStatus.ORDER_CANCELLATION;
+        orderItems.forEach(OrderItem::restoreStock);
     }
 
 

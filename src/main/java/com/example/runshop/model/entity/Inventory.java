@@ -25,6 +25,17 @@ public class Inventory {
     @OneToOne
     @JoinColumn(name = "product_id")
     private Product product;
+    // StockQuantity를 받는 생성자 추가
+    public Inventory(StockQuantity stockQuantity) {
+        this.stockQuantity = stockQuantity;
+    }
+    public Inventory() {} // 기본 생성자 필요
 
+    public void decreaseStock(int quantity) {
+        this.stockQuantity = this.stockQuantity.decreaseStock(quantity);
+    }
+    public void increaseStock(int quantity) {
+        this.stockQuantity = this.stockQuantity.increaseStock(quantity);
+    }
 
 }

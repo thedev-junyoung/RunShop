@@ -20,6 +20,7 @@ import com.example.runshop.module.payment.domain.PaymentMethod;
 import com.example.runshop.service.InventoryService;
 import com.example.runshop.service.UserService;
 import com.example.runshop.utils.mapper.OrderMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -37,6 +38,7 @@ import java.util.List;
 @Service
 @Slf4j
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class OrderService implements CreateOrderUseCase, CancelOrderUseCase, GetOrderDetailUseCase {
 
     private final UserService userService;
@@ -45,35 +47,15 @@ public class OrderService implements CreateOrderUseCase, CancelOrderUseCase, Get
     private final ApplicationEventPublisher eventPublisher;
     private final OrderMapper orderMapper;
 
-    public OrderService(UserService userService, OrderRepository orderRepository,
-                        InventoryService inventoryService, ApplicationEventPublisher eventPublisher, OrderMapper orderMapper) {
-        this.userService = userService;
-        this.orderRepository = orderRepository;
-        this.eventPublisher = eventPublisher;
-        this.inventoryService = inventoryService;
-        this.orderMapper = orderMapper;
-    }
-
-
-
     // 주문 생성
     @Transactional
     @CacheEvict(value = "orderListCache", key = "#userId")
     public void createOrder(Long userId, BigDecimal totalPrice, List<OrderItem> orderItems, PaymentMethod paymentMethod) {
         User user = userService.findUserOrThrow(userId, "주문 생성");
-
-        // 재고 감소
-        for (OrderItem item : orderItems) {
-            inventoryService.decreaseStock(item.getProduct().getId(), item.getQuantity().value());
-        }
-
-        // 주문 생성
-        Order order = new Order(user, totalPrice, orderItems);
+        Order order = Order.create(user, totalPrice, orderItems);
         orderRepository.save(order);
-
         // 결제 요청 이벤트 발행
         eventPublisher.publishEvent(new PaymentRequestEvent(this, order.getId(), totalPrice,paymentMethod));
-
         log.info("주문이 성공적으로 생성되었습니다. 주문 ID: {}", order.getId());
     }
 
@@ -125,22 +107,8 @@ public class OrderService implements CreateOrderUseCase, CancelOrderUseCase, Get
     })
     public void cancelOrder(Long orderId) {
         Order order = findOrderOrThrow(orderId);
-        validateOrderState(order);
-
-        // 각 주문 항목의 재고 복구
-        for (OrderItem item : order.getOrderItems()) {
-            Product product = item.getProduct();
-            inventoryService.increaseStock(product.getId(), item.getQuantity().value());
-        }
-
-        // 주문 상태 변경
-        order.setStatus(OrderStatus.ORDER_CANCELLATION);
+        order.cancelOrder();
+        orderRepository.save(order);
         log.info("주문이 성공적으로 취소되었습니다. 주문 ID: {}", orderId);
-    }
-    // 주문 상태 검증 메서드
-    private void validateOrderState(Order order) {
-        if (order.getStatus() == OrderStatus.ORDER_CANCELLATION) {
-            throw new OrderAlreadyBeenCancelledException("이미 취소된 주문입니다.");
-        }
     }
 }

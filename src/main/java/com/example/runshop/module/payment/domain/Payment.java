@@ -9,8 +9,9 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+import static jakarta.persistence.EnumType.STRING;
+
 @Entity
-@Setter
 @Getter
 @Table(name = "payment")
 @NoArgsConstructor
@@ -19,11 +20,11 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(STRING)
     private PaymentMethod method;
 
     @Column(name = "payment_status", nullable = false)
-    @Enumerated(EnumType.STRING)
+    @Enumerated(STRING)
     private PaymentStatus status;
 
 
@@ -50,19 +51,25 @@ public class Payment {
     @JoinColumn(name = "order_id")
     private Order order;
     // 생성자 추가
-    public Payment(Order order, PaymentAmount amount) {
+    public Payment(Order order, PaymentAmount amount, PaymentMethod method) {
         this.order = order;
         this.amount = amount;
-        this.status = PaymentStatus.PENDING; // 초기 상태는 PENDING
+        this.method = method;
+        this.status = PaymentStatus.PENDING;
     }
 
-    // 결제 성공 시 호출되는 메서드
-    public void markSuccess() {
-        this.status = PaymentStatus.SUCCESS;
+    // 정적 팩토리 메서드
+    public static Payment create(Order order, PaymentAmount amount, PaymentMethod method) {
+        return new Payment(order, amount, method);
     }
 
-    // 결제 실패 시 호출되는 메서드
-    public void markFailure() {
-        this.status = PaymentStatus.FAILURE;
+    public void process(boolean success) {
+        if (success) {
+            this.status = PaymentStatus.SUCCESS;
+            order.completePayment();
+        } else {
+            this.status = PaymentStatus.FAILURE;
+//            order.cancelOrder();
+        }
     }
 }
