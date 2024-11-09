@@ -69,14 +69,9 @@ public class JWTFilter extends OncePerRequestFilter {
         String role = jwt.getRole(token);
 
         // 사용자 엔터티를 생성하고, 이메일과 역할을 설정
-        User user = new User();
-        user.setEmail(new Email(username));
-        user.setRole(UserRole.valueOf(role));
-        log.info("인증된 유저: " + username);
-        log.info("인증된 역할: " + role);
 
-        // UserDetails 객체를 생성하고, 이를 기반으로 Authentication 객체를 생성
-        UsersDetails userDetails = new UsersDetails(user);
+        // 간단한 생성자를 사용하여 UsersDetails 생성
+        UsersDetails userDetails = new UsersDetails(new Email(username), UserRole.valueOf(role));
         Authentication authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
         // SecurityContext에 인증 정보를 설정하여 이후의 필터나 요청에서 이 사용자 정보가 활용되도록 함

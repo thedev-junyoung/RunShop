@@ -53,9 +53,9 @@ public class AdminService {
     }
 
     @Transactional
-    public void manageUserStatus(Long userId, boolean isEnabled) {
+    public void manageUserStatus(Long userId, boolean enabled) {
         User user = findUserOrThrow(userId);
-        user.setEnabled(isEnabled);
+        user.updateEnabledAccount(enabled);
         userRepository.save(user);
     }
 

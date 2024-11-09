@@ -67,7 +67,7 @@ class OrderServiceTest {
         // Given: User 생성 및 ID 설정
         user = new User();
         ReflectionTestUtils.setField(user, "id", 1L);
-        user.setName("테스트 유저");
+        ReflectionTestUtils.setField(user, "name", "테스트 유저");
 
         // Product1 생성 및 Inventory 설정
         Product product1 = Product.builder()

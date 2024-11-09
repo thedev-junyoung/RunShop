@@ -6,6 +6,8 @@ import com.example.runshop.model.dto.review.ReviewDTO;
 import com.example.runshop.model.dto.user.UserDTO;
 import com.example.runshop.model.entity.Review;
 import com.example.runshop.model.entity.User;
+import com.example.runshop.model.vo.user.Email;
+import com.example.runshop.model.vo.user.Password;
 import com.example.runshop.repository.ReviewRepository;
 import com.example.runshop.repository.UserRepository;
 import com.example.runshop.utils.mapper.ReviewMapper;
@@ -20,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,7 +49,8 @@ public class AdminServiceTest {
     public void approveSeller_ShouldSetApprovedToTrue() {
         // Given
         User testUser = new User();
-        testUser.setId(1L);
+        ReflectionTestUtils.setField(testUser, "email", new Email("test@gmail.com"));
+        ReflectionTestUtils.setField(testUser, "password", new Password("test12341234"));
         testUser.setApproved(false);
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
@@ -97,7 +101,7 @@ public class AdminServiceTest {
     public void getUser_ShouldReturnUserDTO() {
         // Given
         User testUser = new User();
-        testUser.setId(1L);
+        ReflectionTestUtils.setField(testUser, "id", 1L);
         UserDTO userDTO = new UserDTO();
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
@@ -122,8 +126,9 @@ public class AdminServiceTest {
     public void manageUserStatus_ShouldUpdateUserStatus() {
         // Given
         User testUser = new User();
-        testUser.setId(1L);
-        testUser.setEnabled(true);
+        ReflectionTestUtils.setField(testUser, "id", 1L);
+        ReflectionTestUtils.setField(testUser, "enabled",true);
+
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
 

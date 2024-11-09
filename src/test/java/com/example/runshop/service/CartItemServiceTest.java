@@ -26,6 +26,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -59,14 +60,15 @@ class CartItemServiceTest {
     public void setUp() {
         // Given: User 설정
         user = new User();
-        user.setId(1L);
-        user.setEmail(new Email("test@gmail.com")); // Email VO 사용
-        user.setPassword(new Password("test12341234")); // Password VO 사용
-        user.setName("테스트");
-        user.setPhone("010-1234-5678");
-        user.setAddress(new Address("서울시 강남구 도로명", "101호", "강남구", "서울", "12345")); // Address VO 사용
-        user.setRole(UserRole.CUSTOMER);
-        user.setCartItems(new ArrayList<>());
+        ReflectionTestUtils.setField(user, "id", 1L);
+        ReflectionTestUtils.setField(user, "email", new Email("test@gmail.com"));
+        ReflectionTestUtils.setField(user, "password", new Password("test12341234"));
+        ReflectionTestUtils.setField(user, "enabled", true);
+        ReflectionTestUtils.setField(user, "role", UserRole.CUSTOMER);
+        ReflectionTestUtils.setField(user, "name", "테스트");
+        ReflectionTestUtils.setField(user, "phone", "010-1234-5678");
+        ReflectionTestUtils.setField(user, "address", new Address("서울시 강남구 도로명", "101호", "강남구", "서울", "12345"));
+        ReflectionTestUtils.setField(user, "cartItems", new ArrayList<>());
 
         // Given: Product 및 Inventory 설정
         product = new Product();

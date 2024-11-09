@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
@@ -36,8 +37,8 @@ class LoginServiceTest {
         String emailString = "test@example.com";
         Email email = new Email(emailString); // Email VO로 감싸기
         User user = new User();
-        user.setEmail(email);
-        user.setPassword(new Password("password"));
+        ReflectionTestUtils.setField(user, "email", new Email("test@example.com"));
+        ReflectionTestUtils.setField(user, "password", new Password("test12341234"));
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
 
         // When

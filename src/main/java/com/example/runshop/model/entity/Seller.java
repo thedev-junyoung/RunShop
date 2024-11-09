@@ -27,7 +27,7 @@ public class Seller extends User {
     // 판매자 관련 추가 정보가 필요할 경우 이곳에 필드를 추가할 수 있음
     public Seller() {
         super();
-        this.setRole(UserRole.SELLER);
+        this.updateRole(UserRole.SELLER);
     }
 
 }

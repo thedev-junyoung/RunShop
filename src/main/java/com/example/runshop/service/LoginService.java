@@ -38,7 +38,7 @@ public class LoginService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + emailString));
 
         // 조회된 사용자 정보를 UserDetails 객체로 변환하여 반환
-        return new UsersDetails(user);
+        return new UsersDetails(user.getEmail(),user.getRole());
     }
 
 }
